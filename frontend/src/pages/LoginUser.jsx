@@ -7,7 +7,7 @@ const LoginUser = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
-  const role = queryParams.get("type") || "customer"; // "customer" or "owner"
+  const type = queryParams.get("type") || "customer";
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -20,20 +20,16 @@ const LoginUser = () => {
       const res = await fetch("http://localhost:5000/api/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          username: form.username,
-          password: form.password,
-          type: role,
-        }),
+        body: JSON.stringify({ ...form, type }),
       });
 
       const data = await res.json();
       if (res.ok) {
-        localStorage.setItem("token", data.token);
+        localStorage.setItem("token", data.token || "");
         alert("Login successful!");
         navigate("/dashboard");
       } else {
-        alert(data.msg || "Login failed.");
+        alert(data.error || "Login failed.");
       }
     } catch (error) {
       console.error("Login error:", error);
@@ -42,7 +38,7 @@ const LoginUser = () => {
   };
 
   const handleGoogleLogin = () => {
-    alert("Google login clicked (functionality to be added).");
+    window.location.href = `http://localhost:5000/auth/google?type=${type}`;
   };
 
   return (
@@ -51,7 +47,6 @@ const LoginUser = () => {
         backgroundImage: `url(${BackgroundImg})`,
         backgroundSize: "cover",
         backgroundPosition: "center",
-        backgroundRepeat: "no-repeat",
         minHeight: "100vh",
         display: "flex",
         justifyContent: "center",
@@ -63,20 +58,19 @@ const LoginUser = () => {
         className="container shadow-lg"
         style={{
           maxWidth: "500px",
-          width: "100%",
-          backgroundColor: "rgba(255, 255, 255, 0.88)",
+          backgroundColor: "rgba(255,255,255,0.88)",
           padding: "2rem",
           borderRadius: "12px",
-          color: "#000",
         }}
       >
-        <h2 className="text-center mb-4">Login as {role === "owner" ? "Owner" : "User"}</h2>
-
+        <h2 className="text-center mb-4">
+          Login as {type === "owner" ? "Owner" : "User"}
+        </h2>
         <form onSubmit={handleSubmit}>
           <input
-            type="email"
+            type="text"
             name="username"
-            placeholder="Email"
+            placeholder="Username (Email)"
             className="form-control mb-3"
             value={form.username}
             onChange={handleChange}
@@ -101,7 +95,7 @@ const LoginUser = () => {
 
           <div className="text-center mb-3">
             Not registered?{" "}
-            <Link to={`/signup?type=${role}`}>Sign up now!</Link>
+            <Link to={`/signup?type=${type}`}>Sign up now!</Link>
           </div>
         </form>
 

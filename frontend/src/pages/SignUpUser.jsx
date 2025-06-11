@@ -4,6 +4,8 @@ import BackgroundImg from "../assets/green_back.jpg";
 
 const SignUpUser = () => {
   const [form, setForm] = useState({
+    firstName: "",
+    lastName: "",
     username: "",
     password: "",
     confirmPassword: "",
@@ -12,7 +14,7 @@ const SignUpUser = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
-  const role = queryParams.get("type") || "customer";
+  const type = queryParams.get("type") || "customer";
 
   const handleChange = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -28,18 +30,20 @@ const SignUpUser = () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          firstName: form.firstName,
+          lastName: form.lastName,
           username: form.username,
           password: form.password,
-          type: role,
+          type: type,
         }),
       });
 
       const data = await res.json();
       if (res.ok) {
         alert("Signup successful!");
-        navigate(`/login?type=${role}`);
+        navigate(`/login?type=${type}`);
       } else {
-        alert(data.msg || "Signup failed.");
+        alert(data.error || "Signup failed.");
       }
     } catch (error) {
       console.error("Signup error:", error);
@@ -53,7 +57,6 @@ const SignUpUser = () => {
         backgroundImage: `url(${BackgroundImg})`,
         backgroundSize: "cover",
         backgroundPosition: "center",
-        backgroundRepeat: "no-repeat",
         minHeight: "100vh",
         display: "flex",
         justifyContent: "center",
@@ -65,23 +68,42 @@ const SignUpUser = () => {
         className="container shadow-lg"
         style={{
           maxWidth: "500px",
-          width: "100%",
-          backgroundColor: "rgba(255, 255, 255, 0.88)",
+          backgroundColor: "rgba(255,255,255,0.88)",
           padding: "2rem",
           borderRadius: "12px",
-          color: "#000",
         }}
       >
         <h2 className="text-center mb-4">
-          Create a {role === "owner" ? "Owner" : "User"} Account
+          Create a {type === "owner" ? "Owner" : "User"} Account
         </h2>
-
         <form onSubmit={handleSubmit}>
+          <div className="row g-2 mb-3">
+            <div className="col">
+              <input
+                type="text"
+                name="firstName"
+                className="form-control"
+                placeholder="First Name"
+                required
+                onChange={handleChange}
+              />
+            </div>
+            <div className="col">
+              <input
+                type="text"
+                name="lastName"
+                className="form-control"
+                placeholder="Last Name"
+                required
+                onChange={handleChange}
+              />
+            </div>
+          </div>
           <input
-            type="email"
+            type="text"
             name="username"
             className="form-control mb-3"
-            placeholder="Email"
+            placeholder="Username (Email)"
             required
             onChange={handleChange}
           />
@@ -101,7 +123,6 @@ const SignUpUser = () => {
             required
             onChange={handleChange}
           />
-
           <button
             className="btn w-100"
             style={{ backgroundColor: "var(--primary-color)", color: "#fff" }}
@@ -109,10 +130,9 @@ const SignUpUser = () => {
           >
             Sign Up
           </button>
-
           <div className="text-center mt-3">
             Already have an account?{" "}
-            <Link to={`/login?type=${role}`}>Login here</Link>
+            <Link to={`/login?type=${type}`}>Login here</Link>
           </div>
         </form>
       </div>
