@@ -84,6 +84,9 @@ app.use("/test", userRoutes);
 
 app.use("/", authRoutes);
 
+app.get("/", (req, res) => {
+  res.send("Welcome to home page !!")
+})
 //passReqToCallback: true ensures that req is passed as the first parameter to your verify function.
 passport.use("local", new Strategy({ 
     usernameField: 'username', 
@@ -96,7 +99,7 @@ passport.use("local", new Strategy({
 passport.use("google", new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: "http://localhost:3000/auth/google/secrets",
+    callbackURL: "http://localhost:3000/auth/google/secrets",//this should go to homepage react after succesful login
     passReqToCallback: true
   },
   verifyusingGoogle));
@@ -116,6 +119,8 @@ async function initDb() {
         await sql`
             CREATE TABLE IF NOT EXISTS customer (
                 id SERIAL PRIMARY KEY,
+                fname TEXT NOT NULL, 
+                lname TEXT NOT NULL, 
                 username VARCHAR(255) NOT NULL UNIQUE,   
                 password TEXT NOT NULL,  
                 created_at TIMESTAMPTZ DEFAULT NOW()
@@ -125,6 +130,8 @@ async function initDb() {
         await sql`
             CREATE TABLE IF NOT EXISTS owner (
                 id SERIAL PRIMARY KEY,
+                fname TEXT NOT NULL, 
+                lname TEXT NOT NULL, 
                 username VARCHAR(255) NOT NULL UNIQUE,   
                 password TEXT NOT NULL,           
                 created_at TIMESTAMPTZ DEFAULT NOW()

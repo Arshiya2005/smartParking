@@ -7,16 +7,22 @@ export const register = async (req, res) => {
     const username = req.body.username;
     const password = req.body.password;
     const type = req.body.type;
+    const fname = req.body.firstName;
+    const lname = req.body.lastName;
 
-    const validTypes = ["customer", "owner"];
-    if (!validTypes.includes(type)) {
-        return res.status(400).json({ error: "Invalid user type" });
-    }
 
     try {
-        const checkResult = await sql`
-                SELECT * FROM ${sql(type)} WHERE username = ${username}
+      var checkResult;
+      if(type === "customer") {
+        checkResult = await sql`
+                SELECT * FROM customer WHERE username = ${username}
             `;
+      }else {
+        checkResult = await sql`
+                SELECT * FROM owner WHERE username = ${username}
+            `;
+      }
+        
         if (checkResult.length > 0) {
             console.log("Username already exist !! Try again.")
             return res.status(409).json({ error: "User already exists" });
@@ -34,10 +40,18 @@ export const register = async (req, res) => {
                 }
             })*/
             const hash = await bcrypt.hash(password, saltRounds); 
-            await sql`
-                INSERT INTO ${sql(type)} (username, password) VALUES (${username}, ${hash})
-            `;
+            if(type === "customer") {
+              await sql`
+                INSERT INTO customer (fname, lname, username, password) VALUES (${fname}, ${lname}, ${username}, ${hash})
+              `;
+            }else {
+              await sql`
+                INSERT INTO owner (fname, lname, username, password) VALUES (${fname}, ${lname}, ${username}, ${hash})
+              `;
+            }
+            
             return res.status(201).json({ message: "User registered successfully" });
+            //go to landing page so one can login
         }
     } catch (err) {
         console.log(err);
@@ -87,14 +101,17 @@ export async function verify(req, username, password, done) {
     console.log(username + " " + password);
     const type = req.body.type;
     console.log(type + "+++++++============");
-    const validTypes = ["customer", "owner"];
-    if (!validTypes.includes(type)) {
-        return done("Invalid user type", false);
-    }
     try {
-        const result = await sql`
-            SELECT * FROM ${sql(type)} WHERE username = ${username}
+      var result;
+      if(type === "customer") {
+        result = await sql`
+            SELECT * FROM customer WHERE username = ${username}
         `;
+      }else {
+        result = await sql`
+            SELECT * FROM owner WHERE username = ${username}
+        `;
+      }
         if (result.length > 0) {
         const user = result[0];
         const hash = user.password;
@@ -123,21 +140,32 @@ export async function verifyusingGoogle(req, accessToken, refreshToken, profile,
   try {
     //console.log(profile);
     const userType = req.session?.type || "customer";
-
-    if (!["customer", "owner"].includes(userType)) {
-      return done(null, false, { message: "Invalid user type." });
-    }
-
-    const result = await sql`
-      SELECT * FROM ${sql(userType)} WHERE username = ${profile.email}
-    `;
-
+    var result;
+    if(userType === "customer") {
+        result = await sql`
+            SELECT * FROM customer WHERE username = ${profile.email}
+        `;
+      }else {
+        result = await sql`
+            SELECT * FROM owner WHERE username = ${profile.email}
+        `;
+      }
+      
     if (result.length === 0) {
-      const newUser = await sql`
-        INSERT INTO ${sql(userType)} (username, password) 
-        VALUES (${profile.email}, 'google') 
-        RETURNING *
-      `;
+      var newUser;
+      if(userType === "customer") {
+        newUser = await sql`
+          INSERT INTO customer (username, password) 
+          VALUES (${profile.email}, 'google') 
+          RETURNING *
+        `;
+      }else {
+        newUser = await sql`
+          INSERT INTO owner (username, password) 
+          VALUES (${profile.email}, 'google') 
+          RETURNING *
+        `;
+      }
       return done(null, newUser[0]);
     }else {
       if (result[0].password !== 'google') {
