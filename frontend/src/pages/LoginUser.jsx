@@ -17,7 +17,7 @@ const LoginUser = () => {
     e.preventDefault();
 
     try {
-      const res = await fetch("http://localhost:5000/api/login", {
+      const res = await fetch("http://localhost:3000/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...form, type }),
@@ -38,7 +38,7 @@ const LoginUser = () => {
   };
 
   const handleGoogleLogin = () => {
-    window.location.href = `http://localhost:5000/auth/google?type=${type}`;
+    window.location.href = `http://localhost:3000/auth/google?type=${type}`;
   };
 
   return (

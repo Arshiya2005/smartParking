@@ -30,7 +30,7 @@ dotenv.config();
 }
  */
 const app = express();
-const PORT = process.env.PORT || 3000
+const PORT = process.env.PORT || 5000
 const saltround = 10;
 
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -99,7 +99,7 @@ passport.use("local", new Strategy({
 passport.use("google", new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: "http://localhost:3000/auth/google/secrets",//this should go to homepage react after succesful login
+    callbackURL: "http://localhost:5173/",//this should go to homepage react after succesful login
     passReqToCallback: true
   },
   verifyusingGoogle));
@@ -154,4 +154,3 @@ initDb()
     .catch(() => {
         console.log("Server not started !")
     })
-

@@ -69,17 +69,15 @@ export const logout = async (req, res, next) => {
   });
 };
 
-export const login = async (req, res) =>  {
+export const login = async (req, res, next) =>  {
     passport.authenticate('local', (err, user, info) => {
-        if (err) return next(err);
-        if (!user) return res.status(401).json({ error: "Invalid credentials" });//re-login
- 
-        if (user.type !== req.body.type) {
-            console.log(`Login failed. User registered as ${user.type}, but tried as ${req.body.type}`);
-            return res.status(400).json({ status: false, type: req.body.type});
-            //return res.redirect('/login');
+        if (err) {
+          console.log(info);
+          return res.status(401).json({ error: "user doesn't exist !!" });
         }
-
+        if (!user) return res.status(401).json({ error: "Invalid credentials" });//re-login
+        console.log(user);
+        
         req.logIn(user, (err) => {
         if (err) return next(err);
         return res.status(200).json({ status: true, type : user.type});
@@ -113,21 +111,24 @@ export async function verify(req, username, password, done) {
         `;
       }
         if (result.length > 0) {
-        const user = result[0];
-        const hash = user.password;
-        bcrypt.compare(password, hash, async (err, res) => {
-            if(err) {
-            console.log(err.message);
-            return done(err);
-            }else {
-            if(res) {
-                return done(null, user);
-            }else {
-                return done("User Doesn't exist !! ", false);
-            }
-            }
-        })
+          const user = result[0];
+          const hash = user.password;
+          bcrypt.compare(password, hash, async (err, res) => {
+              if(err) {
+                console.log(err.message);
+                return done(err);
+              }else {
+                if(res) {
+                    user.type = type;
+                    return done(null, user);
+                }else {
+                    return done("User Doesn't exist !! ", false, { message: "Incorrect password" });
+                }
+                
+              }
+          })
         } else {
+          
             return done("User Doesn't exist !! ", false);
         }
     } catch (err) {
