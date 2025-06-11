@@ -19,7 +19,7 @@ Create .env :
 
     # Arcjet Configuration
     ARCJET_KEY=your_arcjet_api_key
-    ARCJET_ENV=development_or_production
+    ARCJET_ENV=development
 
     # Google OAuth Configuration
     GOOGLE_CLIENT_ID=your_google_client_id
