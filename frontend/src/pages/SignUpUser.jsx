@@ -1,19 +1,14 @@
 import React, { useState } from "react";
 import { useNavigate, Link, useLocation } from "react-router-dom";
-import BackgroundImg from "../assets/green_back.jpg"; // adjust path if needed
+import BackgroundImg from "../assets/green_back.jpg";
 
 const SignUpUser = () => {
   const [form, setForm] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
+    username: "",
     password: "",
     confirmPassword: "",
-    vehicleNumber: "",
-    vehicleModel: "",
   });
 
-  const [showVehicle, setShowVehicle] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
@@ -33,11 +28,9 @@ const SignUpUser = () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          firstName: form.firstName,
-          lastName: form.lastName,
-          email: form.email,
+          username: form.username,
           password: form.password,
-          role: role,
+          type: role,
         }),
       });
 
@@ -84,31 +77,9 @@ const SignUpUser = () => {
         </h2>
 
         <form onSubmit={handleSubmit}>
-          <div className="row g-2 mb-3">
-            <div className="col">
-              <input
-                type="text"
-                name="firstName"
-                className="form-control"
-                placeholder="First Name"
-                required
-                onChange={handleChange}
-              />
-            </div>
-            <div className="col">
-              <input
-                type="text"
-                name="lastName"
-                className="form-control"
-                placeholder="Last Name"
-                required
-                onChange={handleChange}
-              />
-            </div>
-          </div>
           <input
             type="email"
-            name="email"
+            name="username"
             className="form-control mb-3"
             placeholder="Email"
             required

@@ -3,11 +3,11 @@ import { useNavigate, Link, useLocation } from "react-router-dom";
 import BackgroundImg from "../assets/green_back.jpg";
 
 const LoginUser = () => {
-  const [form, setForm] = useState({ email: "", password: "" });
+  const [form, setForm] = useState({ username: "", password: "" });
   const navigate = useNavigate();
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
-  const role = queryParams.get("type") || "customer";
+  const role = queryParams.get("type") || "customer"; // "customer" or "owner"
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -17,10 +17,14 @@ const LoginUser = () => {
     e.preventDefault();
 
     try {
-      const res = await fetch("http://localhost:3000//login", {
+      const res = await fetch("http://localhost:5000/api/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...form, type: role }),
+        body: JSON.stringify({
+          username: form.username,
+          password: form.password,
+          type: role,
+        }),
       });
 
       const data = await res.json();
@@ -71,10 +75,10 @@ const LoginUser = () => {
         <form onSubmit={handleSubmit}>
           <input
             type="email"
-            name="email"
+            name="username"
             placeholder="Email"
             className="form-control mb-3"
-            value={form.email}
+            value={form.username}
             onChange={handleChange}
             required
           />
