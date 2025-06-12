@@ -13,11 +13,12 @@ const OwnerHome = () => {
         });
 
         const data = await res.json();
-
+        console.log(data);
         if (!res.ok || data.type !== "owner") {
           navigate("/login?type=owner");
         }
       } catch (err) {
+        console.log("reached here");
         console.error("Error verifying user:", err);
         navigate("/login?type=owner");
       }

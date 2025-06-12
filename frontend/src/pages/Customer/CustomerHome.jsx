@@ -14,10 +14,12 @@ const CustomerHome = () => {
 
         const data = await res.json();
 
+        console.log(data);
         if (!res.ok || data.type !== "customer") {
           navigate("/login?type=customer");
         }
       } catch (err) {
+        console.log("reached here customer");
         console.error("Error verifying user:", err);
         navigate("/login?type=customer");
       }

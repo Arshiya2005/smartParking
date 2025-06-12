@@ -20,18 +20,15 @@ import { verify, verifyusingGoogle } from "./controllers/authController.js";
 
 dotenv.config();
 
-/**
- * 
- * 
- */
-
 const app = express();
 const PORT = process.env.PORT || 5000
 
+app.use(cors({
+  origin: "http://localhost:5173", // Allow requests from your frontend
+  credentials: true                // Allow cookies/session to be included
+}));//Enables Cross-Origin Resource Sharing so your frontend can call your backend
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(express.json());
-app.use(cors());//Enables Cross-Origin Resource Sharing so your frontend can call your backend.
-app.use(helmet());
+app.use(express.json());app.use(helmet());
 app.use(morgan("dev")); // logs requests
 
 app.use(async (req, res, next) => {
