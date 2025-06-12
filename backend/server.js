@@ -22,16 +22,11 @@ dotenv.config();
 
 /**
  * 
- * function ensureAuthenticated(req, res, next) {
-  if (req.isAuthenticated()) {
-    return next(); // allow access
-  }
-  res.status(401).json({ error: "Unauthorized: Please log in" });
-}
+ * 
  */
+
 const app = express();
 const PORT = process.env.PORT || 5000
-const saltround = 10;
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());

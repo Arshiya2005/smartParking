@@ -95,6 +95,14 @@ export const gauth = async (req, res, next) => {
     passport.authenticate('google', { scope: ["profile", "email"] })(req, res, next);
 }
 
+
+export const ensureAuthenticated = async (req, res) => {
+  if (req.isAuthenticated()) {
+    return res.status(200).json({ message: "authorised" });
+  }
+  return res.status(401).json({ error: "Unauthorized: Please log in" });
+}
+
 export async function verify(req, username, password, done) {
     console.log(username + " " + password);
     const type = req.body.type;

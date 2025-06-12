@@ -1,6 +1,6 @@
 import express from "express";
 
-import { register, login, logout, gauth, } from "../controllers/authController.js"
+import { register, login, logout, gauth, ensureAuthenticated } from "../controllers/authController.js"
 import {protectSignupMiddleware} from "../lib/arcjet.js"
 
 const router = express.Router();
@@ -16,6 +16,7 @@ router.post("/register", protectSignupMiddleware, register);
 router.get("/logout", logout);
 router.post("/login", login);
 router.get("/auth/google", gauth);
+router.get("/verify", ensureAuthenticated);
 
 
 export default router;
