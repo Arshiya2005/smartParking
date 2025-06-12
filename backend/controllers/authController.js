@@ -98,7 +98,7 @@ export const gauth = async (req, res, next) => {
 
 export const ensureAuthenticated = async (req, res) => {
   if (req.isAuthenticated()) {
-    return res.status(200).json({ message: "authorised" });
+    return res.status(200).json({ message: "authorised" , type: req.user.type});
   }
   return res.status(401).json({ error: "Unauthorized: Please log in" });
 }
