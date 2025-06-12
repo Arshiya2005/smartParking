@@ -9,16 +9,16 @@ const CustomerHome = () => {
       try {
         const res = await fetch("http://localhost:3000/verify", {
           method: "GET",
-          credentials: "include", // ✅ important for cookies/sessions
+          credentials: "include",
         });
 
-        if (!res.ok) {
-          // Not authenticated — redirect to login
-          console.log("you are not authenticated !");
+        const data = await res.json();
+
+        if (!res.ok || data.type !== "customer") {
           navigate("/login?type=customer");
         }
       } catch (err) {
-        console.error("Auth check failed:", err);
+        console.error("Error verifying user:", err);
         navigate("/login?type=customer");
       }
     };
