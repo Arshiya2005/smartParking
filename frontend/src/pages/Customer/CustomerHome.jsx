@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import useAuthRedirect from "../hooks/useAuthRedirect";
+import useAuthRedirect from "../../hooks/useAuthRedirect";
 const CustomerHome = () => {
     useAuthRedirect("customer");
 
