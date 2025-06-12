@@ -72,7 +72,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 
-app.use("/test", userRoutes);
+app.use("/user", userRoutes);
 
 app.use("/", authRoutes);
 
@@ -96,14 +96,19 @@ passport.use("google", new GoogleStrategy({
   },
   verifyusingGoogle));
 
-///save user is local storage
 passport.serializeUser((user, cb) => {
-  cb(null, user);
+  const safeUser = {
+    id: user.id,
+    fname: user.fname,
+    lname: user.lname,
+    username: user.username,
+    type: user.type,
+  };
+  cb(null, { user: safeUser });
 });
 
-//deserializes User so that we can access it
-passport.deserializeUser((user, cb) => {
-  cb(null, user);
+passport.deserializeUser((wrapped, cb) => {
+  cb(null, wrapped.user);
 });
 
 async function initDb() {
