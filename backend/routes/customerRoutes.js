@@ -1,7 +1,7 @@
 import express from "express";
 
 import {welcome, myVehicles, addVehicle, deleteVehicle, info, editFname, editLname} from "../controllers/customerController.js"
-import { searchNearby, chooseSlot, confirm } from "../controllers/customerController.js"
+import { searchNearby, chooseSlot } from "../controllers/customerController.js"
 import {isAuthenticated} from "../controllers/authController.js"
 
 const router = express.Router();
@@ -15,7 +15,7 @@ router.post("/profile/info/editFname", isAuthenticated, editFname);
 router.post("/profile/info/editLname", isAuthenticated, editLname);
 router.post("/searchNearby", isAuthenticated,  searchNearby);
 router.post("/chooseSlot", isAuthenticated, chooseSlot); 
-router.get("/confirm", confirm);
+//router.get("/confirm", confirm);
 
 
 export default router;
