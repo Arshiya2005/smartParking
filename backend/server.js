@@ -117,8 +117,7 @@ passport.deserializeUser((wrapped, cb) => {
 async function initDb() {
     try {
         await sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp";`;
-        await sql`DROP TABLE IF EXISTS vehicle;`;
-await sql`DROP TABLE IF EXISTS parkingspot;`;
+        
         await sql`
             CREATE TABLE IF NOT EXISTS customer (
                 id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
