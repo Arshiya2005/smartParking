@@ -7,8 +7,9 @@ import CardBookNow from "../../components/cardBookNow";
 import peaach from "../../assets/green_back.jpg";
 
 const CustomerHome = () => {
+    // alert("before useAuthRedirect is called");
   useAuthRedirect("customer");
-
+//   alert("after useAuthRedirect is called");
   return (
     <div
       style={{
@@ -18,7 +19,7 @@ const CustomerHome = () => {
         backgroundPosition: "center",
       }}
     >
-      <NavBarCustomer />
+       <NavBarCustomer />
 
       <div className="container py-4">
         <div className="row mb-4">
@@ -35,7 +36,7 @@ const CustomerHome = () => {
             <CardBookNow />
           </div>
         </div>
-      </div>
+      </div> 
     </div>
   );
 };

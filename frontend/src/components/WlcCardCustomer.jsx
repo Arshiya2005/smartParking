@@ -1,40 +1,45 @@
 import React, { useEffect, useState } from "react";
 import scooty from "../assets/girl_scooty.svg";
 
-
-
-////
 const WlcCardCustomer = () => {
-  const [name, setName] = useState({ fname: "", lname: "" });
+  const [name, setName] = useState(null); // null = loading
 
   useEffect(() => {
     const fetchWelcome = async () => {
       try {
         const res = await fetch("http://localhost:3000/customer/welcome", {
-  credentials: "include",
-  headers: {
-    "Cache-Control": "no-cache"
-  }
-});
-
-        const data = await res.json();
-        if (res.ok) {
+          credentials: "include",
+        });
+  
+        const response = await res.json();
+        console.log("🔍 Data received from /customer/welcome:", response);
+  
+        const data = response.data; // ✅ extract inner data
+  
+        if (res.ok && data?.fname && data?.lname) {
           setName({ fname: data.fname, lname: data.lname });
         } else {
-          console.error("Failed to fetch customer name.");
+          console.warn("⚠️ Missing fname or lname in response:", data);
+          setName({ fname: "", lname: "" });
         }
       } catch (err) {
-        console.error("Error fetching welcome info:", err);
+        console.error("❌ Error fetching welcome data:", err);
+        setName({ fname: "", lname: "" });
       }
     };
-
+  
     fetchWelcome();
   }, []);
 
-  const displayName =
-    name.fname.trim() || name.lname.trim()
-      ? `${name.fname} ${name.lname}`
-      : "Guest";
+  if (name === null) {
+    return (
+      <div className="text-center py-4">
+        <div className="spinner-border text-success" role="status"></div>
+      </div>
+    );
+  }
+
+  const displayName = `${name?.fname || ""} ${name?.lname || ""}`.trim() || "Guest";
 
   return (
     <div
@@ -46,16 +51,16 @@ const WlcCardCustomer = () => {
       }}
     >
       <div className="row align-items-center">
-        {/* Image Column */}
+        {/* Image */}
         <div className="col-12 col-md-5 text-center mb-3 mb-md-0">
           <img
             src={scooty}
-            alt="Scooty"
+            alt="Scooty Illustration"
             style={{ maxHeight: "180px", width: "auto", objectFit: "contain" }}
           />
         </div>
 
-        {/* Text Column */}
+        {/* Text */}
         <div className="col-12 col-md-7 text-md-start text-center">
           <h2 style={{ fontSize: "2rem", fontWeight: 700 }}>
             Welcome, {displayName}!
