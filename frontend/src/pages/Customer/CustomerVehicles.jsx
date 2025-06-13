@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import VehicleCard from "../../components/vehicleCard";
 import { FaPlus } from "react-icons/fa";
+import peachh from "../../assets/peach_background.jpg"
 
 const CustomerVehicles = () => {
   const [vehicles, setVehicles] = useState([]);
@@ -102,8 +103,6 @@ const CustomerVehicles = () => {
             >
               <option value="car">Car</option>
               <option value="bike">Bike</option>
-              <option value="scooter">Scooter</option>
-              <option value="auto">Auto</option>
             </select>
           </div>
           <div className="col-md-1 d-flex align-items-center">

@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
-
+import peachh from "../../assets/peach_background.jpg"
 const CustomerInfo = () => {
   const [info, setInfo] = useState(null);
   const [newFname, setNewFname] = useState("");
   const [newLname, setNewLname] = useState("");
   const [loading, setLoading] = useState(false);
 
+  // Fetch user info on component mount
   useEffect(() => {
     const fetchInfo = async () => {
       try {
@@ -28,6 +29,7 @@ const CustomerInfo = () => {
     fetchInfo();
   }, []);
 
+  // Handle First Name Update
   const handleEditFname = async () => {
     try {
       setLoading(true);
@@ -50,6 +52,7 @@ const CustomerInfo = () => {
     }
   };
 
+  // Handle Last Name Update
   const handleEditLname = async () => {
     try {
       setLoading(true);
@@ -72,10 +75,11 @@ const CustomerInfo = () => {
     }
   };
 
+  // Handle Logout
   const handleLogout = async () => {
     try {
-      const res = await fetch("http://localhost:3000/customer/logout", {
-        method: "POST",
+      const res = await fetch("http://localhost:3000/logout", {
+        method: "GET",
         credentials: "include",
       });
 
@@ -96,11 +100,11 @@ const CustomerInfo = () => {
   return (
     <div
       className="container d-flex justify-content-center align-items-center"
-      style={{ minHeight: "89vh", backgroundColor: "#ffe5b4", width: "90vw"}}
+      style={{ minHeight: "89vh", backgroundColor: "#F7C59F", width: "100vw" , backgroundImage:`url(${peachh})`}}
     >
       <div
         className="card p-4 shadow"
-        style={{ width: "100%", maxWidth: "600px", borderRadius: "12px" , height: "70vh"}}
+        style={{ width: "100%", maxWidth: "600px", borderRadius: "12px", height: "70vh" }}
       >
         <h3 className="mb-4 text-center">Customer Info</h3>
 
@@ -113,7 +117,7 @@ const CustomerInfo = () => {
               value={newFname}
               onChange={(e) => setNewFname(e.target.value)}
             />
-            <button className="btn btn-primary" onClick={handleEditFname} disabled={loading}>
+            <button className="btn btn-primary" onClick={handleEditFname} disabled={loading} style={{ backgroundColor: "#2C786C" }}>
               Update
             </button>
           </div>
@@ -128,7 +132,7 @@ const CustomerInfo = () => {
               value={newLname}
               onChange={(e) => setNewLname(e.target.value)}
             />
-            <button className="btn btn-primary" onClick={handleEditLname} disabled={loading}>
+            <button className="btn btn-primary" onClick={handleEditLname} disabled={loading} style={{ backgroundColor: "#2C786C" }}>
               Update
             </button>
           </div>
