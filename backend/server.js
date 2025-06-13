@@ -174,7 +174,7 @@ async function initDb() {
               customer_id UUID NOT NULL REFERENCES customer(id) ON DELETE CASCADE,
               owner_id UUID NOT NULL REFERENCES owner(id) ON DELETE CASCADE,
               vehicle_id UUID NOT NULL REFERENCES vehicle(id) ON DELETE CASCADE,
-              slot_id UUID NOT NULL REFERENCES slot(id) ON DELETE CASCADE
+              slot_id UUID NOT NULL REFERENCES parkingspot(id) ON DELETE CASCADE
           );
 
         `;

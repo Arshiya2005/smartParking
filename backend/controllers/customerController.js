@@ -1,6 +1,7 @@
 import axios from "axios";
 import dotenv from "dotenv";
 import { sql } from "../config/db.js";
+import { v4 as uuidv4 } from 'uuid';
 
 dotenv.config();
 
@@ -37,13 +38,15 @@ export const addVehicle = async (req, res) => {
         if(req.user.type !== "customer") {
             return res.status(401).json({ error: "no active user" });
         }
+        console.log(req.body);
         const name = req.body.name;
         const no = req.body.no;
         const type = req.body.type;
         const id = req.user.id;
-
+        const Vid = uuidv4();
+        console.log(id);
         await sql`
-            INSERT INTO vehicle (id, model, type, number, customer_id) VALUES (${uuidv4()}, ${name}, ${type}, ${no}, ${id})
+            INSERT INTO vehicle (id, model, type, number, customer_id) VALUES (${Vid}, ${name}, ${type}, ${no}, ${id})
         `;
         return res.status(200).json({ message: "Vehicle added successfully" });
     } catch (error) {
@@ -89,12 +92,15 @@ export const editFname = async (req, res) => {
             return res.status(401).json({ error: "no active user" });
         }
         const fname = req.body.fname;
+        console.log(fname);
         const id = req.user.id;
         await sql`
             UPDATE customer
             SET fname = ${fname}
             WHERE id = ${id}
         `;
+        req.user.fname = fname;
+        console.log(req.user);
         return res.status(200).json({ message: "Updated successfully" });
     } catch (error) {
         return res.status(500).json({ error: "internal server error" });
@@ -207,17 +213,17 @@ export const chooseSlot = async (req, res) => {
             SELECT * FROM vehicle where id = ${Vid}
         `;
         const type = vehicle[0].type;
-        const slotcount = await sql`
+        const owner = await sql`
             SELECT * FROM owner where id = ${spotdata[0].owner_id}
         `;
-        const count = type === "bike" ? slotcount[0].bike : slotcount[0].car;
+        const count = type === "bike" ? spotdata[0].bike : spotdata[0].car;
         for(var i = 1; i <= count; i++) {
             const response = await sql`
                 SELECT * FROM bookings
                 WHERE slot_id = ${id} AND slot_no = ${i} AND NOT (${eTime} <= sTime OR ${sTime} >= eTime );
             `;
             if (response.length === 0) {
-                return res.status(200).json({ user : req.user, slot : spotdata, vehicle, chosenSlotNo: i });
+                return res.status(200).json({ user : req.user, slot : spotdata, vehicle, chosenSlotNo: i, ownerdata : owner[0]  });
             }
         }
         return res.status(409).json({ message: "slot not available" });
