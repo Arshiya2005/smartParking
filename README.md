@@ -28,6 +28,9 @@ Create .env :
     # Session Secret for express-session
     SESSION_SECRET=your_session_secret
 
+    ORS_API_KEY=your_openrouteservice_api_key
+
+
 Start server : 
 
     npm run dev

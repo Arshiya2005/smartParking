@@ -150,6 +150,19 @@ async function initDb() {
 
         `;
 
+        await sql`
+          CREATE TABLE IF NOT EXISTS parkingspot (
+              id SERIAL PRIMARY KEY,
+              name TEXT NOT NULL,
+              lon DOUBLE PRECISION NOT NULL,
+              lat DOUBLE PRECISION NOT NULL,
+              bike INTEGER DEFAULT 0,      
+              car INTEGER DEFAULT 0,       
+              owner_id UUID NOT NULL,
+              FOREIGN KEY (owner_id) REFERENCES owner(id)
+          );
+        `;
+
         console.log("Database initiated successfully");
     } catch (error) {
         console.log("Error initDb", error);
