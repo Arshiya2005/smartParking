@@ -5,7 +5,6 @@ import cors from "cors";
 import dotenv from "dotenv";
 import path from "path";
 import bodyParser from "body-parser";
-import bcrypt from "bcrypt"
 import session from "express-session"
 import passport from "passport";
 import { Strategy } from "passport-local";
@@ -60,11 +59,15 @@ app.use(async (req, res, next) => {
   }
 });
 
-
 app.use(session({
   secret : process.env.SESSION_SECRET,
   resave : false,//this will store 'session' locally not on db(if stored on db then can retrieve even when we restart server)
   saveUninitialized: true,
+  cookie: {
+    httpOnly: true,
+    secure: false, 
+    maxAge: 1000 * 60 * 60 * 24 // 1 day
+  }
 }));
 
 //this should come only after session
@@ -113,9 +116,10 @@ passport.deserializeUser((wrapped, cb) => {
 
 async function initDb() {
     try {
+        await sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp";`;
         await sql`
             CREATE TABLE IF NOT EXISTS customer (
-                id SERIAL PRIMARY KEY,
+                id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
                 fname TEXT NOT NULL, 
                 lname TEXT NOT NULL, 
                 username VARCHAR(255) NOT NULL UNIQUE,   
@@ -126,13 +130,24 @@ async function initDb() {
 
         await sql`
             CREATE TABLE IF NOT EXISTS owner (
-                id SERIAL PRIMARY KEY,
+                id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
                 fname TEXT NOT NULL, 
                 lname TEXT NOT NULL, 
                 username VARCHAR(255) NOT NULL UNIQUE,   
                 password TEXT NOT NULL,           
                 created_at TIMESTAMPTZ DEFAULT NOW()
             );
+        `;
+
+        await sql`
+          CREATE TABLE IF NOT EXISTS vehicle (
+              id SERIAL PRIMARY KEY,
+              model TEXT NOT NULL,
+              type TEXT NOT NULL,
+              number TEXT NOT NULL UNIQUE,
+              customer_id UUID NOT NULL REFERENCES customer(id) ON DELETE CASCADE
+          );
+
         `;
 
         console.log("Database initiated successfully");

@@ -1,5 +1,7 @@
 import passport from "passport";
 import bcrypt from "bcrypt";
+import { v4 as uuidv4 } from 'uuid';
+
 
 import { sql } from "../config/db.js";
 
@@ -40,13 +42,15 @@ export const register = async (req, res) => {
                 }
             })*/
             const hash = await bcrypt.hash(password, saltRounds); 
+            const id = uuidv4();
+
             if(type === "customer") {
               await sql`
-                INSERT INTO customer (fname, lname, username, password) VALUES (${fname}, ${lname}, ${username}, ${hash})
+                INSERT INTO customer (id, fname, lname, username, password) VALUES (${id}, ${fname}, ${lname}, ${username}, ${hash})
               `;
             }else {
               await sql`
-                INSERT INTO owner (fname, lname, username, password) VALUES (${fname}, ${lname}, ${username}, ${hash})
+                INSERT INTO owner (id, fname, lname, username, password) VALUES (${id}, ${fname}, ${lname}, ${username}, ${hash})
               `;
             }
             
@@ -97,12 +101,21 @@ export const gauth = async (req, res, next) => {
 
 
 export const ensureAuthenticated = async (req, res) => {
-  console.log(req.session);
+  //console.log(req.session);
   if (req.isAuthenticated()) {
     return res.status(200).json({ message: "authorised" , type: req.user.type});
   }
   return res.status(401).json({ error: "Unauthorized: Please log in" });
 }
+
+export const isAuthenticated = (req, res, next) => {
+  if (req.isAuthenticated()) {
+    console.log(req.user);
+    return next(); // user is logged in
+  }
+  return res.status(401).json({ error: "Unauthorized(from middleware): Please log in" });
+};
+
 
 export async function verify(req, username, password, done) {
     console.log(username + " " + password);
@@ -163,16 +176,19 @@ export async function verifyusingGoogle(req, accessToken, refreshToken, profile,
       
     if (result.length === 0) {
       var newUser;
+      const id = uuidv4();
+      console.log("Profile in verifyusingGoogle : (for checking fname exists it or not)")
+      console.log(profile);
       if(userType === "customer") {
         newUser = await sql`
-          INSERT INTO customer (username, password) 
-          VALUES (${profile.email}, 'google') 
+          INSERT INTO customer (id, username, password) 
+          VALUES (${id}, ${profile.email}, 'google') 
           RETURNING *
         `;
       }else {
         newUser = await sql`
-          INSERT INTO owner (username, password) 
-          VALUES (${profile.email}, 'google') 
+          INSERT INTO owner (id, username, password) 
+          VALUES (${id}, ${profile.email}, 'google') 
           RETURNING *
         `;
       }
