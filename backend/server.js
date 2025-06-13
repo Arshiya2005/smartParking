@@ -119,8 +119,6 @@ async function initDb() {
         await sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp";`;
         await sql`DROP TABLE IF EXISTS vehicle;`;
 await sql`DROP TABLE IF EXISTS parkingspot;`;
-await sql`DROP TABLE IF EXISTS owner;`;
-await sql`DROP TABLE IF EXISTS customer;`;
         await sql`
             CREATE TABLE IF NOT EXISTS customer (
                 id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
