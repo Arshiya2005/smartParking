@@ -164,12 +164,26 @@ async function initDb() {
           );
         `;
 
+        await sql`
+          CREATE TABLE IF NOT EXISTS bookings (
+              id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+              type TEXT NOT NULL,
+              sTime TIME NOT NULL,
+              eTime TIME NOT NULL,
+              slot_no INTEGER NOT NULL,
+              customer_id UUID NOT NULL REFERENCES customer(id) ON DELETE CASCADE,
+              owner_id UUID NOT NULL REFERENCES owner(id) ON DELETE CASCADE,
+              vehicle_id UUID NOT NULL REFERENCES vehicle(id) ON DELETE CASCADE,
+              slot_id UUID NOT NULL REFERENCES slot(id) ON DELETE CASCADE
+          );
+
+        `;
+
         console.log("Database initiated successfully");
     } catch (error) {
         console.log("Error initDb", error);
     }
 }
-
 
 initDb()
     .then(() => {
