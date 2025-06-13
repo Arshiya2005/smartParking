@@ -43,7 +43,7 @@ export const addVehicle = async (req, res) => {
         const id = req.user.id;
 
         await sql`
-            INSERT INTO vehicle (model, type, number, customer_id) VALUES (${name}, ${type}, ${no}, ${id})
+            INSERT INTO vehicle (id, model, type, number, customer_id) VALUES (${uuidv4()}, ${name}, ${type}, ${no}, ${id})
         `;
         return res.status(200).json({ message: "Vehicle added successfully" });
     } catch (error) {
