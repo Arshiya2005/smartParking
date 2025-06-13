@@ -177,6 +177,7 @@ export const searchNearby = async (req, res) => {
             lon: spot.lon,
             distance,
             duration,
+            Vid
         });
       }
     }
@@ -193,16 +194,33 @@ export const chooseSlot = async (req, res) => {
         if(req.user.type !== "customer") {
             return res.status(401).json({ error: "no active user" });
         }
-        const id = req.body.id;
+        const spot = req.body.spot;
+        const id = spot.id;
+        const Vid = spot.Vid;
         const sTime = req.body.sTime;
         const eTime = req.body.eTime;
 
-        await sql`
-            UPDATE customer
-            SET fname = ${lname}
-            WHERE id = ${id}
+        const spotdata = await sql`
+            SELECT * FROM parkingspot where id = ${id}
         `;
-        return res.status(200).json({ message: "Updated successfully" });
+        const vehicle = await sql`
+            SELECT * FROM vehicle where id = ${Vid}
+        `;
+        const type = vehicle[0].type;
+        const slotcount = await sql`
+            SELECT * FROM owner where id = ${spotdata[0].owner_id}
+        `;
+        const count = type === "bike" ? slotcount[0].bike : slotcount[0].car;
+        for(var i = 1; i <= count; i++) {
+            const response = await sql`
+                SELECT * FROM bookings
+                WHERE slot_id = ${id} AND slot_no = ${i} AND NOT (${eTime} <= sTime OR ${sTime} >= eTime );
+            `;
+            if (response.length === 0) {
+                return res.status(200).json({ user : req.user, slot : spotdata, vehicle, chosenSlotNo: i });
+            }
+        }
+        return res.status(409).json({ message: "slot not available" });
     } catch (error) {
         return res.status(500).json({ error: "internal server error" });
     }
