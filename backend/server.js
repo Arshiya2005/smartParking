@@ -171,6 +171,7 @@ async function initDb() {
               type TEXT NOT NULL,
               sTime TIME NOT NULL,
               eTime TIME NOT NULL,
+              date DATE NOT NULL DEFAULT CURRENT_DATE,
               slot_no INTEGER NOT NULL,
               customer_id UUID NOT NULL REFERENCES customer(id) ON DELETE CASCADE,
               owner_id UUID NOT NULL REFERENCES owner(id) ON DELETE CASCADE,

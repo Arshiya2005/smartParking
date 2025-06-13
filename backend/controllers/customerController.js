@@ -217,16 +217,60 @@ export const chooseSlot = async (req, res) => {
             SELECT * FROM owner where id = ${spotdata[0].owner_id}
         `;
         const count = type === "bike" ? spotdata[0].bike : spotdata[0].car;
+        const today = new Date().toISOString().slice(0, 10);
         for(var i = 1; i <= count; i++) {
             const response = await sql`
                 SELECT * FROM bookings
-                WHERE slot_id = ${id} AND slot_no = ${i} AND NOT (${eTime} <= sTime OR ${sTime} >= eTime );
+                WHERE date = ${today} AND slot_id = ${id} AND slot_no = ${i} AND NOT (${eTime} <= sTime OR ${sTime} >= eTime );
             `;
             if (response.length === 0) {
                 return res.status(200).json({ user : req.user, slot : spotdata, vehicle, chosenSlotNo: i, ownerdata : owner[0]  });
             }
         }
         return res.status(409).json({ message: "slot not available" });
+    } catch (error) {
+        return res.status(500).json({ error: "internal server error" });
+    }
+};
+
+export const activeBooking = async (req, res) => {
+    try {
+        if(req.user.type !== "customer") {
+            return res.status(401).json({ error: "no active user" });
+        }
+        const id = req.user.id;
+        const now = new Date();
+        const today = now.toISOString().slice(0, 10);
+        const time = now.toTimeString().split(' ')[0];
+        const response = await sql`
+            SELECT * FROM bookings
+                WHERE date = ${today} AND customer_id = ${id} AND ${time} <= eTime AND ${time} >= sTime ;
+            `;
+        if (response.length > 0) {
+            return res.status(200).json({ data : response  });
+        }
+        return res.status(200).json({ message: "No active booking at this time" });
+    } catch (error) {
+        return res.status(500).json({ error: "internal server error" });
+    }
+};
+
+export const Specificbooking = async (req, res) => {
+    try {
+        if(req.user.type !== "customer") {
+            return res.status(401).json({ error: "no active user" });
+        }
+        const book = req.body.book;
+        const spotdata = await sql`
+            SELECT * FROM parkingspot where id = ${book.slot_id}
+        `;
+        const vehicle = await sql`
+            SELECT * FROM vehicle where id = ${book.vehicle_id}
+        `;
+        const owner = await sql`
+            SELECT * FROM owner where id = ${book.owner_id}
+        `;
+        return res.status(200).json({book , spot : spotdata[0], vehicle : vehicle[0], owner : owner[0]});
     } catch (error) {
         return res.status(500).json({ error: "internal server error" });
     }
