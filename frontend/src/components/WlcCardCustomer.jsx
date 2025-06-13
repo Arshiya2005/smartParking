@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import scooty from "../assets/girl_scooty.svg";
 
+
+
+////
 const WlcCardCustomer = () => {
   const [name, setName] = useState({ fname: "", lname: "" });
 
@@ -8,8 +11,11 @@ const WlcCardCustomer = () => {
     const fetchWelcome = async () => {
       try {
         const res = await fetch("http://localhost:3000/customer/welcome", {
-          credentials: "include",
-        });
+  credentials: "include",
+  headers: {
+    "Cache-Control": "no-cache"
+  }
+});
 
         const data = await res.json();
         if (res.ok) {

@@ -12,6 +12,9 @@ const useAuthCheck = (expectedType) => {
         const res = await fetch("http://localhost:3000/verify", {
           method: "GET",
           credentials: "include",
+          headers: {
+            "Cache-Control": "no-cache",
+          },
         });
 
         const data = await res.json();

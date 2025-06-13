@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-
 const useAuthRedirect = (expectedType) => {
   const navigate = useNavigate();
 
@@ -8,8 +7,11 @@ const useAuthRedirect = (expectedType) => {
     const checkAuth = async () => {
       try {
         const res = await fetch("http://localhost:3000/verify", {
-          method: "GET",
-          credentials: "include",
+        method: "GET",
+        credentials: "include",
+        headers: {
+            "Cache-Control": "no-cache"
+        }
         });
 
         const data = await res.json();
