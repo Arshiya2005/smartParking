@@ -1,12 +1,41 @@
 import React, { useEffect } from "react";
 import useAuthRedirect from "../../hooks/useAuthRedirect";
+import NavBarCustomer from "../../components/navCustomer";
+import WlcCardCustomer from "../../components/WlcCardCustomer";
+import CardActive from "../../components/cardActive";
+import CardBookNow from "../../components/cardBookNow";
+import peaach from "../../assets/green_back.jpg";
+
 const CustomerHome = () => {
-    useAuthRedirect("customer");
+  useAuthRedirect("customer");
 
   return (
-    <div>
-      <h1>Welcome, to customer home !</h1>
-      {/* Add your page content here */}
+    <div
+      style={{
+        minHeight: "100vh",
+        backgroundImage: `url(${peaach})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
+    >
+      <NavBarCustomer />
+
+      <div className="container py-4">
+        <div className="row mb-4">
+          <div className="col-12">
+            <WlcCardCustomer />
+          </div>
+        </div>
+
+        <div className="row">
+          <div className="col-12 col-md-6 mb-3">
+            <CardActive />
+          </div>
+          <div className="col-12 col-md-6 mb-3">
+            <CardBookNow />
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

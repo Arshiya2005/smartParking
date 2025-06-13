@@ -3,6 +3,13 @@ import LandingPage from './pages/LandingPage';
 import LoginUser from './pages/LoginUser';
 import SignUpUser from './pages/SignUpUser';
 import CustomerHome from './pages/Customer/CustomerHome';
+import CustomerProfile from './pages/Customer/CustomerProfile';
+import MakeNewBooking from './pages/Customer/MakeNewBooking';
+import MyActiveBookings from './pages/Customer/MyActiveBookings';
+import CustomerInfo from './pages/Customer/CustomerInfo';
+import CustomerNotifications from './pages/Customer/CustomerNotifications';
+import CustomerHistory from './pages/Customer/CustomerHistory';
+import CustomerVehicles from './pages/Customer/CustomerVehicles';
 import OwnerHome from './pages/Owner/OwnerHome';
 import './index.css';
 
@@ -14,6 +21,15 @@ function App() {
       <Route path="/signup" element={<SignUpUser />} />
       <Route path ="/customer" element={<CustomerHome/>}/>
       <Route path ="/owner" element={<OwnerHome/>}/>
+      <Route path="/customer/profile" element={<CustomerProfile />}>
+  <Route index element={<CustomerInfo />} /> {/* Default */}
+  <Route path="info" element={<CustomerInfo />} />
+  <Route path="history" element={<CustomerHistory />} />
+  <Route path="notifications" element={<CustomerNotifications />} />
+  <Route path="vehicles" element={<CustomerVehicles />} />
+</Route>
+      <Route path = "/customer/activebookings" element={<MyActiveBookings/>}></Route>
+      <Route path = "/customer/newbooking" element={<MakeNewBooking/>}></Route>
     </Routes>
   );
 }
