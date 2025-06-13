@@ -9,6 +9,7 @@ import session from "express-session"
 import passport from "passport";
 import { Strategy } from "passport-local";
 import GoogleStrategy from "passport-google-oauth2";
+import { v4 as uuidv4 } from 'uuid';
 
 import customerRoutes from "./routes/customerRoutes.js"; 
 import authRoutes from "./routes/authRoutes.js"; 
@@ -184,7 +185,18 @@ async function initDb() {
         console.log("Error initDb", error);
     }
 }
-
+/**
+ * 
+ * INSERT INTO parkingspot (name, lon, lat, bike, car, owner_id) VALUES 
+('Shivaji Nagar Parking',      76.0725624, 18.0223068, 5, 3, '<OWNER_UUID>'),
+('FC Road Parking',            73.8412187, 18.5220938, 6, 2, '<OWNER_UUID>'),
+('JM Road Parking',            73.8450956, 18.5191235, 4, 4, '<OWNER_UUID>'),
+('Kothrud Stand Parking',      73.8134605, 18.4998613, 8, 5, '<OWNER_UUID>'),
+('Viman Nagar Parking Lot',    73.9133336, 18.5703877, 10, 6, '<OWNER_UUID>'),
+('Baner High Street Parking',  73.7697351, 18.5666887, 5, 3, '<OWNER_UUID>'),
+('Palus Parking',    74.4515545, 17.0955099, 7, 4, '<OWNER_UUID>'),
+('khatav Parking', 74.4017634, 17.6370491, 6, 5, '<OWNER_UUID>'),
+ */
 initDb()
     .then(() => {
         app.listen(PORT, () => {
