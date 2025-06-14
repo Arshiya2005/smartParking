@@ -6,7 +6,11 @@ const BookingForm = () => {
   const [showAddVehicle, setShowAddVehicle] = useState(false);
   const [newVehicle, setNewVehicle] = useState({ name: "", no: "", type: "car" });
   const [selectedVehicleId, setSelectedVehicleId] = useState("");
-  const [location, setLocation] = useState("");
+
+  const [useGPS, setUseGPS] = useState(false);
+  const [manualLocation, setManualLocation] = useState("");
+  const [coords, setCoords] = useState({ lat: null, lon: null });
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -17,9 +21,9 @@ const BookingForm = () => {
         });
         const data = await res.json();
         if (res.ok) setVehicles(data.data);
-        else console.error("inside the FetchVehicles function : Failed to load vehicles, res was OK");
+        else console.error("Failed to load vehicles");
       } catch (err) {
-        console.error("Vehicle fetch error(res was not OK):", err);
+        console.error("Vehicle fetch error:", err);
       }
     };
     fetchVehicles();
@@ -34,41 +38,78 @@ const BookingForm = () => {
         body: JSON.stringify(newVehicle),
       });
       if (res.ok) {
-        alert("Vehicle added successfully : res was OK");
-        setShowAddVehicle(false);
-        setNewVehicle({ name: "", no: "", type: "car" });
+        alert("Vehicle added successfully");
         const updated = await res.json();
         setVehicles((prev) => [...prev, updated]);
+        setShowAddVehicle(false);
+        setNewVehicle({ name: "", no: "", type: "car" });
       } else {
-        alert("Failed to add vehicle : res was not OK");
+        alert("Failed to add vehicle");
       }
     } catch (err) {
       console.error("Add vehicle error:", err);
     }
   };
 
+  const handleUseCurrentLocation = () => {
+    if (!navigator.geolocation) {
+      alert("Geolocation is not supported by your browser");
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+        (position) => {
+          console.log("Location success:", position);
+          setCoords({
+            lat: position.coords.latitude,
+            lon: position.coords.longitude,
+          });
+          alert("Current location set successfully!");
+        },
+        (err) => {
+          console.error("Geolocation error:", err);
+          if (err.code === 1) {
+            alert("Permission denied. Please allow location access.");
+          } else if (err.code === 2) {
+            alert("Location unavailable. Please try again or enter manually.");
+          } else if (err.code === 3) {
+            alert("Location request timed out. Try again.");
+          } else {
+            alert("Unknown geolocation error occurred.");
+          }
+        },
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+      );
+  };
+
   const handleSearchNearby = async () => {
+    const vehicle = vehicles.find((v) => v.id === selectedVehicleId);
+    if (!vehicle) return alert("Please select a vehicle");
+
     try {
-      const vehicle = vehicles.find((v) => v.id === selectedVehicleId);
-      if (!vehicle || !location) return alert("Please fill all fields");
+      let body;
+      if (useGPS) {
+        if (!coords.lat || !coords.lon) {
+          return alert("Please click 'Use My Location' to fetch coordinates.");
+        }
+        body = { lat: coords.lat, lon: coords.lon, id: vehicle.id, type: vehicle.type };
+      } else {
+        if (!manualLocation.trim()) return alert("Please enter a location");
+        body = { location: manualLocation.trim(), id: vehicle.id, type: vehicle.type };
+      }
 
       const res = await fetch("http://localhost:3000/customer/searchNearby", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({
-          location,
-          id: vehicle.id,
-          type: vehicle.type,
-        }),
+        body: JSON.stringify(body),
       });
+
       const data = await res.json();
-      console.log("Nearby Search Response:", res.status, data);
       if (res.ok) {
-        console.log("res was okay , so now navigating to the NearbySpots.jsx");
         navigate("/customer/nearby", { state: { data } });
       } else {
-        alert(data.message || "Failed to fetch nearby slots : res sent was not OK");
+        alert(data.message || "Failed to fetch nearby slots");
       }
     } catch (err) {
       console.error("Search error:", err);
@@ -79,10 +120,16 @@ const BookingForm = () => {
     <div className="container mt-4">
       <h3 className="mb-3">Book a Parking Slot</h3>
 
+      {/* VEHICLE SELECTION */}
       <div className="mb-3">
         <label className="form-label">Select Vehicle</label>
         {vehicles.length === 0 ? (
-          <p>No vehicles found. <button className="btn btn-link p-0" onClick={() => setShowAddVehicle(true)}>Add Vehicle</button></p>
+          <p>
+            No vehicles found.{" "}
+            <button className="btn btn-link p-0" onClick={() => setShowAddVehicle(true)}>
+              Add Vehicle
+            </button>
+          </p>
         ) : (
           <select
             className="form-select"
@@ -90,29 +137,30 @@ const BookingForm = () => {
             onChange={(e) => setSelectedVehicleId(e.target.value)}
           >
             <option value="">-- Choose a vehicle --</option>
-            {vehicles.map((vehicle) => (
-              <option key={vehicle.id} value={vehicle.id}>
-                {vehicle.model} ({vehicle.number})
+            {vehicles.map((v) => (
+              <option key={v.id} value={v.id}>
+                {v.model} ({v.number})
               </option>
             ))}
           </select>
         )}
       </div>
 
+      {/* ADD VEHICLE FORM */}
       {showAddVehicle && (
         <div className="mb-3">
           <h5>Add New Vehicle</h5>
           <input
             type="text"
-            placeholder="Vehicle Model"
             className="form-control mb-2"
+            placeholder="Vehicle Model"
             value={newVehicle.name}
             onChange={(e) => setNewVehicle({ ...newVehicle, name: e.target.value })}
           />
           <input
             type="text"
-            placeholder="Vehicle Number"
             className="form-control mb-2"
+            placeholder="Vehicle Number"
             value={newVehicle.no}
             onChange={(e) => setNewVehicle({ ...newVehicle, no: e.target.value })}
           />
@@ -124,21 +172,73 @@ const BookingForm = () => {
             <option value="car">Car</option>
             <option value="bike">Bike</option>
           </select>
-          <button className="btn btn-success" onClick={handleAddVehicle}>Add</button>
+          <button className="btn btn-success" onClick={handleAddVehicle}>
+            Add
+          </button>
         </div>
       )}
 
+      {/* LOCATION INPUT TOGGLE */}
       <div className="mb-3">
-        <label className="form-label">Enter Location</label>
-        <input
-          type="text"
-          className="form-control"
-          placeholder="Eg. FC Road Pune"
-          value={location}
-          onChange={(e) => setLocation(e.target.value)}
-        />
+        <label className="form-label">Choose Location Method</label>
+        <div className="form-check">
+          <input
+            className="form-check-input"
+            type="radio"
+            name="locationMode"
+            id="manualRadio"
+            checked={!useGPS}
+            onChange={() => setUseGPS(false)}
+          />
+          <label className="form-check-label" htmlFor="manualRadio">
+            Enter Location Manually
+          </label>
+        </div>
+        <div className="form-check mb-2">
+          <input
+            className="form-check-input"
+            type="radio"
+            name="locationMode"
+            id="gpsRadio"
+            checked={useGPS}
+            onChange={() => setUseGPS(true)}
+          />
+          <label className="form-check-label" htmlFor="gpsRadio">
+            Use My Current Location
+          </label>
+        </div>
       </div>
 
+      {/* LOCATION INPUTS */}
+      {!useGPS ? (
+        <div className="mb-3">
+          <input
+            type="text"
+            className="form-control"
+            placeholder="Eg. MG Road, Pune"
+            value={manualLocation}
+            onChange={(e) => setManualLocation(e.target.value)}
+          />
+        </div>
+      ) : (
+        <div className="mb-3">
+          <button className="btn btn-outline-primary mb-2" onClick={handleUseCurrentLocation}>
+            Get My Current Location
+          </button>
+          {coords.lat && coords.lon ? (
+            <input
+              type="text"
+              className="form-control"
+              value={`Latitude: ${coords.lat}, Longitude: ${coords.lon}`}
+              disabled
+            />
+          ) : (
+            <input className="form-control" disabled placeholder="Location not fetched yet" />
+          )}
+        </div>
+      )}
+
+      {/* PROCEED BUTTON */}
       <button className="btn btn-primary" onClick={handleSearchNearby}>
         Proceed
       </button>
@@ -147,4 +247,3 @@ const BookingForm = () => {
 };
 
 export default BookingForm;
-

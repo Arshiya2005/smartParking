@@ -28,6 +28,13 @@ const CustomerVehicles = () => {
   };
 
   const handleAddVehicle = async () => {
+    const { name, no, type } = newVehicle;
+  
+    if (!name.trim() || !no.trim() || !type) {
+      alert("Please fill in all fields before adding a vehicle.");
+      return;
+    }
+  
     try {
       const res = await fetch("http://localhost:3000/customer/profile/myVehicles/add", {
         method: "POST",
@@ -37,9 +44,8 @@ const CustomerVehicles = () => {
       });
       if (res.ok) {
         alert("Vehicle added successfully");
-        setShowAddVehicle(false);
         setNewVehicle({ name: "", no: "", type: "car" });
-        await fetchVehicles(); // <- this fixes everything
+        await fetchVehicles(); // refresh
       } else {
         alert("Failed to add vehicle");
       }
@@ -47,7 +53,6 @@ const CustomerVehicles = () => {
       console.error("Add vehicle error:", err);
     }
   };
-
   const handleDeleteVehicle = async (id) => {
     try {
       const res = await fetch("http://localhost:3000/customer/profile/myVehicles/delete", {
