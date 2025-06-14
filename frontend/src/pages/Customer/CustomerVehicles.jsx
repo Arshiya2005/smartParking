@@ -29,7 +29,6 @@ const CustomerVehicles = () => {
 
   const handleAddVehicle = async () => {
     try {
-      console.log(newVehicle);
       const res = await fetch("http://localhost:3000/customer/profile/myVehicles/add", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -37,9 +36,10 @@ const CustomerVehicles = () => {
         body: JSON.stringify(newVehicle),
       });
       if (res.ok) {
-        alert("Vehicle added");
+        alert("Vehicle added successfully");
+        setShowAddVehicle(false);
         setNewVehicle({ name: "", no: "", type: "car" });
-        fetchVehicles(); // refresh list
+        await fetchVehicles(); // <- this fixes everything
       } else {
         alert("Failed to add vehicle");
       }

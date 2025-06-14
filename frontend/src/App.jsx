@@ -11,6 +11,9 @@ import CustomerNotifications from './pages/Customer/CustomerNotifications';
 import CustomerHistory from './pages/Customer/CustomerHistory';
 import CustomerVehicles from './pages/Customer/CustomerVehicles';
 import OwnerHome from './pages/Owner/OwnerHome';
+import BookingForm from './pages/Customer/BookingForm';
+import NearbySpots from "./pages/Customer/NearbySpots";
+import NearbyMap from './components/NearbyMap';
 import './index.css';
 
 function App() {
@@ -30,7 +33,9 @@ function App() {
 </Route>
       <Route path = "/customer/activebookings" element={<MyActiveBookings/>}></Route>
       <Route path = "/customer/newbooking" element={<MakeNewBooking/>}></Route>
+      <Route path = "/customer/nearby" element={<NearbySpots/>}></Route>
     </Routes>
+  
   );
 }
 

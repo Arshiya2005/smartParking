@@ -127,6 +127,10 @@ export const editLname = async (req, res) => {
 
 
 export const searchNearby = async (req, res) => {
+    //disha added this
+    console.log("Is Authenticated:", req.isAuthenticated());
+    console.log("User:", req.user);
+    //disha added this
   try {
     if (req.user.type !== "customer") {
       return res.status(401).json({ error: "No active user" });
@@ -168,8 +172,11 @@ export const searchNearby = async (req, res) => {
 
       const response = await axios.get(url, {
         headers: {
-          "Accept": "application/json",
-        },
+            "Accept": "application/json, application/geo+json, application/gpx+xml, img/png; charset=utf-8",
+            //disha added this
+            "Authorization": process.env.ORS_API_KEY
+            //disha added this
+          },
       });
       console.log("from search nearby : ");
       console.log(response.data.routes[0].summary);

@@ -1,6 +1,7 @@
 import React from 'react';
 import useAuthRedirect from '../../hooks/useAuthRedirect';
 import NavBarCustomer from '../../components/navCustomer';
+import BookingForm from './BookingForm';
 
 const MakeNewBooking = () => {
   useAuthRedirect("customer"); 
@@ -12,8 +13,7 @@ const MakeNewBooking = () => {
       <div className="container py-4">
         <h2 className="mb-4">Make a New Booking</h2>
         <p>You are on the Make New Bookings page!</p>
-
-        {/* Add your booking form or slot selection UI here */}
+        <BookingForm/>
       </div>
     </div>
   );
