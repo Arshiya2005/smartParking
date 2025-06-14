@@ -119,6 +119,7 @@ export const editLname = async (req, res) => {
             SET fname = ${lname}
             WHERE id = ${id}
         `;
+        req.user.lname = lname;
         return res.status(200).json({ message: "Updated successfully" });
     } catch (error) {
         return res.status(500).json({ error: "internal server error" });
@@ -170,11 +171,13 @@ export const searchNearby = async (req, res) => {
     for (const spot of allSpots) {
       const url = `https://api.openrouteservice.org/v2/directions/driving-car?api_key=${process.env.ORS_API_KEY}&start=${lon},${lat}&end=${spot.lon},${spot.lat}`;
       const response = await axios.get(url);
-      console.log("from search nearby : ");
+      console.log("from search nearby: " + spot.name);
+      
+      
       const features = response.data.features;
       console.log("summary: ")
       console.log(features[0].properties.summary);
-      const summary = features[0].properties.summary;
+      const summary = features[0].properties.segments[0];
       const distance = summary.distance; 
       const duration = summary.duration;
       if((Vtype === "bike" && spot.bike !== 0) || (Vtype === "car" && spot.car !== 0)) {
