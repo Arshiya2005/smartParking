@@ -280,3 +280,24 @@ export const Specificbooking = async (req, res) => {
         return res.status(500).json({ error: "internal server error" });
     }
 };
+
+export const addbooking = async (req, res) => {
+    try {
+        if(req.user.type !== "customer") {
+            return res.status(401).json({ error: "no active user" });
+        }
+        const {slot, vehicle, chosenSlotNo, owner} = req.body;
+        await sql`
+            INSERT INTO bookings (
+                type, sTime, eTime, slot_no,
+                customer_id, owner_id, vehicle_id, slot_id
+            ) VALUES (
+                ${vehicle.type}, ${slot.sTime}, ${slot.eTime}, ${chosenSlotNo},
+                ${req.user.id}, ${owner.id}, ${vehicle.id}, ${slot.id}
+            )
+        `;
+        return res.status(200).json({message : "booked successfully"});
+    } catch (error) {
+        return res.status(500).json({ error: "internal server error" });
+    }
+};
