@@ -40,4 +40,5 @@ Start server :
 Frontend : 
 
     cd ./frontend
+    npm i
     npm run dev
