@@ -1,6 +1,6 @@
 import React from 'react';
 import useAuthRedirect from '../../hooks/useAuthRedirect';
-import NavBarCustomer from '../../components/navCustomer';
+import NavBarCustomer from '../../components/NavBarCustomer';
 
 const MyActiveBookings = () => {
   useAuthRedirect("customer"); 

@@ -14,7 +14,10 @@ import OwnerHome from './pages/Owner/OwnerHome';
 import BookingForm from './pages/Customer/BookingForm';
 import NearbySpots from "./pages/Customer/NearbySpots";
 import NearbyMap from './components/NearbyMap';
+import ConfirmBooking from './pages/Customer/confirmBooking';
 import './index.css';
+import ChooseSlot from './pages/Customer/ChooseSlot';
+import PaymentsPage from './pages/Customer/PaymentsPage';
 
 function App() {
   return (
@@ -30,12 +33,16 @@ function App() {
   <Route path="history" element={<CustomerHistory />} />
   <Route path="notifications" element={<CustomerNotifications />} />
   <Route path="vehicles" element={<CustomerVehicles />} />
+
 </Route>
       <Route path = "/customer/activebookings" element={<MyActiveBookings/>}></Route>
       <Route path = "/customer/newbooking" element={<MakeNewBooking/>}></Route>
       <Route path = "/customer/nearby" element={<NearbySpots/>}></Route>
+      <Route path = "/customer/chooseslot" element={<ChooseSlot/>}></Route>
+      <Route path="/customer/confirm" element={<ConfirmBooking />} />
+      <Route path="/customer/pay" element={<PaymentsPage />}></Route>
     </Routes>
-  
+    
   );
 }
 

@@ -7,7 +7,7 @@ const SlotCard = ({ spot }) => {
 
   const handleChoose = () => {
     // You may pass spot to next page or call backend from here
-    navigate("/customer/choose-slot", { state: { spot } });
+    navigate("/customer/chooseslot", { state: { spot } });
   };
 
   return (
@@ -16,7 +16,7 @@ const SlotCard = ({ spot }) => {
         <h5 className="card-title">{spot.name}</h5>
         <p className="card-text">
           Distance: {(spot.distance / 1000).toFixed(2)} km <br />
-          Duration: {(spot.duration / 60).toFixed(1)} minutes
+          {/* Duration: {(spot.duration / 60).toFixed(1)} minutes */}
         </p>
         <button className="btn btn-success" onClick={handleChoose}>
           Select this Spot

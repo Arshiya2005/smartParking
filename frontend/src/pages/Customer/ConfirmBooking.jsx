@@ -1,0 +1,80 @@
+// src/pages/customer/ConfirmBooking.jsx
+
+import React from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import NavBarCustomer from "../../components/NavBarCustomer";
+
+const ConfirmBooking = () => {
+  const { state } = useLocation();
+  const navigate = useNavigate();
+
+  const booking = state?.booking;
+  const sTime = state?.sTime;
+  const eTime = state?.eTime;
+  const price = state?.price;
+
+  if (!booking || !sTime || !eTime || !price) {
+    return (
+      <div>
+        <NavBarCustomer />
+        <div className="container mt-5">
+          <h4 className="text-danger">Invalid access. Booking details missing.</h4>
+          <button className="btn btn-secondary mt-3" onClick={() => navigate("/customer")}>
+            Go to Dashboard
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  const { slot, vehicle, chosenSlotNo, ownerdata } = booking;
+
+  return (
+    <div style={{ minHeight: "100vh", backgroundColor: "#f8f9fa" }}>
+      <NavBarCustomer />
+      <div className="container py-5">
+        <h2 className="mb-4">Confirm Your Booking</h2>
+
+        <div className="card shadow p-4" style={{ borderRadius: "12px" }}>
+          <h5 className="mb-3">Booking Summary</h5>
+
+          <p><strong>Parking Spot:</strong> {slot[0].name}</p>
+          <p><strong>Slot Number:</strong> {chosenSlotNo}</p>
+          <p><strong>Start Time:</strong> {sTime}</p>
+          <p><strong>End Time:</strong> {eTime}</p>
+
+          <hr />
+
+          <p><strong>Vehicle:</strong> {vehicle[0].model} ({vehicle[0].number})</p>
+          <p><strong>Owner:</strong> {ownerdata.fname} {ownerdata.lname}</p>
+          <p><strong>Owner Email:</strong> {ownerdata.email}</p>
+
+          <hr />
+
+          <p className="fs-5"><strong>Total Price:</strong> ₹{price}</p>
+
+          <div className="d-flex gap-3 mt-4">
+            <button
+              className="btn btn-secondary"
+              onClick={() => navigate(-1)}
+            >
+              ← Back to Slot Selection
+            </button>
+            <button
+  className="btn btn-success"
+  onClick={() =>
+    navigate("/customer/pay", {
+      state: { price }
+    })
+  }
+>
+  Proceed to Pay
+</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default ConfirmBooking;

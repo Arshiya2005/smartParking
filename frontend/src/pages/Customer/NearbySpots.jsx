@@ -1,7 +1,7 @@
 // src/pages/customer/NearbySpots.jsx
 import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import NavBarCustomer from "../../components/navCustomer";
+import NavBarCustomer from "../../components/NavBarCustomer";
 import NearbyMap from "../../components/NearbyMap";
 import SlotCard from "../../components/SlotCard";
 

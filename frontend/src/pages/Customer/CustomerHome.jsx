@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import useAuthRedirect from "../../hooks/useAuthRedirect";
-import NavBarCustomer from "../../components/navCustomer";
+import NavBarCustomer from "../../components/NavBarCustomer";
 import WlcCardCustomer from "../../components/WlcCardCustomer";
 import CardActive from "../../components/cardActive";
 import CardBookNow from "../../components/cardBookNow";
