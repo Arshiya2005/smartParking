@@ -249,7 +249,7 @@ export const activeBooking = async (req, res) => {
         const time = now.toTimeString().split(' ')[0];
         const response = await sql`
             SELECT * FROM bookings
-                WHERE date = ${today} AND customer_id = ${id} AND ${time} <= eTime AND ${time} >= sTime ;
+                WHERE date = ${today} AND customer_id = ${id} AND ${time} < eTime;
             `;
         if (response.length > 0) {
             return res.status(200).json({ data : response  });
