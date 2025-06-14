@@ -128,8 +128,8 @@ export const editLname = async (req, res) => {
 
 export const searchNearby = async (req, res) => {
     //disha added this
-    console.log("Is Authenticated:", req.isAuthenticated());
-    console.log("User:", req.user);
+    //console.log("Is Authenticated:", req.isAuthenticated());
+    //console.log("User:", req.user);
     //disha added this
   try {
     if (req.user.type !== "customer") {
@@ -164,24 +164,19 @@ export const searchNearby = async (req, res) => {
     }
 
     const allSpots = await sql`SELECT id, name, lat, lon, bike, car FROM parkingspot`;
-
+    
     const results = [];
 
     for (const spot of allSpots) {
       const url = `https://api.openrouteservice.org/v2/directions/driving-car?api_key=${process.env.ORS_API_KEY}&start=${lon},${lat}&end=${spot.lon},${spot.lat}`;
-
-      const response = await axios.get(url, {
-        headers: {
-            "Accept": "application/json, application/geo+json, application/gpx+xml, img/png; charset=utf-8",
-            //disha added this
-            "Authorization": process.env.ORS_API_KEY
-            //disha added this
-          },
-      });
+      const response = await axios.get(url);
       console.log("from search nearby : ");
-      console.log(response.data.routes[0].summary);
-      const distance = response.data.routes[0].summary.distance; 
-      const duration = response.data.routes[0].summary.duration;
+      const features = response.data.features;
+      console.log("summary: ")
+      console.log(features[0].properties.summary);
+      const summary = features[0].properties.summary;
+      const distance = summary.distance; 
+      const duration = summary.duration;
       if((Vtype === "bike" && spot.bike !== 0) || (Vtype === "car" && spot.car !== 0)) {
         results.push({
             id: spot.id,
