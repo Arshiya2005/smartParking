@@ -257,7 +257,7 @@ export const activeBooking = async (req, res) => {
         if (response.length > 0) {
             console.log("reached here ");
             console.log(response);
-            return res.status(200).json({ data : response  , spot : spotdata});
+            return res.status(200).json({ data : response  , spot : spotdata[0]});
         }
         console.log("no data available !");
         return res.status(200).json({ message: "No active booking at this time" });
@@ -268,24 +268,33 @@ export const activeBooking = async (req, res) => {
 
 export const Specificbooking = async (req, res) => {
     try {
-        if(req.user.type !== "customer") {
-            return res.status(401).json({ error: "no active user" });
-        }
-        const book = req.body.book;
-        const spotdata = await sql`
-            SELECT * FROM parkingspot where id = ${book.slot_id}
-        `;
-        const vehicle = await sql`
-            SELECT * FROM vehicle where id = ${book.vehicle_id}
-        `;
-        const owner = await sql`
-            SELECT * FROM owner where id = ${book.owner_id}
-        `;
-        return res.status(200).json({book , spot : spotdata[0], vehicle : vehicle[0], owner : owner[0]});
+      if (req.user.type !== "customer") {
+        return res.status(401).json({ error: "no active user" });
+      }
+  
+      const book = JSON.parse(decodeURIComponent(req.query.book)); // ✅ safely parse
+  
+      const spotdata = await sql`
+        SELECT * FROM parkingspot where id = ${book.slot_id}
+      `;
+      const vehicle = await sql`
+        SELECT * FROM vehicle where id = ${book.vehicle_id}
+      `;
+      const owner = await sql`
+        SELECT * FROM owner where id = ${book.owner_id}
+      `;
+  
+      return res.status(200).json({
+        book,
+        spot: spotdata[0],
+        vehicle: vehicle[0],
+        owner: owner[0],
+      });
     } catch (error) {
-        return res.status(500).json({ error: "internal server error" });
+      console.error("Specificbooking error:", error);
+      return res.status(500).json({ error: "internal server error" });
     }
-};
+  };
 
 export const addbooking = async (req, res) => {
     try {

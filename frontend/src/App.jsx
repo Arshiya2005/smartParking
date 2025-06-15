@@ -18,6 +18,8 @@ import ConfirmBooking from './pages/Customer/confirmBooking';
 import './index.css';
 import ChooseSlot from './pages/Customer/ChooseSlot';
 import PaymentsPage from './pages/Customer/PaymentsPage';
+import BookingDetails from './pages/Customer/BookingDetails';
+import CancelBooking from './pages/Customer/CancelBooking';
 
 function App() {
   return (
@@ -41,6 +43,8 @@ function App() {
       <Route path = "/customer/chooseslot" element={<ChooseSlot/>}></Route>
       <Route path="/customer/confirm" element={<ConfirmBooking />} />
       <Route path="/customer/pay" element={<PaymentsPage />}></Route>
+      <Route path="/customer/bookingdetails" element={<BookingDetails/>}></Route>
+      <Route path="customer/cancelooking" element={<CancelBooking/>}></Route>
     </Routes>
     
   );
