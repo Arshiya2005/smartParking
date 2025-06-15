@@ -317,8 +317,29 @@ export const addbooking = async (req, res) => {
     }
 };
 
-//bookingHistory, SpecificHistory
 export const bookingHistory = async (req, res) => {
+    try {
+        if(req.user.type !== "customer") {
+            return res.status(401).json({ error: "no active user" });
+        }
+        const id = req.user.id;
+        const response = await sql`
+            SELECT * FROM bookings WHERE customer_id = ${id};
+            `;
+        const spotdata = await sql`
+            SELECT * FROM parkingspot where id = ${response[0].id}
+        `;
+        if (response.length > 0) {
+            return res.status(200).json({ data : response  , spot : spotdata});
+        }
+        return res.status(200).json({ message: "No bookings" });
+    } catch (error) {
+        return res.status(500).json({ error: "internal server error" });
+    }
+};
+
+//cancelBooking not done
+export const cancelBooking = async (req, res) => {
     try {
         if(req.user.type !== "customer") {
             return res.status(401).json({ error: "no active user" });
