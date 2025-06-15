@@ -1,6 +1,4 @@
-// src/pages/customer/PaymentsPage.jsx
-
-import React from "react";
+import React, { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import NavBarCustomer from "../../components/NavBarCustomer";
 
@@ -8,48 +6,74 @@ const PaymentsPage = () => {
   const { state } = useLocation();
   const navigate = useNavigate();
 
-  const { price } = state || {};
+  // Pull individual fields
+  const slot = state?.data?.slot;
+  const vehicle = state?.data?.vehicle;
+  const owner = state?.data?.owner;
+  const chosenSlotNo = state?.data?.chosenSlotNo;
+  const sTime = state?.data?.sTime;
+  const eTime = state?.data?.eTime;
+  const price = state?.data?.price;
 
-  if (!price) {
-    return (
-      <div>
-        <NavBarCustomer />
-        <div className="container mt-5">
-          <h4 className="text-danger">No payment details found.</h4>
-          <button className="btn btn-secondary mt-3" onClick={() => navigate("/customer")}>
-            Go to Dashboard
-          </button>
-        </div>
-      </div>
-    );
-  }
+  // Optional unified booking object for convenience
+  const booking = { slot, vehicle, owner, chosenSlotNo };
+
+  // Debug logs
+  useEffect(() => {
+    console.log("DEBUG: slot", slot);
+    console.log("DEBUG: vehicle", vehicle);
+    console.log("DEBUG: owner", owner);
+    console.log("DEBUG: chosenSlotNo", chosenSlotNo);
+    console.log("DEBUG: sTime", sTime);
+    console.log("DEBUG: eTime", eTime);
+    console.log("DEBUG: price", price);
+  }, []);
+
+  const handlePayment = async () => {
+    if (!slot || !vehicle || !owner || !chosenSlotNo || !sTime || !eTime || !price) {
+      alert("Booking details missing. Please try again.");
+      return;
+    }
+
+    try {
+      const res = await fetch("http://localhost:3000/customer/addbooking", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          slot: { ...slot, sTime, eTime },
+          vehicle,
+          owner,
+          chosenSlotNo,
+        }),
+      });
+
+      if (res.ok) {
+        alert("Payment successful! Booking confirmed.");
+        navigate("/customer");
+      } else {
+        alert("Booking failed. Please try again.");
+      }
+    } catch (err) {
+      console.error("Payment error:", err);
+      alert("Something went wrong. Please try again.");
+    }
+  };
 
   return (
-    <div style={{ minHeight: "100vh", backgroundColor: "#f1f1f1" }}>
+    <div style={{ minHeight: "100vh", backgroundColor: "#f8f9fa" }}>
       <NavBarCustomer />
-      <div className="container py-5 d-flex justify-content-center">
-        <div className="card shadow p-4" style={{ borderRadius: "12px", maxWidth: "500px", width: "100%" }}>
-          <h3 className="text-center mb-4">Payment</h3>
+      <div className="container py-5">
+        <h2 className="mb-4">Payment</h2>
 
-          <div className="mb-4 text-center">
-            <h5>Total Amount to Pay:</h5>
-            <h2 className="text-success">₹{price}</h2>
-          </div>
+        <div className="card shadow p-4" style={{ borderRadius: "12px" }}>
+          <p className="fs-5 mb-3">
+            Please click below to complete the payment of <strong>₹{price}</strong>
+          </p>
 
-          <div className="d-grid gap-2">
-            <button
-              className="btn btn-primary"
-              onClick={() => alert("Payment gateway integration coming soon!")}
-            >
-              Pay Now
-            </button>
-            <button
-  className="btn btn-outline-secondary"
-  onClick={() => navigate("/customer")}
->
-  Back to Dashboard
-</button>
-          </div>
+          <button className="btn btn-success" onClick={handlePayment}>
+            Pay Now
+          </button>
         </div>
       </div>
     </div>

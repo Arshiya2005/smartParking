@@ -47,7 +47,7 @@ const ConfirmBooking = () => {
 
           <p><strong>Vehicle:</strong> {vehicle[0].model} ({vehicle[0].number})</p>
           <p><strong>Owner:</strong> {ownerdata.fname} {ownerdata.lname}</p>
-          <p><strong>Owner Email:</strong> {ownerdata.email}</p>
+          <p><strong>Owner Email:</strong> {ownerdata.username}</p>
 
           <hr />
 
@@ -62,11 +62,30 @@ const ConfirmBooking = () => {
             </button>
             <button
   className="btn btn-success"
-  onClick={() =>
+  onClick={() => {
+    console.log("Proceed to Pay clicked!");
+    console.log("Slot:", slot?.[0]);
+    console.log("Vehicle:", vehicle?.[0]);
+    console.log("Owner:", ownerdata);
+    console.log("Slot No:", chosenSlotNo);
+    console.log("Start Time:", sTime);
+    console.log("End Time:", eTime);
+    console.log("Price:", price);
+
     navigate("/customer/pay", {
-      state: { price }
-    })
-  }
+      state: {
+        data: {
+          slot: slot[0],
+          vehicle: vehicle[0],
+          owner: ownerdata,
+          chosenSlotNo,
+          sTime,
+          eTime,
+          price,
+        },
+      },
+    });
+  }}
 >
   Proceed to Pay
 </button>
