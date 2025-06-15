@@ -251,10 +251,13 @@ export const activeBooking = async (req, res) => {
             SELECT * FROM bookings
                 WHERE date = ${today} AND customer_id = ${id} AND ${time} < eTime;
             `;
+        const spotdata = await sql`
+            SELECT * FROM parkingspot where id = ${response[0].id}
+        `;
         if (response.length > 0) {
             console.log("reached here ");
             console.log(response);
-            return res.status(200).json({ data : response  });
+            return res.status(200).json({ data : response  , spot : spotdata});
         }
         console.log("no data available !");
         return res.status(200).json({ message: "No active booking at this time" });
