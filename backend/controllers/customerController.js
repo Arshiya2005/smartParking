@@ -252,8 +252,11 @@ export const activeBooking = async (req, res) => {
                 WHERE date = ${today} AND customer_id = ${id} AND ${time} < eTime;
             `;
         if (response.length > 0) {
+            console.log("reached here ");
+            console.log(response);
             return res.status(200).json({ data : response  });
         }
+        console.log("no data available !");
         return res.status(200).json({ message: "No active booking at this time" });
     } catch (error) {
         return res.status(500).json({ error: "internal server error" });
