@@ -2,6 +2,7 @@ import express from "express";
 
 import {welcome, myVehicles, addVehicle, deleteVehicle, info, editFname, editLname} from "../controllers/customerController.js"
 import { searchNearby, chooseSlot , activeBooking, Specificbooking, addbooking} from "../controllers/customerController.js"
+import { bookingHistory } from "../controllers/customerController.js"
 import {isAuthenticated} from "../controllers/authController.js"
 
 const router = express.Router();
@@ -18,6 +19,6 @@ router.post("/chooseSlot", isAuthenticated, chooseSlot);
 router.get("/activeBooking", isAuthenticated, activeBooking);
 router.get("/Specificbooking", isAuthenticated, Specificbooking);
 router.post("/addbooking", isAuthenticated, addbooking); 
-
+router.get("/bookingHistory", isAuthenticated, bookingHistory);
 
 export default router;
