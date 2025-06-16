@@ -1,62 +1,107 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import { useLocation } from "react-router-dom";
+import NavBarCustomer from "../../components/NavBarCustomer";
 
 const HistoryBookingDetails = () => {
-  const location = useLocation();
-  const bookingId = location.state?.booking?.id;
-  const [bookingDetails, setBookingDetails] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const { state } = useLocation();
+  const booking = state?.booking;
+  const [data, setData] = useState(null);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchDetails = async () => {
+    const fetchSpecificBooking = async () => {
       try {
-        if (!bookingId) {
-          setError("No booking ID found.");
-          setLoading(false);
-          return;
-        }
-  
-        const res = await axios.get(`/customer/Specificbooking?bookingId=${bookingId}`, {
-          withCredentials: true,
+        const query = new URLSearchParams({
+          book: encodeURIComponent(JSON.stringify(booking)),
+        }).toString();
+
+        const res = await fetch(`http://localhost:3000/customer/Specificbooking?${query}`, {
+          method: "GET",
+          credentials: "include",
         });
-        console.log("📦 Full bookingDetails response:", res.data);
-        setBookingDetails(res.data);
-      } catch (err) {
-        console.error("❌ Error fetching booking details:", err);
-        if (err.response) {
-          console.error("🔍 Backend error response:", err.response.data);
-          setError(err.response.data.message || "Something went wrong on server.");
+
+        const result = await res.json();
+        console.log("📦 History booking details received:", result);
+
+        if (res.ok) {
+          setData(result);
         } else {
-          setError("Something went wrong.");
+          setError(result?.error || "Something went wrong");
         }
-      } finally {
-        setLoading(false);
+      } catch (err) {
+        console.error("❌ Error fetching specific booking:", err);
+        setError("Failed to fetch booking details.");
       }
     };
-  
-    fetchDetails();
-  }, [bookingId]);
-  if (loading) return <p className="text-center mt-4">Loading booking details...</p>;
-  if (error) return <p className="text-danger text-center mt-4">{error}</p>;
-  if (!bookingDetails) return <p className="text-center mt-4">No details available.</p>;
 
-  const { user, vehicle, slot, ownerdata, chosenSlotNo } = bookingDetails;
+    if (booking) fetchSpecificBooking();
+    else setError("No booking data provided.");
+  }, [booking]);
+
+  if (error) {
+    return (
+      <div>
+        
+        <div className="container py-4">
+          <p className="text-danger">{error}</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!data) {
+    return (
+      <div>
+        <NavBarCustomer />
+        <div className="container py-4">
+          <p>Loading booking details...</p>
+        </div>
+      </div>
+    );
+  }
+
+  const { book, spot, vehicle, owner } = data;
 
   return (
-    <div className="container mt-4">
-      <h3 className="mb-4">Booking Details</h3>
-      <div className="card p-3 shadow">
-        <p><strong>Slot Number:</strong> {chosenSlotNo}</p>
-        <p><strong>Slot Address:</strong> {slot?.address}</p>
-        <p><strong>Owner:</strong> {ownerdata?.fname} {ownerdata?.lname} ({ownerdata?.email})</p>
-        <p><strong>Start Time:</strong> {slot?.stime}</p>
-        <p><strong>End Time:</strong> {slot?.etime}</p>
-        <p><strong>Vehicle Type:</strong> {vehicle?.type}</p>
-        <p><strong>Plate No:</strong> {vehicle?.plate_no}</p>
-        <p><strong>Customer:</strong> {user?.fname} {user?.lname} ({user?.username})</p>
-        <p><strong>Total Price:</strong> ₹{slot?.price}</p>
+    <div style={{ minHeight: "100vh", backgroundColor: "#f5f5f5" }}>
+      <div className="container py-4">
+        <h2 className="mb-4">Booking Details</h2>
+
+        <div className="card shadow p-4" style={{ borderRadius: "12px" }}>
+          <h5>Booking Info</h5>
+          <p><strong>Type:</strong> {book.type}</p>
+          <p><strong>Start Time:</strong> {book.stime}</p>
+          <p><strong>End Time:</strong> {book.etime}</p>
+          <p><strong>Date:</strong> {new Date(book.date).toLocaleDateString("en-IN", { timeZone: "Asia/Kolkata" })}</p>
+
+          <h5 className="mt-4">Parking Spot Info</h5>
+          <p><strong>Name:</strong> {spot.name}</p>
+
+          <h5 className="mt-4">Vehicle Info</h5>
+          <p><strong>Model:</strong> {vehicle.model}</p>
+          <p><strong>Type:</strong> {vehicle.type}</p>
+
+          <h5 className="mt-4">Owner Info</h5>
+          <p><strong>Name:</strong> {owner.fname} {owner.lname}</p>
+          <p><strong>Username:</strong> {owner.username}</p>
+          <p className="mb-1">
+  <strong>Status:</strong>{" "}
+  <span
+    className={`badge px-2 py-1 rounded-pill ${
+      book.status === "confirmed"
+        ? "bg-success"
+        : book.status === "cancelled"
+        ? "bg-danger"
+        : book.status === "completed"
+        ? "bg-primary"
+        : "bg-secondary"
+    }`}
+    style={{ textTransform: "capitalize", fontSize: "0.9rem" }}
+  >
+    {book.status}
+  </span>
+</p>
+        </div>
       </div>
     </div>
   );
