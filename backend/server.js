@@ -173,6 +173,7 @@ async function initDb() {
               eTime TIME NOT NULL,
               date DATE NOT NULL DEFAULT CURRENT_DATE,
               slot_no INTEGER NOT NULL,
+              status TEXT NOT NULL DEFAULT 'active',
               customer_id UUID NOT NULL REFERENCES customer(id) ON DELETE CASCADE,
               owner_id UUID NOT NULL REFERENCES owner(id) ON DELETE CASCADE,
               vehicle_id UUID NOT NULL REFERENCES vehicle(id) ON DELETE CASCADE,
