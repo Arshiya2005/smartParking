@@ -9,7 +9,8 @@ import session from "express-session"
 import passport from "passport";
 import { Strategy } from "passport-local";
 import GoogleStrategy from "passport-google-oauth2";
-import { v4 as uuidv4 } from 'uuid';
+import http from 'http';
+import { Server } from 'socket.io';
 
 import customerRoutes from "./routes/customerRoutes.js"; 
 import authRoutes from "./routes/authRoutes.js"; 
@@ -26,7 +27,7 @@ const PORT = process.env.PORT || 5000
 app.use(cors({
   origin: "http://localhost:5173", // Allow requests from your frontend
   credentials: true                // Allow cookies/session to be included
-}));//Enables Cross-Origin Resource Sharing so your frontend can call your backend
+}));//cors ensures that only requests from your frontend (localhost:5173) are allowed.
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());app.use(helmet());
 app.use(morgan("dev")); // logs requests
@@ -80,6 +81,37 @@ app.use("/customer", customerRoutes);
 
 app.use("/", authRoutes);
 
+const server = http.createServer(app);
+
+const io = new Server(server, {
+  cors: {
+    origin: "http://localhost:5173", 
+    methods: ["GET", "POST"]
+  }
+});
+
+// Store connected users
+const connectedUsers = new Map();
+
+io.on('connection', (socket) => {
+  console.log("Socket connected:", socket.id);
+
+  socket.on('register-user', (userId) => {
+    connectedUsers.set(userId, socket.id);
+    console.log(`Registered user ${userId} to socket ${socket.id}`);
+  });
+
+  socket.on('disconnect', () => {
+    for (const [userId, sockId] of connectedUsers.entries()) {
+      if (sockId === socket.id) {
+        connectedUsers.delete(userId);
+        console.log(`User ${userId} disconnected`);
+        break;
+      }
+    }
+  });
+});
+
 app.get("/", (req, res) => {
   res.send("Welcome to home page !!")
 })
@@ -90,7 +122,6 @@ passport.use("local", new Strategy({
     passReqToCallback: true 
   }, 
   verify));
-
 
 passport.use("google", new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
@@ -171,7 +202,7 @@ async function initDb() {
               type TEXT NOT NULL,
               sTime TIME NOT NULL,
               eTime TIME NOT NULL,
-              date DATE NOT NULL DEFAULT CURRENT_DATE,
+              date DATE NOT NULL,
               slot_no INTEGER NOT NULL,
               status TEXT NOT NULL DEFAULT 'active',
               customer_id UUID NOT NULL REFERENCES customer(id) ON DELETE CASCADE,
@@ -187,24 +218,13 @@ async function initDb() {
         console.log("Error initDb", error);
     }
 }
-/**
- * 
- * INSERT INTO parkingspot (name, lon, lat, bike, car, owner_id) VALUES 
-('Shivaji Nagar Parking',      76.0725624, 18.0223068, 5, 3, '<OWNER_UUID>'),
-('FC Road Parking',            73.8412187, 18.5220938, 6, 2, '<OWNER_UUID>'),
-('JM Road Parking',            73.8450956, 18.5191235, 4, 4, '<OWNER_UUID>'),
-('Kothrud Stand Parking',      73.8134605, 18.4998613, 8, 5, '<OWNER_UUID>'),
-('Viman Nagar Parking Lot',    73.9133336, 18.5703877, 10, 6, '<OWNER_UUID>'),
-('Baner High Street Parking',  73.7697351, 18.5666887, 5, 3, '<OWNER_UUID>'),
-('Palus Parking',    74.4515545, 17.0955099, 7, 4, '<OWNER_UUID>'),
-('khatav Parking', 74.4017634, 17.6370491, 6, 5, '<OWNER_UUID>'),
- */
+
 initDb()
-    .then(() => {
-        app.listen(PORT, () => {
-            console.log("Server is running of " + PORT)
-        }) 
-    })
-    .catch(() => {
-        console.log("Server not started !")
-    })
+  .then(() => {
+    server.listen(PORT, () => {
+      console.log("Server is running on " + PORT);
+    });
+  })
+  .catch(() => {
+    console.log("Server not started !");
+  });

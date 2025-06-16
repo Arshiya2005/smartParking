@@ -10,8 +10,7 @@ cron.schedule('* * * * *', async () => {
     SET status = 'inactive'
     WHERE date = ${today} AND eTime < ${now} AND status = 'active'
   `;
-  //console.log('Checked and updated expired bookings');
-
+  
 });
 
 

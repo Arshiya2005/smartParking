@@ -301,13 +301,15 @@ export const addbooking = async (req, res) => {
         if(req.user.type !== "customer") {
             return res.status(401).json({ error: "no active user" });
         }
+        const now = new Date();
+        const today = now.toISOString().slice(0, 10);
         const {slot, vehicle, chosenSlotNo, owner} = req.body;
         await sql`
             INSERT INTO bookings (
-                type, sTime, eTime, slot_no,
+                type, sTime, eTime, date, slot_no,
                 customer_id, owner_id, vehicle_id, slot_id
             ) VALUES (
-                ${vehicle.type}, ${slot.sTime}, ${slot.eTime}, ${chosenSlotNo},
+                ${vehicle.type}, ${slot.sTime}, ${slot.eTime}, ${today}, ${chosenSlotNo},
                 ${req.user.id}, ${owner.id}, ${vehicle.id}, ${slot.id}
             )
         `;
