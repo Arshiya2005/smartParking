@@ -226,7 +226,7 @@ export const chooseSlot = async (req, res) => {
         for(var i = 1; i <= count; i++) {
             const response = await sql`
                 SELECT * FROM bookings
-                WHERE date = ${today} AND slot_id = ${id} AND slot_no = ${i} AND NOT (${eTime} <= sTime OR ${sTime} >= eTime );
+                WHERE date = ${today} AND slot_id = ${id} AND slot_no = ${i} AND NOT (${eTime} <= sTime OR ${sTime} >= eTime ) AND status = ${'active'};
             `;
             if (response.length === 0) {
                 return res.status(200).json({ user : req.user, slot : spotdata, vehicle, chosenSlotNo: i, ownerdata : owner[0]  });
@@ -249,7 +249,7 @@ export const activeBooking = async (req, res) => {
         const time = now.toTimeString().split(' ')[0];
         const response = await sql`
             SELECT * FROM bookings
-                WHERE date = ${today} AND customer_id = ${id} AND ${time} < eTime;
+                WHERE date = ${today} AND customer_id = ${id} AND ${time} < eTime AND status = ${'active'};
             `;
         const spotdata = await sql`
             SELECT * FROM parkingspot where id = ${response[0].id}
@@ -341,23 +341,18 @@ export const bookingHistory = async (req, res) => {
     }
 };
 
-//cancelBooking not done
 export const cancelBooking = async (req, res) => {
     try {
         if(req.user.type !== "customer") {
             return res.status(401).json({ error: "no active user" });
         }
-        const id = req.user.id;
-        const response = await sql`
-            SELECT * FROM bookings WHERE customer_id = ${id};
-            `;
-        const spotdata = await sql`
-            SELECT * FROM parkingspot where id = ${response[0].id}
+        const id = req.query.id;
+        await sql`
+            UPDATE bookings
+            SET status = 'cancelled'
+            WHERE id = ${id}
         `;
-        if (response.length > 0) {
-            return res.status(200).json({ data : response  , spot : spotdata});
-        }
-        return res.status(200).json({ message: "No bookings" });
+        return res.status(200).json({ message: "booking cancelled successfully !" });
     } catch (error) {
         return res.status(500).json({ error: "internal server error" });
     }
