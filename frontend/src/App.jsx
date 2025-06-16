@@ -20,6 +20,7 @@ import ChooseSlot from './pages/Customer/ChooseSlot';
 import PaymentsPage from './pages/Customer/PaymentsPage';
 import BookingDetails from './pages/Customer/BookingDetails';
 import CancelBooking from './pages/Customer/CancelBooking';
+import HistoryBookingDetails from './pages/Customer/historyBookingDetails';
 
 function App() {
   return (
@@ -35,6 +36,7 @@ function App() {
   <Route path="history" element={<CustomerHistory />} />
   <Route path="notifications" element={<CustomerNotifications />} />
   <Route path="vehicles" element={<CustomerVehicles />} />
+  <Route path="historydetails" element={<HistoryBookingDetails/>}/>
 
 </Route>
       <Route path = "/customer/activebookings" element={<MyActiveBookings/>}></Route>

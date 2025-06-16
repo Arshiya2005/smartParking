@@ -1,54 +1,46 @@
-import React from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { useLocation } from "react-router-dom";
 import NavBarCustomer from "../../components/NavBarCustomer";
 
-const BookingDetails = () => {
-  const { state } = useLocation();
-  const navigate = useNavigate();
-  const data = state?.data;
+const HistoryBookingDetails = () => {
+  const location = useLocation();
+  const bookingId = location.state?.booking?.id;
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  if (!data) {
-    return (
-      <div>
-        <NavBarCustomer />
-        <div className="container py-4">
-          <p className="text-danger">No booking details found.</p>
-        </div>
-      </div>
-    );
-  }
+  useEffect(() => {
+    const fetchDetails = async () => {
+      try {
+        if (!bookingId) {
+          setError("No booking ID found.");
+          setLoading(false);
+          return;
+        }
+
+        const res = await axios.get(`/customer/Specificbooking?bookingId=${bookingId}`, {
+          withCredentials: true,
+        });
+
+        console.log("✅ Booking data from backend:", res.data);
+        setData(res.data);
+      } catch (err) {
+        console.error("❌ Error fetching booking details:", err);
+        setError("Something went wrong while fetching booking details.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDetails();
+  }, [bookingId]);
+
+  if (loading) return <p className="text-center mt-4">Loading booking details...</p>;
+  if (error) return <p className="text-danger text-center mt-4">{error}</p>;
+  if (!data) return <p className="text-center mt-4">No details available.</p>;
 
   const { book, spot, vehicle, owner } = data;
-
-  const dateOnly = book.date.split("T")[0]; // Extract YYYY-MM-DD
-  const startDateTime = new Date(`${dateOnly}T${book.stime}`);
-  const endDateTime = new Date(`${dateOnly}T${book.etime}`);
-const handleCancel = () => {
-  try {
-    const now = new Date();
-
-    // Combine date and time to form a full ISO string (in local time)
-    const dateOnly = new Date(book.date).toLocaleDateString("en-CA", { timeZone: "Asia/Kolkata" }); // yyyy-mm-dd
-    const startDateTime = new Date(`${dateOnly}T${book.stime}`);
-
-    const timeDiffMs = startDateTime.getTime() - now.getTime();
-    const timeDiffHours = timeDiffMs / (1000 * 60 * 60);
-
-    console.log("⏱️ Raw booking.date from backend:", book.date);
-    console.log("🛠️ Reconstructed startDateTime:", startDateTime.toString());
-    console.log("🕒 Current time (now):", now.toString());
-    console.log("⌛ Time difference in hours:", timeDiffHours);
-
-    if (timeDiffHours >= 1) {
-      navigate("/customer/cancelbooking", { state: { bookingId: book.id } });
-    } else {
-      alert("❌ You can't cancel now. Cancellations must be made at least 1 hour before the start time.");
-    }
-  } catch (err) {
-    console.error("⚠️ Error during cancellation logic:", err);
-    alert("Something went wrong while checking cancellation eligibility.");
-  }
-};
 
   return (
     <div style={{ minHeight: "100vh", backgroundColor: "#f5f5f5" }}>
@@ -73,24 +65,10 @@ const handleCancel = () => {
           <h5 className="mt-4">Owner Info</h5>
           <p><strong>Name:</strong> {owner.fname} {owner.lname}</p>
           <p><strong>Username:</strong> {owner.username}</p>
-
-          <div className="mt-4 d-flex gap-3">
-            <button className="btn btn-danger" onClick={handleCancel}>
-              Cancel Booking
-            </button>
-            <a
-              className="btn btn-primary"
-              href={`https://www.google.com/maps/search/?api=1&query=${spot.lat},${spot.lon}`}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Navigate to Spot
-            </a>
-          </div>
         </div>
       </div>
     </div>
   );
 };
 
-export default BookingDetails;
+export default HistoryBookingDetails;
