@@ -135,5 +135,6 @@ initDb()
     console.log("Server not started !");
   });
 
+import './shedulers/bookingStatus.js';//This line executes the bookingStatus.js file at startup
 
 export { io };

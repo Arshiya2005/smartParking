@@ -1,14 +1,13 @@
 import cron from 'node-cron';
-import { sql } from './config/db.js';
+import { sql } from '../config/db.js';
 
 cron.schedule('* * * * *', async () => {
   const now = new Date().toTimeString().split(' ')[0]; // 'HH:MM:SS'
-  const today = new Date().toISOString().slice(0, 10); // 'YYYY-MM-DD'
-
+  console.log(now);
   await sql`
     UPDATE bookings
     SET status = 'inactive'
-    WHERE date = ${today} AND eTime < ${now} AND status = 'active'
+    WHERE eTime < ${now} AND status = 'active'
   `;
   
 });
