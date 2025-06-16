@@ -78,6 +78,15 @@ export async function initDb() {
           );
 
         `;
+        await sql`
+            CREATE TABLE notifications (
+                id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+                customer_id UUID NOT NULL,
+                message TEXT NOT NULL,
+                created_at TIMESTAMP NOT NULL,
+                status VARCHAR(10) NOT NULL
+            );
+        `;
 
         console.log("Database initiated successfully");
     } catch (error) {

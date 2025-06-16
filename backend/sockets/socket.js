@@ -1,6 +1,6 @@
 import { io } from "../server.js"
 
-const connectedUsers = new Map();
+export const connectedUsers = new Map();
 
 io.on('connection', (socket) => {
   console.log("Socket connected:", socket.id);

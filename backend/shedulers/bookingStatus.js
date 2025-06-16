@@ -1,5 +1,7 @@
 import cron from 'node-cron';
 import { sql } from '../config/db.js';
+import { io } from '../server.js';
+import { connectedUsers } from '../sockets/socket.js';
 
 cron.schedule('* * * * *', async () => {
   const now = new Date().toTimeString().split(' ')[0]; // 'HH:MM:SS'
@@ -12,7 +14,6 @@ cron.schedule('* * * * *', async () => {
   
 });
 
-
 cron.schedule('* * * * *', async () => {
   const now = new Date();
   const in10min = new Date(now.getTime() + 10 * 60000);
@@ -24,10 +25,27 @@ cron.schedule('* * * * *', async () => {
     WHERE date = ${today} AND sTime = ${targetTime} AND status = 'active'
   `;
 
-  bookings.forEach((b) => {
-    console.log(`Reminder: Your booking starts at ${b.sTime}`);
-    // Optionally: Emit with socket or send email
-  });
+  for (const b of bookings) {
+    const userSocketId = connectedUsers.get(b.customer_id);
+    if (userSocketId) {
+      io.to(userSocketId).emit('booking-reminder', {
+        message: `Your parking starts at ${b.sTime}`,
+        booking: b
+      });
+      await sql`
+        INSERT INTO notifications (customer_id, message, created_at, status)
+        VALUES (${b.customer_id}, ${`Your booking at ${b.sTime} is about to start.`}, ${now}, 'read')
+      `;
+      console.log(`Reminder sent to user ${b.customer_id}`);
+    } else {
+      const now = new Date();
+      await sql`
+        INSERT INTO notifications (customer_id, message, created_at, status)
+        VALUES (${b.customer_id}, ${`Your booking at ${b.sTime} is about to start.`}, ${now}, 'unread')
+      `;
+      console.log(`User ${b.customer_id} not connected, notification saved`);
+    }
+  }
 });
 
 
