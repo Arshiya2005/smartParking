@@ -57,8 +57,8 @@ const BookingDetails = () => {
         <div className="card shadow p-4" style={{ borderRadius: "12px" }}>
           <h5>Booking Info</h5>
           <p><strong>Type:</strong> {book.type}</p>
-          <p><strong>Start Time:</strong> {book.sTime}</p>
-          <p><strong>End Time:</strong> {book.eTime}</p>
+          <p><strong>Start Time:</strong> {book.stime}</p>
+          <p><strong>End Time:</strong> {book.etime}</p>
           <p><strong>Date:</strong> {book.date}</p>
 
           <h5 className="mt-4">Parking Spot Info</h5>

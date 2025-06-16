@@ -273,7 +273,7 @@ export const Specificbooking = async (req, res) => {
       }
   
       const book = JSON.parse(decodeURIComponent(req.query.book)); // ✅ safely parse
-  
+      console.log(book);
       const spotdata = await sql`
         SELECT * FROM parkingspot where id = ${book.slot_id}
       `;
