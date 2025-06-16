@@ -88,11 +88,22 @@ const MyActiveBookings = () => {
               <p className="mb-1"><strong>Start Time:</strong> {booking.stime}</p>
               <p className="mb-1"><strong>End Time:</strong> {booking.etime}</p>
               <p className="mb-1">
-                <strong>Status:</strong>{" "}
-                <span className={`badge ${getBookingStatus(booking) === "Upcoming" ? "bg-warning" : "bg-success"}`}>
-                  {getBookingStatus(booking)}
-                </span>
-              </p>
+  <strong>Status:</strong>{" "}
+  <span
+    className={`badge px-2 py-1 rounded-pill ${
+      booking.status === "confirmed"
+        ? "bg-success"
+        : booking.status === "cancelled"
+        ? "bg-danger"
+        : booking.status === "completed"
+        ? "bg-primary"
+        : "bg-secondary"
+    }`}
+    style={{ textTransform: "capitalize", fontSize: "0.9rem" }}
+  >
+    {booking.status}
+  </span>
+</p>
             </div>
             <button className="btn btn-outline-primary">&gt;</button>
           </div>
