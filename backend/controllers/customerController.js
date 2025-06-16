@@ -273,7 +273,7 @@ export const Specificbooking = async (req, res) => {
       }
   
       const book = JSON.parse(decodeURIComponent(req.query.book)); // ✅ safely parse
-      console.log(book);
+      console.log(book.date);
       const spotdata = await sql`
         SELECT * FROM parkingspot where id = ${book.slot_id}
       `;
@@ -303,6 +303,7 @@ export const addbooking = async (req, res) => {
         }
         const now = new Date();
         const today = now.toISOString().slice(0, 10);
+        console.log(today);
         const {slot, vehicle, chosenSlotNo, owner} = req.body;
         await sql`
             INSERT INTO bookings (

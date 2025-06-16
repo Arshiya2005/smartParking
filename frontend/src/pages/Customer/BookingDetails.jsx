@@ -20,33 +20,35 @@ const BookingDetails = () => {
 
   const { book, spot, vehicle, owner } = data;
 
-  const handleCancel = () => {
-    try {
-      const now = new Date();
+  const dateOnly = book.date.split("T")[0]; // Extract YYYY-MM-DD
+  const startDateTime = new Date(`${dateOnly}T${book.stime}`);
+  const endDateTime = new Date(`${dateOnly}T${book.etime}`);
+const handleCancel = () => {
+  try {
+    const now = new Date();
 
-      // Properly build a full ISO date-time string using booking date and start time
-      const dateOnly = book.date.split("T")[0]; // YYYY-MM-DD
-      const startDateTimeStr = `${dateOnly}T${book.sTime}`; // Combine with stime: HH:mm:ss
-      const bookingStartTime = new Date(startDateTimeStr);
+    // Combine date and time to form a full ISO string (in local time)
+    const dateOnly = new Date(book.date).toLocaleDateString("en-CA", { timeZone: "Asia/Kolkata" }); // yyyy-mm-dd
+    const startDateTime = new Date(`${dateOnly}T${book.stime}`);
 
-      const timeDiffMs = bookingStartTime.getTime() - now.getTime();
-      const timeDiffHours = timeDiffMs / (1000 * 60 * 60);
+    const timeDiffMs = startDateTime.getTime() - now.getTime();
+    const timeDiffHours = timeDiffMs / (1000 * 60 * 60);
 
-      console.log("⏱️ Raw booking.date from backend:", book.date);
-      console.log("🛠️ Reconstructed bookingStartTime:", bookingStartTime.toString());
-      console.log("🕒 Current time (now):", now.toString());
-      console.log("⌛ Time difference in hours:", timeDiffHours);
+    console.log("⏱️ Raw booking.date from backend:", book.date);
+    console.log("🛠️ Reconstructed startDateTime:", startDateTime.toString());
+    console.log("🕒 Current time (now):", now.toString());
+    console.log("⌛ Time difference in hours:", timeDiffHours);
 
-      if (timeDiffHours >= 1) {
-        navigate("/customer/cancelbooking", { state: { bookingId: book.id } });
-      } else {
-        alert("❌ You can't cancel now. Cancellations must be made at least 1 hour before the start time.");
-      }
-    } catch (err) {
-      console.error("⚠️ Error during cancellation logic:", err);
-      alert("Something went wrong while checking cancellation eligibility.");
+    if (timeDiffHours >= 1) {
+      navigate("/customer/cancelbooking", { state: { bookingId: book.id } });
+    } else {
+      alert("❌ You can't cancel now. Cancellations must be made at least 1 hour before the start time.");
     }
-  };
+  } catch (err) {
+    console.error("⚠️ Error during cancellation logic:", err);
+    alert("Something went wrong while checking cancellation eligibility.");
+  }
+};
 
   return (
     <div style={{ minHeight: "100vh", backgroundColor: "#f5f5f5" }}>
@@ -59,7 +61,7 @@ const BookingDetails = () => {
           <p><strong>Type:</strong> {book.type}</p>
           <p><strong>Start Time:</strong> {book.stime}</p>
           <p><strong>End Time:</strong> {book.etime}</p>
-          <p><strong>Date:</strong> {book.date}</p>
+          <p><strong>Date:</strong> {new Date(book.date).toLocaleDateString("en-IN", { timeZone: "Asia/Kolkata" })}</p>
 
           <h5 className="mt-4">Parking Spot Info</h5>
           <p><strong>Name:</strong> {spot.name}</p>
