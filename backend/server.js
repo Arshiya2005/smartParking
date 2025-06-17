@@ -90,7 +90,6 @@ const io = new Server(server, {
   }
 });
 
-
 app.get("/", (req, res) => {
   res.send("Welcome to home page !!")
 })
@@ -129,12 +128,13 @@ initDb()
   .then(() => {
     server.listen(PORT, () => {
       console.log("Server is running on " + PORT);
+      import('./shedulers/bookingStatus.js');//This line executes the bookingStatus.js file at startup
     });
   })
   .catch(() => {
     console.log("Server not started !");
   });
 
-import './shedulers/bookingStatus.js';//This line executes the bookingStatus.js file at startup
+
 
 export { io };
