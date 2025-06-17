@@ -116,7 +116,7 @@ export const editLname = async (req, res) => {
         const id = req.user.id;
         await sql`
             UPDATE customer
-            SET fname = ${lname}
+            SET lname = ${lname}
             WHERE id = ${id}
         `;
         req.user.lname = lname;
