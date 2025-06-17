@@ -79,7 +79,7 @@ export async function initDb() {
 
         `;
         await sql`
-            CREATE TABLE notifications (
+            CREATE TABLE IF NOT EXISTS notifications (
                 id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
                 customer_id UUID NOT NULL,
                 message TEXT NOT NULL,
