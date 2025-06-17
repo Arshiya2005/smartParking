@@ -11,6 +11,8 @@ const BookingForm = () => {
   const [manualLocation, setManualLocation] = useState("");
   const [coords, setCoords] = useState({ lat: null, lon: null });
 
+  const [isLoading, setIsLoading] = useState(false); // 🟡 Spinner loading state
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -58,28 +60,27 @@ const BookingForm = () => {
     }
 
     navigator.geolocation.getCurrentPosition(
-        (position) => {
-          console.log("Location success:", position);
-          setCoords({
-            lat: position.coords.latitude,
-            lon: position.coords.longitude,
-          });
-          alert("Current location set successfully!");
-        },
-        (err) => {
-          console.error("Geolocation error:", err);
-          if (err.code === 1) {
-            alert("Permission denied. Please allow location access.");
-          } else if (err.code === 2) {
-            alert("Location unavailable. Please try again or enter manually.");
-          } else if (err.code === 3) {
-            alert("Location request timed out. Try again.");
-          } else {
-            alert("Unknown geolocation error occurred.");
-          }
-        },
-        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
-      );
+      (position) => {
+        setCoords({
+          lat: position.coords.latitude,
+          lon: position.coords.longitude,
+        });
+        alert("Current location set successfully!");
+      },
+      (err) => {
+        console.error("Geolocation error:", err);
+        if (err.code === 1) {
+          alert("Permission denied. Please allow location access.");
+        } else if (err.code === 2) {
+          alert("Location unavailable. Please try again or enter manually.");
+        } else if (err.code === 3) {
+          alert("Location request timed out. Try again.");
+        } else {
+          alert("Unknown geolocation error occurred.");
+        }
+      },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+    );
   };
 
   const handleSearchNearby = async () => {
@@ -87,14 +88,20 @@ const BookingForm = () => {
     if (!vehicle) return alert("Please select a vehicle");
 
     try {
+      setIsLoading(true); // 🔵 Start spinner
+
       let body;
       if (useGPS) {
         if (!coords.lat || !coords.lon) {
+          setIsLoading(false);
           return alert("Please click 'Use My Location' to fetch coordinates.");
         }
         body = { lat: coords.lat, lon: coords.lon, id: vehicle.id, type: vehicle.type };
       } else {
-        if (!manualLocation.trim()) return alert("Please enter a location");
+        if (!manualLocation.trim()) {
+          setIsLoading(false);
+          return alert("Please enter a location");
+        }
         body = { location: manualLocation.trim(), id: vehicle.id, type: vehicle.type };
       }
 
@@ -113,6 +120,8 @@ const BookingForm = () => {
       }
     } catch (err) {
       console.error("Search error:", err);
+    } finally {
+      setIsLoading(false); // 🔴 Stop spinner
     }
   };
 
@@ -238,9 +247,16 @@ const BookingForm = () => {
         </div>
       )}
 
-      {/* PROCEED BUTTON */}
-      <button className="btn btn-primary" onClick={handleSearchNearby}>
-        Proceed
+      {/* PROCEED BUTTON WITH SPINNER */}
+      <button className="btn btn-primary" onClick={handleSearchNearby} disabled={isLoading}>
+        {isLoading && (
+          <span
+            className="spinner-border spinner-border-sm me-2"
+            role="status"
+            aria-hidden="true"
+          />
+        )}
+        {isLoading ? "Searching..." : "Proceed"}
       </button>
     </div>
   );
