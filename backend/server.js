@@ -13,6 +13,7 @@ import http from 'http';
 import { Server } from 'socket.io';
 
 import customerRoutes from "./routes/customerRoutes.js"; 
+import ownerRoutes from "./routes/ownerRoutes.js"; 
 import authRoutes from "./routes/authRoutes.js"; 
 import { initDb } from "./config/db.js";
 import { aj  } from "./lib/arcjet.js";
@@ -78,6 +79,7 @@ app.use(passport.session());
 
 
 app.use("/customer", customerRoutes);
+app.use("/owner", ownerRoutes);
 
 app.use("/", authRoutes);
 
