@@ -134,3 +134,22 @@ export const availableSlot = async (req, res) => {
         return res.status(500).json({ error: "internal server error" });
     }
 };
+
+
+export const activeBookingInArea = async (req, res) => {
+    try {
+        if(req.user.type !== "owner") {
+            return res.status(401).json({ error: "no active user" });
+        }
+        const now = new Date();
+        const today = now.toISOString().slice(0, 10);
+        const area = JSON.parse(decodeURIComponent(req.query.area)); // ✅ safely parse
+        const response = await sql`
+            SELECT * FROM bookings WHERE slot_id = ${area.id} AND date = ${today} AND status = 'active' ORDER BY sTime ASC
+
+        `;
+        return res.status(200).json({ data : response });
+    } catch (error) {
+        return res.status(500).json({ error: "internal server error" });
+    }
+};
