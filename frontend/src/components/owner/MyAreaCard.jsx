@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import useAuthCheck from "../hooks/useAuthCheck";
-import myarea from "../assets/myarea.svg"; // Replace with the actual image asset for 'My Area'
+import useAuthCheck from "../../hooks/useAuthCheck";
+import myarea from "../../assets/myarea.svg"; // Replace with the actual image asset for 'My Area'
 
 const MyAreaCard = () => {
   const isAuthenticated = useAuthCheck("owner");

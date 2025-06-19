@@ -25,7 +25,13 @@ import BookingDetails from './pages/Customer/BookingDetails';
 import CancelBooking from './pages/Customer/CancelBooking';
 import HistoryBookingDetails from './pages/Customer/historyBookingDetails';
 import BookingReminderListener from './components/BookingReminderListener';
-
+import OwnerProfile from './pages/Owner/OwnerProfile';
+import OwnerHistory from './pages/Owner/OwnerHistory';
+import OwnerNotifications from './pages/Owner/OwnerNotifications';
+import OwnerInfo from './pages/Owner/OwnerInfo';
+import AddArea from './pages/Owner/AddArea';
+import MyArea from './pages/Owner/MyArea';
+import AreaDetails from './pages/Owner/AreaDetails';
 // 🧠 Custom util to fetch current user from backend
 async function getCurrentUser() {
   try {
@@ -58,7 +64,7 @@ function App() {
         <Route path="/login" element={<LoginUser />} />
         <Route path="/signup" element={<SignUpUser />} />
         <Route path="/customer" element={<CustomerHome />} />
-        <Route path="/owner" element={<OwnerHome />} />
+        
         <Route path="/customer/profile" element={<CustomerProfile />}>
           <Route index element={<CustomerInfo />} />
           <Route path="info" element={<CustomerInfo />} />
@@ -75,7 +81,21 @@ function App() {
         <Route path="/customer/pay" element={<PaymentsPage />} />
         <Route path="/customer/bookingdetails" element={<BookingDetails />} />
         <Route path="customer/cancelBooking" element={<CancelBooking />} />
+       
+        <Route path="/owner" element={<OwnerHome />} />
+      <Route path="/owner/profile" element={<OwnerProfile />}>
+          <Route index element={<OwnerInfo />} />
+          <Route path="info" element={<OwnerInfo />} />
+          <Route path="history" element={<OwnerHistory />} />
+          <Route path="notifications" element={<OwnerNotifications />} />
+        </Route>
+        <Route path="/owner/addarea" element={<AddArea/>}></Route>
+        <Route path="/owner/myarea" element={<MyArea/>}></Route>
+        <Route path="/owner/areaDetails" element={<AreaDetails />} />
       </Routes>
+     
+      
+      
     </>
   );
 }
