@@ -1,5 +1,6 @@
 import cron from "node-cron";
-import { sql } from "../db.js";
+import { sql } from "../config/db.js";
+
 cron.schedule("0 0 * * *", async () => {
   console.log("Running scheduled deletion job...");
 
