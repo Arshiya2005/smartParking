@@ -211,7 +211,7 @@ export const deleteArea = async (req, res) => {
             return res.status(401).json({ error: "no active user" });
         }
         const now = new Date();
-        const area = JSON.parse(decodeURIComponent(req.query.area)); // ✅ safely parse
+        const area = req.body.area;
         await sql`
             INSERT INTO scheduled_task (spot_id, created_at) VALUES (${area.id}, ${now})
         `;
