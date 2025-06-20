@@ -128,10 +128,6 @@ export const editLname = async (req, res) => {
 
 
 export const searchNearby = async (req, res) => {
-    //disha added this
-    //console.log("Is Authenticated:", req.isAuthenticated());
-    //console.log("User:", req.user);
-    //disha added this
   try {
     if (req.user.type !== "customer") {
       return res.status(401).json({ error: "No active user" });

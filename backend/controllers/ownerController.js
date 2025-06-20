@@ -192,12 +192,13 @@ export const chnageSlotCount = async (req, res) => {
         if(req.user.type !== "owner") {
             return res.status(401).json({ error: "no active user" });
         }
-        const area = JSON.parse(decodeURIComponent(req.query.area)); // ✅ safely parse
-        const response = await sql`
-            SELECT * FROM bookings WHERE slot_id = ${area.id} ORDER BY date ASC, sTime ASC
-
+        const now = new Date();
+        const {bike, car, area} = req.body;
+        await sql`
+            INSERT INTO scheduled_task (spot_id, bike, car, created_at)
+            VALUES (${area.id}, ${bike}, ${car}, ${now});
         `;
-        return res.status(200).json({ data : response });
+        return res.status(200).json({ message : "request is sent. slots will be be updated by tomorrow"});
     } catch (error) {
         return res.status(500).json({ error: "internal server error" });
     }
@@ -209,12 +210,12 @@ export const deleteArea = async (req, res) => {
         if(req.user.type !== "owner") {
             return res.status(401).json({ error: "no active user" });
         }
+        const now = new Date();
         const area = JSON.parse(decodeURIComponent(req.query.area)); // ✅ safely parse
-        const response = await sql`
-            SELECT * FROM bookings WHERE slot_id = ${area.id} ORDER BY date ASC, sTime ASC
-
+        await sql`
+            INSERT INTO scheduled_task (spot_id, created_at) VALUES (${area.id}, ${now})
         `;
-        return res.status(200).json({ data : response });
+        return res.status(200).json({ message : "request is sent. Area will be be deleted by tomorrow" });
     } catch (error) {
         return res.status(500).json({ error: "internal server error" });
     }
