@@ -74,11 +74,28 @@ export const addArea = async (req, res) => {
             return res.status(401).json({ error: "no active user" });
         }
         const {lon, lat, bike, car, name} = req.body;
+        const existing = await sql`
+            SELECT * FROM parkingspot WHERE lat = ${lat} AND lon = ${lon};
+        `;
+        if (existing.length > 0) {
+            const spot = existing[0];
+            if (spot.is_active === false && spot.owner_id == req.user.id) {
+                await sql`
+                    UPDATE parkingspot 
+                    SET is_active = TRUE, name = ${name}, bike = ${bike}, car = ${car}
+                    WHERE id = ${spot.id};
+                `;
+                return res.status(200).json({ message: "Parking area reactivated successfully" });
+            } else {
+                return res.status(409).json({ error: "Parking area already exists" });
+            }
+        }
         await sql`
             INSERT INTO parkingspot (name, lon, lat, bike, car, owner_id) VALUES (${name}, ${lon}, ${lat}, ${bike}, ${car}, ${req.user.id})
         `;
         return res.status(200).json({ message: "Updated successfully" });
     } catch (error) {
+        console.error("addArea error:", error);
         return res.status(500).json({ error: "internal server error" });
     }
 };
@@ -155,6 +172,39 @@ export const activeBookingInArea = async (req, res) => {
 };
 
 export const bookingHistoryInArea = async (req, res) => {
+    try {
+        if(req.user.type !== "owner") {
+            return res.status(401).json({ error: "no active user" });
+        }
+        const area = JSON.parse(decodeURIComponent(req.query.area)); // ✅ safely parse
+        const response = await sql`
+            SELECT * FROM bookings WHERE slot_id = ${area.id} ORDER BY date ASC, sTime ASC
+
+        `;
+        return res.status(200).json({ data : response });
+    } catch (error) {
+        return res.status(500).json({ error: "internal server error" });
+    }
+};
+
+export const chnageSlotCount = async (req, res) => {
+    try {
+        if(req.user.type !== "owner") {
+            return res.status(401).json({ error: "no active user" });
+        }
+        const area = JSON.parse(decodeURIComponent(req.query.area)); // ✅ safely parse
+        const response = await sql`
+            SELECT * FROM bookings WHERE slot_id = ${area.id} ORDER BY date ASC, sTime ASC
+
+        `;
+        return res.status(200).json({ data : response });
+    } catch (error) {
+        return res.status(500).json({ error: "internal server error" });
+    }
+};
+
+
+export const deleteArea = async (req, res) => {
     try {
         if(req.user.type !== "owner") {
             return res.status(401).json({ error: "no active user" });

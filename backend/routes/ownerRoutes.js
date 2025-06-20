@@ -1,7 +1,7 @@
 import express from "express";
 
 import {welcome, info, editFname, editLname, addArea, parkingAreas, availableSlot} from "../controllers/ownerController.js"
-import { activeBookingInArea , bookingHistoryInArea } from "../controllers/ownerController.js"
+import { activeBookingInArea , bookingHistoryInArea , chnageSlotCount , deleteArea } from "../controllers/ownerController.js"
 import {isAuthenticated} from "../controllers/authController.js"
 
 const router = express.Router();
@@ -15,5 +15,7 @@ router.get("/parkingAreas", isAuthenticated, parkingAreas);
 router.get("/availableSlot", isAuthenticated, availableSlot);
 router.get("/activeBookingInArea", isAuthenticated, activeBookingInArea);
 router.get("/bookingHistoryInArea", isAuthenticated, bookingHistoryInArea);
+router.post("/chnageSlotCount", isAuthenticated, chnageSlotCount);
+router.get("/deleteArea", isAuthenticated, deleteArea);
 
 export default router;

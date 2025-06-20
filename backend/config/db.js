@@ -56,7 +56,8 @@ export async function initDb() {
               lon DOUBLE PRECISION NOT NULL,
               lat DOUBLE PRECISION NOT NULL,
               bike INTEGER DEFAULT 0,      
-              car INTEGER DEFAULT 0,       
+              car INTEGER DEFAULT 0,      
+              is_active BOOLEAN DEFAULT TRUE, 
               owner_id UUID NOT NULL,
               FOREIGN KEY (owner_id) REFERENCES owner(id)
           );
@@ -87,7 +88,7 @@ export async function initDb() {
                 status VARCHAR(10) NOT NULL
             );
         `;
-
+       
         console.log("Database initiated successfully");
     } catch (error) {
         console.log("Error initDb", error);
