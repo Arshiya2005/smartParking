@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import peachh from "../../assets/peach_background.jpg"
+import green from "../../assets/green_back.jpg"
 const CustomerInfo = () => {
   const [info, setInfo] = useState(null);
   const [newFname, setNewFname] = useState("");
@@ -99,9 +99,18 @@ const CustomerInfo = () => {
 
   return (
     <div
-      className="container d-flex justify-content-center align-items-center"
-      style={{ minHeight: "89vh", backgroundColor: "#F7C59F", width: "100vw" , backgroundImage:`url(${peachh})`}}
-    >
+  className="d-flex justify-content-center align-items-center"
+  style={{
+    height: "100vh",
+    width: "100vw",
+    margin: 0,
+    padding: 0,
+    backgroundImage: `url(${green})`,
+    backgroundSize: "cover",
+    backgroundRepeat: "no-repeat",
+    backgroundPosition: "center",
+  }}
+>
       <div
         className="card p-4 shadow"
         style={{ width: "100%", maxWidth: "600px", borderRadius: "12px", height: "70vh" }}

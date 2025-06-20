@@ -9,7 +9,7 @@ const CustomerProfile = () => {
   return (
     <div>
       <CustProfileNav />
-      <div className="p-3">
+      <div className="">
         <Outlet />
       </div>
     </div>

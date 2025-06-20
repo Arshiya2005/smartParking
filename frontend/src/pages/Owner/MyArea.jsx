@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import AreaCard from "../../components/owner/AreaCard";
-
+import greenBg from "../../assets/green_back.jpg"
+import NavBarOwner from "../../components/owner/NavBarOwner";
 const MyArea = () => {
   const [areas, setAreas] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -31,11 +32,13 @@ const MyArea = () => {
   }, []);
 
   return (
+    <>
+    <NavBarOwner/>
     <div
       className="py-5"
       style={{
         minHeight: "100vh",
-        backgroundColor: "#f6d6bd", // 🍑 peach background
+        backgroundImage: `url(${greenBg})`, 
         paddingLeft: "1rem",
         paddingRight: "1rem",
       }}
@@ -70,6 +73,8 @@ const MyArea = () => {
         </div>
       </div>
     </div>
+    </>
+    
   );
 };
 

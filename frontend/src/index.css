@@ -14,7 +14,11 @@
 }
 
 
-
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
 .nav-link {
   color: #ffffff !important;
 }
@@ -71,3 +75,10 @@ a[href="/login/owner"]:hover {
   text-decoration: none;
 }
 
+/* index.css or App.css */
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+}

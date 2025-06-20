@@ -9,7 +9,7 @@ const OwnerProfile = () => {
   return (
     <div>
       <OwnerProfileNav/>
-      <div className="p-3">
+      <div className="">
         <Outlet />
       </div>
     </div>

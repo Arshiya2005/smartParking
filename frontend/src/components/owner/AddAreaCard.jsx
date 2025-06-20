@@ -7,7 +7,7 @@ const AddAreaCard = () => {
     <div className="card text-white bg-success h-100">
       <div
         className="card-body d-flex flex-column justify-content-between"
-        style={{ backgroundColor: "#537d8d" }} // Air Force Blue from your palette
+        style={{ backgroundColor: "#2D776C" }} // Air Force Blue from your palette
       >
         <div className="d-flex flex-column align-items-center text-center">
           <img

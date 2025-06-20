@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import NavBarOwner from "../../components/owner/NavBarOwner";
-
+import green from "../../assets/green_back.jpg"
 const AddArea = () => {
   const [formData, setFormData] = useState({
     name: "",
@@ -73,7 +73,7 @@ const AddArea = () => {
     <div
       style={{
         minHeight: "100vh",
-        backgroundColor: "#f6d6bd", // 🍑 Peach background
+        backgroundImage: `url(${green})`, // 🍑 Peach background
         paddingTop: "4rem",
         paddingBottom: "4rem",
       }}

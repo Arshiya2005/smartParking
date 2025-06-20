@@ -1,13 +1,20 @@
 import React, { useEffect, useState } from "react";
-import peachh from "../../assets/peach_background.jpg";
+import green from "../../assets/green_back.jpg";
 
 const OwnerInfo = () => {
   const [info, setInfo] = useState(null);
   const [newFname, setNewFname] = useState("");
   const [newLname, setNewLname] = useState("");
   const [loading, setLoading] = useState(false);
+  useEffect(() => {
+    document.body.style.margin = "0";
+    document.body.style.padding = "0";
+    return () => {
+      document.body.style.margin = "";
+      document.body.style.padding = "";
+    };
+  }, []);
 
-  // Fetch owner info on component mount
   useEffect(() => {
     const fetchInfo = async () => {
       try {
@@ -30,7 +37,6 @@ const OwnerInfo = () => {
     fetchInfo();
   }, []);
 
-  // Handle First Name Update
   const handleEditFname = async () => {
     try {
       setLoading(true);
@@ -53,7 +59,6 @@ const OwnerInfo = () => {
     }
   };
 
-  // Handle Last Name Update
   const handleEditLname = async () => {
     try {
       setLoading(true);
@@ -76,7 +81,6 @@ const OwnerInfo = () => {
     }
   };
 
-  // Handle Logout
   const handleLogout = async () => {
     try {
       const res = await fetch("http://localhost:3000/logout", {
@@ -100,19 +104,27 @@ const OwnerInfo = () => {
 
   return (
     <div
-      className="container d-flex justify-content-center align-items-center"
-      style={{
-        minHeight: "89vh",
-        backgroundColor: "#F7C59F",
-        width: "100vw",
-        backgroundImage: `url(${peachh})`,
-        backgroundSize: "cover",
-        backgroundRepeat: "no-repeat",
-      }}
-    >
+  className="d-flex justify-content-center align-items-center"
+  style={{
+    height: "100vh",
+    width: "100vw",
+    backgroundImage: `url(${green})`,
+    backgroundSize: "cover",
+    backgroundRepeat: "no-repeat",
+    backgroundPosition: "center",
+    margin: 0,
+    padding: 0,
+  }}
+>
       <div
         className="card p-4 shadow"
-        style={{ width: "100%", maxWidth: "600px", borderRadius: "12px", height: "70vh" }}
+        style={{
+          width: "100%",
+          maxWidth: "600px",
+          borderRadius: "12px",
+          height: "70vh",
+          backgroundColor: "rgba(255,255,255,0.95)", // Optional for better blending
+        }}
       >
         <h3 className="mb-4 text-center">Owner Info</h3>
 

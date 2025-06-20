@@ -87,12 +87,12 @@ const LoginUser = () => {
             required
           />
           <button
-            type="submit"
-            className="btn w-100 mb-3"
-            style={{ backgroundColor: "var(--primary-color)", color: "#fff" }}
-          >
-            Login
-          </button>
+  type="submit"
+  className="btn w-100 mb-3"
+  style={{ backgroundColor: "#2C786C", color: "#fff", fontWeight: "500" }}
+>
+  Login
+</button>
 
           <div className="text-center mb-3">
             Not registered?{" "}

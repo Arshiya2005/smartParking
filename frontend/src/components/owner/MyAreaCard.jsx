@@ -11,7 +11,7 @@ const MyAreaCard = () => {
     <div className="card text-white bg-primary h-100">
       <div
         className="card-body d-flex flex-column justify-content-between"
-        style={{ backgroundColor: "#493657" }}
+        style={{ backgroundColor: "#2D776C" }}
       >
         <div className="d-flex flex-column align-items-center text-center">
           {/* SVG image */}

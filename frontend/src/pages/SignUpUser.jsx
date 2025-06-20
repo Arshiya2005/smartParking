@@ -125,7 +125,7 @@ const SignUpUser = () => {
           />
           <button
             className="btn w-100"
-            style={{ backgroundColor: "var(--primary-color)", color: "#fff" }}
+            style={{ backgroundColor: "#2C786C", color: "#fff" }}
             type="submit"
           >
             Sign Up
