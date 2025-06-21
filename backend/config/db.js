@@ -67,7 +67,7 @@ export async function initDb() {
               model TEXT NOT NULL,
               type TEXT NOT NULL,
               number TEXT NOT NULL UNIQUE,
-              customer_id UUID NOT NULL REFERENCES customer(id) ON DELETE CASCADE,
+              customer_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
               is_active BOOLEAN DEFAULT true
           );
 
@@ -83,7 +83,7 @@ export async function initDb() {
               car INTEGER DEFAULT 0,      
               is_active BOOLEAN DEFAULT TRUE, 
               owner_id UUID NOT NULL,
-              FOREIGN KEY (owner_id) REFERENCES owner(id)
+              FOREIGN KEY (owner_id) REFERENCES users(id)
           );
         `;
 
@@ -96,8 +96,8 @@ export async function initDb() {
               date DATE NOT NULL,
               slot_no INTEGER NOT NULL,
               status TEXT NOT NULL DEFAULT 'active',
-              customer_id UUID NOT NULL REFERENCES customer(id) ON DELETE CASCADE,
-              owner_id UUID NOT NULL REFERENCES owner(id) ON DELETE CASCADE,
+              customer_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+              owner_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
               vehicle_id UUID NOT NULL REFERENCES vehicle(id) ON DELETE CASCADE,
               slot_id UUID NOT NULL REFERENCES parkingspot(id) ON DELETE CASCADE
           );
@@ -106,7 +106,7 @@ export async function initDb() {
         await sql`
             CREATE TABLE IF NOT EXISTS notifications (
                 id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-                customer_id UUID NOT NULL,
+                customer_id UUID NOT NULL REFERENCES users(id),
                 message TEXT NOT NULL,
                 created_at TIMESTAMP NOT NULL,
                 status VARCHAR(10) NOT NULL
