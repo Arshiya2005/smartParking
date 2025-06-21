@@ -30,27 +30,15 @@ export const register = async (req, res) => {
             return res.status(409).json({ error: "User already exists" });
         } else {
             const saltRounds = 10;
-            /*
-            bcrypt.hash(password, saltround, async (err, hash) => {
-                if(err) {
-                    console.log(err.message);
-                }else {
-                    console.log(hash)
-                    await sql`
-                        INSERT INTO ${sql(type)} (username, hash) VALUES (${username}, ${hash})
-                    `;
-                }
-            })*/
             const hash = await bcrypt.hash(password, saltRounds); 
-            const id = uuidv4();
 
             if(type === "customer") {
               await sql`
-                INSERT INTO customer (id, fname, lname, username, password) VALUES (${id}, ${fname}, ${lname}, ${username}, ${hash})
+                INSERT INTO customer ( fname, lname, username, password) VALUES ( ${fname}, ${lname}, ${username}, ${hash})
               `;
             }else {
               await sql`
-                INSERT INTO owner (id, fname, lname, username, password) VALUES (${id}, ${fname}, ${lname}, ${username}, ${hash})
+                INSERT INTO owner ( fname, lname, username, password) VALUES ( ${fname}, ${lname}, ${username}, ${hash})
               `;
             }
             
@@ -176,19 +164,18 @@ export async function verifyusingGoogle(req, accessToken, refreshToken, profile,
       
     if (result.length === 0) {
       var newUser;
-      const id = uuidv4();
       console.log("Profile in verifyusingGoogle : (for checking fname exists it or not)")
       console.log(profile);
       if(userType === "customer") {
         newUser = await sql`
-          INSERT INTO customer (id, username, password) 
-          VALUES (${id}, ${profile.email}, 'google') 
+          INSERT INTO customer ( username, password) 
+          VALUES (${profile.email}, 'google') 
           RETURNING *
         `;
       }else {
         newUser = await sql`
-          INSERT INTO owner (id, username, password) 
-          VALUES (${id}, ${profile.email}, 'google') 
+          INSERT INTO owner (username, password) 
+          VALUES ( ${profile.email}, 'google') 
           RETURNING *
         `;
       }

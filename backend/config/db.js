@@ -44,7 +44,8 @@ export async function initDb() {
               model TEXT NOT NULL,
               type TEXT NOT NULL,
               number TEXT NOT NULL UNIQUE,
-              customer_id UUID NOT NULL REFERENCES customer(id) ON DELETE CASCADE
+              customer_id UUID NOT NULL REFERENCES customer(id) ON DELETE CASCADE,
+              is_active BOOLEAN DEFAULT true
           );
 
         `;
@@ -88,7 +89,15 @@ export async function initDb() {
                 status VARCHAR(10) NOT NULL
             );
         `;
-       
+        await sql`
+            CREATE TABLE IF NOT EXISTS scheduled_task (
+                id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+                spot_id UUID NOT NULL REFERENCES parkingspot(id),
+                bike INTEGER,
+                car INTEGER,
+                created_at TIMESTAMP
+            );
+        `;
         console.log("Database initiated successfully");
     } catch (error) {
         console.log("Error initDb", error);

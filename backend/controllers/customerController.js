@@ -24,7 +24,7 @@ export const myVehicles = async (req, res) => {
         }
         const id = req.user.id;
         const result = await sql`
-            SELECT * FROM vehicle WHERE customer_id = ${id}
+            SELECT * FROM vehicle WHERE customer_id = ${id} AND is_active = TRUE
         `;
         console.log(result);
         return res.status(200).json({ data: result });
@@ -40,14 +40,26 @@ export const addVehicle = async (req, res) => {
         }
         console.log(req.body);
         const name = req.body.name;
-        const no = req.body.no;
+        const no = req.body.no.replace(/\s+/g, "").toUpperCase();
         const type = req.body.type;
         const id = req.user.id;
-        const Vid = uuidv4();
-        console.log(id);
-        await sql`
-            INSERT INTO vehicle (id, model, type, number, customer_id) VALUES (${Vid}, ${name}, ${type}, ${no}, ${id})
+        const response = await sql`
+            SELECT * FROM vehicle WHERE number = ${no};
         `;
+        if(response.length > 0) {
+            const data = response[0];
+            if(data.is_active) {
+                return res.status(409).json({ message: "Vehicle Already exists" });
+            }else {
+                await sql`
+                    UPDATE vehicle SET is_active = true, model = ${name}, customer_id = ${id} WHERE id = ${data.id};
+                `;
+            }
+        }else {
+            await sql`
+                INSERT INTO vehicle (model, type, number, customer_id) VALUES (${name}, ${type}, ${no}, ${id})
+            `;
+        }
         return res.status(200).json({ message: "Vehicle added successfully" });
     } catch (error) {
         return res.status(500).json({ error: "internal server error" });
@@ -64,8 +76,7 @@ export const deleteVehicle = async (req, res) => {
         const userId = req.user.id;
 
         await sql`
-            DELETE FROM vehicle 
-            WHERE id = ${id} AND customer_id = ${userId}
+            UPDATE vehicle SET is_active = FALSE  WHERE id = ${id} AND customer_id = ${userId};
         `;
         return res.status(200).json({ message: "Vehicle deleted successfully" });
     } catch (error) {
@@ -128,10 +139,6 @@ export const editLname = async (req, res) => {
 
 
 export const searchNearby = async (req, res) => {
-    //disha added this
-    //console.log("Is Authenticated:", req.isAuthenticated());
-    //console.log("User:", req.user);
-    //disha added this
   try {
     if (req.user.type !== "customer") {
       return res.status(401).json({ error: "No active user" });
@@ -150,38 +157,51 @@ export const searchNearby = async (req, res) => {
         });
         const data = response.data;
         if (data.length > 0) {
-            lat = data[0].lat;
-            lon = data[0].lon;
+            lat = parseFloat(data[0].lat);
+            lon = parseFloat(data[0].lon);            
         } else {
             return res.status(404).json({message: "Location not found"});
         }
     }else {
-        lat = req.body.lat;
-        lon = req.body.lon;
+        lat = parseFloat(req.body.lat);
+        lon = parseFloat(req.body.lon);
     }
 
-    if (!lat || !lon) {
-        return res.status(400).json({ error: "Missing location coordinates" });
+    if (isNaN(lat) || isNaN(lon)) {
+      return res.status(400).json({ error: "Missing or invalid coordinates" });
     }
 
-    const allSpots = await sql`SELECT id, name, lat, lon, bike, car FROM parkingspot`;
-    
+    let allSpots = [];
+    let radiusInKm = 2;
+    let attemptLimit = 4;
+    do {
+        allSpots = await sql`
+        SELECT id, name, lat, lon, bike, car
+        FROM parkingspot
+        WHERE
+            6371 * acos(
+            cos(radians(${lat}))
+            * cos(radians(lat))
+            * cos(radians(lon) - radians(${lon}))
+            + sin(radians(${lat})) * sin(radians(lat))
+            ) < ${radiusInKm};
+        `;
+        radiusInKm += 1;
+        attemptLimit--;
+    } while(allSpots.length < 5&& attemptLimit > 0);
     const results = [];
 
     for (const spot of allSpots) {
+        if ((Vtype === "bike" && spot.bike === 0) || (Vtype === "car" && spot.car === 0)) {
+            continue;
+        }
       const url = `https://api.openrouteservice.org/v2/directions/driving-car?api_key=${process.env.ORS_API_KEY}&start=${lon},${lat}&end=${spot.lon},${spot.lat}`;
       const response = await axios.get(url);
-      console.log("from search nearby: " + spot.name);
-      
-      
       const features = response.data.features;
-      console.log("summary: ")
-      console.log(features[0].properties.summary);
       const summary = features[0].properties.segments[0];
       const distance = summary.distance; 
       const duration = summary.duration;
-      if((Vtype === "bike" && spot.bike !== 0) || (Vtype === "car" && spot.car !== 0)) {
-        results.push({
+      results.push({
             id: spot.id,
             name: spot.name,
             lat: spot.lat,
@@ -190,7 +210,6 @@ export const searchNearby = async (req, res) => {
             duration,
             Vid
         });
-      }
     }
     results.sort((a, b) => a.distance - b.distance);
     return res.status(200).json({ userloc : {lon ,lat }, data: results.slice(0, 5) });
@@ -210,17 +229,35 @@ export const chooseSlot = async (req, res) => {
         const Vid = spot.Vid;
         const sTime = req.body.sTime;
         const eTime = req.body.eTime;
-
+/**
         const spotdata = await sql`
             SELECT * FROM parkingspot where id = ${id}
         `;
+        const owner = await sql`
+            SELECT * FROM owner where id = ${spotdata[0].owner_id}
+        `;
+ */
+        const spotdata = await sql`
+            SELECT 
+                p.*,  
+                o.id AS owner_id,
+                o.fname, o.lname, o.username
+            FROM parkingspot p
+            INNER JOIN owner o ON p.owner_id = o.id
+            WHERE p.id = ${id};
+        `;
+        const ownerdata = {
+            id : spotdata[0].owner_id,
+            fname : spotdata[0].fname,
+            lname : spotdata[0].lname,
+            username : spotdata[0].username
+        }
+        console.log(spotdata);
         const vehicle = await sql`
             SELECT * FROM vehicle where id = ${Vid}
         `;
         const type = vehicle[0].type;
-        const owner = await sql`
-            SELECT * FROM owner where id = ${spotdata[0].owner_id}
-        `;
+        
         const count = type === "bike" ? spotdata[0].bike : spotdata[0].car;
         const today = new Date().toISOString().slice(0, 10);
         for(var i = 1; i <= count; i++) {
@@ -229,7 +266,7 @@ export const chooseSlot = async (req, res) => {
                 WHERE date = ${today} AND slot_id = ${id} AND slot_no = ${i} AND NOT (${eTime} <= sTime OR ${sTime} >= eTime ) AND status = ${'active'};
             `;
             if (response.length === 0) {
-                return res.status(200).json({ user : req.user, slot : spotdata, vehicle, chosenSlotNo: i, ownerdata : owner[0]  });
+                return res.status(200).json({ user : req.user, slot : spotdata[0], vehicle, chosenSlotNo: i, ownerdata });
             }
         }
         return res.status(409).json({ message: "slot not available" });

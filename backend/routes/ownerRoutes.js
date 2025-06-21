@@ -16,6 +16,6 @@ router.get("/availableSlot", isAuthenticated, availableSlot);
 router.get("/activeBookingInArea", isAuthenticated, activeBookingInArea);
 router.get("/bookingHistoryInArea", isAuthenticated, bookingHistoryInArea);
 router.post("/chnageSlotCount", isAuthenticated, chnageSlotCount);
-router.get("/deleteArea", isAuthenticated, deleteArea);
+router.post("/deleteArea", isAuthenticated, deleteArea);
 
 export default router;
