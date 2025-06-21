@@ -15,7 +15,7 @@ router.get("/parkingAreas", isAuthenticated, parkingAreas);
 router.get("/availableSlot", isAuthenticated, availableSlot);
 router.get("/activeBookingInArea", isAuthenticated, activeBookingInArea);
 router.get("/bookingHistoryInArea", isAuthenticated, bookingHistoryInArea);
-router.post("/chnageSlotCount", isAuthenticated, chnageSlotCount);
+router.post("/changeSlotCount", isAuthenticated, chnageSlotCount);
 router.post("/deleteArea", isAuthenticated, deleteArea);
 
 export default router;
