@@ -266,7 +266,7 @@ export const chooseSlot = async (req, res) => {
                 WHERE date = ${today} AND slot_id = ${id} AND slot_no = ${i} AND NOT (${eTime} <= sTime OR ${sTime} >= eTime ) AND status = ${'active'};
             `;
             if (response.length === 0) {
-                return res.status(200).json({ user : req.user, slot : spotdata[0], vehicle, chosenSlotNo: i, ownerdata });
+                return res.status(200).json({ user : req.user, slot : spotdata, vehicle, chosenSlotNo: i, ownerdata });
             }
         }
         return res.status(409).json({ message: "slot not available" });
