@@ -157,38 +157,51 @@ export const searchNearby = async (req, res) => {
         });
         const data = response.data;
         if (data.length > 0) {
-            lat = data[0].lat;
-            lon = data[0].lon;
+            lat = parseFloat(data[0].lat);
+            lon = parseFloat(data[0].lon);            
         } else {
             return res.status(404).json({message: "Location not found"});
         }
     }else {
-        lat = req.body.lat;
-        lon = req.body.lon;
+        lat = parseFloat(req.body.lat);
+        lon = parseFloat(req.body.lon);
     }
 
-    if (!lat || !lon) {
-        return res.status(400).json({ error: "Missing location coordinates" });
+    if (isNaN(lat) || isNaN(lon)) {
+      return res.status(400).json({ error: "Missing or invalid coordinates" });
     }
 
-    const allSpots = await sql`SELECT id, name, lat, lon, bike, car FROM parkingspot`;
-    
+    let allSpots = [];
+    let radiusInKm = 2;
+    let attemptLimit = 4;
+    do {
+        allSpots = await sql`
+        SELECT id, name, lat, lon, bike, car
+        FROM parkingspot
+        WHERE
+            6371 * acos(
+            cos(radians(${lat}))
+            * cos(radians(lat))
+            * cos(radians(lon) - radians(${lon}))
+            + sin(radians(${lat})) * sin(radians(lat))
+            ) < ${radiusInKm};
+        `;
+        radiusInKm += 1;
+        attemptLimit--;
+    } while(allSpots.length < 5&& attemptLimit > 0);
     const results = [];
 
     for (const spot of allSpots) {
+        if ((Vtype === "bike" && spot.bike === 0) || (Vtype === "car" && spot.car === 0)) {
+            continue;
+        }
       const url = `https://api.openrouteservice.org/v2/directions/driving-car?api_key=${process.env.ORS_API_KEY}&start=${lon},${lat}&end=${spot.lon},${spot.lat}`;
       const response = await axios.get(url);
-      console.log("from search nearby: " + spot.name);
-      
-      
       const features = response.data.features;
-      console.log("summary: ")
-      console.log(features[0].properties.summary);
       const summary = features[0].properties.segments[0];
       const distance = summary.distance; 
       const duration = summary.duration;
-      if((Vtype === "bike" && spot.bike !== 0) || (Vtype === "car" && spot.car !== 0)) {
-        results.push({
+      results.push({
             id: spot.id,
             name: spot.name,
             lat: spot.lat,
@@ -197,7 +210,6 @@ export const searchNearby = async (req, res) => {
             duration,
             Vid
         });
-      }
     }
     results.sort((a, b) => a.distance - b.distance);
     return res.status(200).json({ userloc : {lon ,lat }, data: results.slice(0, 5) });
