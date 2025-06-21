@@ -37,7 +37,7 @@ export const editFname = async (req, res) => {
         console.log(fname);
         const id = req.user.id;
         await sql`
-            UPDATE customer
+            UPDATE owner
             SET fname = ${fname}
             WHERE id = ${id}
         `;
@@ -57,7 +57,7 @@ export const editLname = async (req, res) => {
         const lname = req.body.lname;
         const id = req.user.id;
         await sql`
-            UPDATE customer
+            UPDATE owner
             SET lname = ${lname}
             WHERE id = ${id}
         `;
