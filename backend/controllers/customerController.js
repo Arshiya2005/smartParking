@@ -229,17 +229,35 @@ export const chooseSlot = async (req, res) => {
         const Vid = spot.Vid;
         const sTime = req.body.sTime;
         const eTime = req.body.eTime;
-
+/**
         const spotdata = await sql`
             SELECT * FROM parkingspot where id = ${id}
         `;
+        const owner = await sql`
+            SELECT * FROM owner where id = ${spotdata[0].owner_id}
+        `;
+ */
+        const spotdata = await sql`
+            SELECT 
+                p.*,  
+                o.id AS owner_id,
+                o.fname, o.lname, o.username
+            FROM parkingspot p
+            INNER JOIN owner o ON p.owner_id = o.id
+            WHERE p.id = ${id};
+        `;
+        const ownerdata = {
+            id : spotdata[0].owner_id,
+            fname : spotdata[0].fname,
+            lname : spotdata[0].lname,
+            username : spotdata[0].username
+        }
+        console.log(spotdata);
         const vehicle = await sql`
             SELECT * FROM vehicle where id = ${Vid}
         `;
         const type = vehicle[0].type;
-        const owner = await sql`
-            SELECT * FROM owner where id = ${spotdata[0].owner_id}
-        `;
+        
         const count = type === "bike" ? spotdata[0].bike : spotdata[0].car;
         const today = new Date().toISOString().slice(0, 10);
         for(var i = 1; i <= count; i++) {
@@ -248,7 +266,7 @@ export const chooseSlot = async (req, res) => {
                 WHERE date = ${today} AND slot_id = ${id} AND slot_no = ${i} AND NOT (${eTime} <= sTime OR ${sTime} >= eTime ) AND status = ${'active'};
             `;
             if (response.length === 0) {
-                return res.status(200).json({ user : req.user, slot : spotdata, vehicle, chosenSlotNo: i, ownerdata : owner[0]  });
+                return res.status(200).json({ user : req.user, slot : spotdata[0], vehicle, chosenSlotNo: i, ownerdata });
             }
         }
         return res.status(409).json({ message: "slot not available" });
