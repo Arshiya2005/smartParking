@@ -252,7 +252,7 @@ export const chooseSlot = async (req, res) => {
             lname : spotdata[0].lname,
             username : spotdata[0].username
         }
-        console.log(spotdata);
+        //console.log(spotdata);
         const vehicle = await sql`
             SELECT * FROM vehicle where id = ${Vid}
         `;
@@ -288,13 +288,8 @@ export const activeBooking = async (req, res) => {
             SELECT * FROM bookings
                 WHERE date = ${today} AND customer_id = ${id} AND ${time} < eTime AND status = ${'active'};
             `;
-        const spotdata = await sql`
-            SELECT * FROM parkingspot where id = ${response[0].id}
-        `;
         if (response.length > 0) {
-            console.log("reached here ");
-            console.log(response);
-            return res.status(200).json({ data : response  , spot : spotdata[0]});
+            return res.status(200).json({ data : response });
         }
         console.log("no data available !");
         return res.status(200).json({ message: "No active booking at this time" });
@@ -310,22 +305,29 @@ export const Specificbooking = async (req, res) => {
       }
   
       const book = JSON.parse(decodeURIComponent(req.query.book)); // ✅ safely parse
-      console.log(book.date);
-      const spotdata = await sql`
-        SELECT * FROM parkingspot where id = ${book.slot_id}
-      `;
       const vehicle = await sql`
         SELECT * FROM vehicle where id = ${book.vehicle_id}
       `;
-      const owner = await sql`
-        SELECT * FROM owner where id = ${book.owner_id}
-      `;
-  
+      const spotdata = await sql`
+            SELECT 
+                p.*,  
+                o.id AS owner_id,
+                o.fname, o.lname, o.username
+            FROM parkingspot p
+            INNER JOIN owner o ON p.owner_id = o.id
+            WHERE p.id = ${book.slot_id};
+        `;
+        const ownerdata = {
+            id : spotdata[0].owner_id,
+            fname : spotdata[0].fname,
+            lname : spotdata[0].lname,
+            username : spotdata[0].username
+        }
       return res.status(200).json({
         book,
         spot: spotdata[0],
         vehicle: vehicle[0],
-        owner: owner[0],
+        owner: ownerdata,
       });
     } catch (error) {
       console.error("Specificbooking error:", error);
@@ -366,11 +368,8 @@ export const bookingHistory = async (req, res) => {
         const response = await sql`
             SELECT * FROM bookings WHERE customer_id = ${id};
             `;
-        const spotdata = await sql`
-            SELECT * FROM parkingspot where id = ${response[0].id}
-        `;
         if (response.length > 0) {
-            return res.status(200).json({ data : response  , spot : spotdata});
+            return res.status(200).json({ data : response});
         }
         return res.status(200).json({ message: "No bookings" });
     } catch (error) {
