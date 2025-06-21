@@ -32,6 +32,7 @@ import OwnerInfo from './pages/Owner/OwnerInfo';
 import AddArea from './pages/Owner/AddArea';
 import MyArea from './pages/Owner/MyArea';
 import AreaDetails from './pages/Owner/AreaDetails';
+import SpecificArea from './pages/Owner/SpecificArea';
 // 🧠 Custom util to fetch current user from backend
 async function getCurrentUser() {
   try {
@@ -92,6 +93,7 @@ function App() {
         <Route path="/owner/addarea" element={<AddArea/>}></Route>
         <Route path="/owner/myarea" element={<MyArea/>}></Route>
         <Route path="/owner/areaDetails" element={<AreaDetails />} />
+        <Route path="/owner/specificArea" element={<SpecificArea/>}></Route>
       </Routes>
      
       

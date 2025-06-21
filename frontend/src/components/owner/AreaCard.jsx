@@ -24,7 +24,7 @@ const AreaCard = ({ area }) => {
       {/* Right side: Arrow button */}
       <div>
         <Link
-          to={`/owner/areaDetails`}
+          to={`/owner/specificArea`}
           className="btn btn-outline-dark rounded-circle px-3 py-1"
           style={{ fontWeight: "bold", fontSize: "1.2rem" }}
         >
