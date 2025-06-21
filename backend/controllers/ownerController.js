@@ -171,6 +171,45 @@ export const activeBookingInArea = async (req, res) => {
     }
 };
 
+
+export const Specificbooking = async (req, res) => {
+    try {
+      if (req.user.type !== "owner") {
+        return res.status(401).json({ error: "no active user" });
+      }
+  
+      const book = JSON.parse(decodeURIComponent(req.query.book)); // ✅ safely parse
+      const vehicle = await sql`
+        SELECT * FROM vehicle where id = ${book.vehicle_id}
+      `;
+      const spotdata = await sql`
+            SELECT 
+                p.*,  
+                o.id AS owner_id,
+                o.fname, o.lname, o.username
+            FROM parkingspot p
+            INNER JOIN owner o ON p.owner_id = o.id
+            WHERE p.id = ${book.slot_id};
+        `;
+        const ownerdata = {
+            id : spotdata[0].owner_id,
+            fname : spotdata[0].fname,
+            lname : spotdata[0].lname,
+            username : spotdata[0].username
+        }
+      return res.status(200).json({
+        book,
+        spot: spotdata[0],
+        vehicle: vehicle[0],
+        owner: ownerdata,
+      });
+    } catch (error) {
+      console.error("Specificbooking error:", error);
+      return res.status(500).json({ error: "internal server error" });
+    }
+  };
+
+
 export const bookingHistoryInArea = async (req, res) => {
     try {
         if(req.user.type !== "owner") {
