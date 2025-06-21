@@ -15,6 +15,29 @@ export const sql = neon(
 export async function initDb() {
     try {
         await sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp";`;
+
+        /**
+         * 
+         * CREATE TABLE IF NOT EXISTS owner_profile (
+    user_id UUID PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+    shop_name TEXT,
+    license_no TEXT,
+    address TEXT
+);
+         */
+
+        await sql`
+            CREATE TABLE IF NOT EXISTS users (
+                id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+                fname TEXT,
+                lname TEXT,
+                username VARCHAR(255) NOT NULL,
+                password TEXT NOT NULL,
+                type VARCHAR(10) NOT NULL,
+                created_at TIMESTAMPTZ DEFAULT NOW()
+            );
+
+        `;
         
         await sql`
             CREATE TABLE IF NOT EXISTS customer (

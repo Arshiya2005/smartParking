@@ -18,7 +18,7 @@ import authRoutes from "./routes/authRoutes.js";
 import { initDb } from "./config/db.js";
 import { aj  } from "./lib/arcjet.js";
 
-import { verify, verifyusingGoogle } from "./controllers/authController.js";
+import { verify, verifyusingGoogle } from "./controllers/authController2.js";
 
 dotenv.config();
 

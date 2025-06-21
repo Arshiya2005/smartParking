@@ -1,6 +1,6 @@
 import express from "express";
 
-import { register, login, logout, gauth, ensureAuthenticated } from "../controllers/authController.js"
+import { register, login, logout, gauth, ensureAuthenticated } from "../controllers/authController2.js"
 import {protectSignupMiddleware} from "../lib/arcjet.js"
 
 const router = express.Router();

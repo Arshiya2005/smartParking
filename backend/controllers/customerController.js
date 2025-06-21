@@ -1,7 +1,6 @@
 import axios from "axios";
 import dotenv from "dotenv";
 import { sql } from "../config/db.js";
-import { v4 as uuidv4 } from 'uuid';
 
 dotenv.config();
 
@@ -229,14 +228,6 @@ export const chooseSlot = async (req, res) => {
         const Vid = spot.Vid;
         const sTime = req.body.sTime;
         const eTime = req.body.eTime;
-/**
-        const spotdata = await sql`
-            SELECT * FROM parkingspot where id = ${id}
-        `;
-        const owner = await sql`
-            SELECT * FROM owner where id = ${spotdata[0].owner_id}
-        `;
- */
         const spotdata = await sql`
             SELECT 
                 p.*,  
