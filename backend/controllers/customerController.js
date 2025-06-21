@@ -24,7 +24,7 @@ export const myVehicles = async (req, res) => {
         }
         const id = req.user.id;
         const result = await sql`
-            SELECT * FROM vehicle WHERE customer_id = ${id}
+            SELECT * FROM vehicle WHERE customer_id = ${id} AND is_active = TRUE
         `;
         console.log(result);
         return res.status(200).json({ data: result });
@@ -40,14 +40,26 @@ export const addVehicle = async (req, res) => {
         }
         console.log(req.body);
         const name = req.body.name;
-        const no = req.body.no;
+        const no = req.body.no.replace(/\s+/g, "").toUpperCase();
         const type = req.body.type;
         const id = req.user.id;
-        const Vid = uuidv4();
-        console.log(id);
-        await sql`
-            INSERT INTO vehicle (id, model, type, number, customer_id) VALUES (${Vid}, ${name}, ${type}, ${no}, ${id})
+        const response = await sql`
+            SELECT * FROM vehicle WHERE number = ${no};
         `;
+        if(response.length > 0) {
+            const data = response[0];
+            if(data.is_active) {
+                return res.status(409).json({ message: "Vehicle Already exists" });
+            }else {
+                await sql`
+                    UPDATE vehicle SET is_active = true, model = ${name}, customer_id = ${id} WHERE id = ${data.id};
+                `;
+            }
+        }else {
+            await sql`
+                INSERT INTO vehicle (model, type, number, customer_id) VALUES (${name}, ${type}, ${no}, ${id})
+            `;
+        }
         return res.status(200).json({ message: "Vehicle added successfully" });
     } catch (error) {
         return res.status(500).json({ error: "internal server error" });
@@ -64,8 +76,7 @@ export const deleteVehicle = async (req, res) => {
         const userId = req.user.id;
 
         await sql`
-            DELETE FROM vehicle 
-            WHERE id = ${id} AND customer_id = ${userId}
+            UPDATE vehicle SET is_active = FALSE  WHERE id = ${id} AND customer_id = ${userId};
         `;
         return res.status(200).json({ message: "Vehicle deleted successfully" });
     } catch (error) {

@@ -44,7 +44,8 @@ export async function initDb() {
               model TEXT NOT NULL,
               type TEXT NOT NULL,
               number TEXT NOT NULL UNIQUE,
-              customer_id UUID NOT NULL REFERENCES customer(id) ON DELETE CASCADE
+              customer_id UUID NOT NULL REFERENCES customer(id) ON DELETE CASCADE,
+              is_active BOOLEAN DEFAULT true
           );
 
         `;
