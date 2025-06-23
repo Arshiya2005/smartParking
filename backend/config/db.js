@@ -40,28 +40,6 @@ export async function initDb() {
         `;
         
         await sql`
-            CREATE TABLE IF NOT EXISTS customer (
-                id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-                fname TEXT NOT NULL, 
-                lname TEXT NOT NULL, 
-                username VARCHAR(255) NOT NULL UNIQUE,   
-                password TEXT NOT NULL,  
-                created_at TIMESTAMPTZ DEFAULT NOW()
-            );
-        `;
-
-        await sql`
-            CREATE TABLE IF NOT EXISTS owner (
-                id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-                fname TEXT NOT NULL, 
-                lname TEXT NOT NULL, 
-                username VARCHAR(255) NOT NULL UNIQUE,   
-                password TEXT NOT NULL,           
-                created_at TIMESTAMPTZ DEFAULT NOW()
-            );
-        `;
-
-        await sql`
           CREATE TABLE IF NOT EXISTS vehicle (
               id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
               model TEXT NOT NULL,
@@ -106,7 +84,7 @@ export async function initDb() {
         await sql`
             CREATE TABLE IF NOT EXISTS notifications (
                 id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-                customer_id UUID NOT NULL REFERENCES users(id),
+                users_id UUID NOT NULL REFERENCES users(id),
                 message TEXT NOT NULL,
                 created_at TIMESTAMP NOT NULL,
                 status VARCHAR(10) NOT NULL

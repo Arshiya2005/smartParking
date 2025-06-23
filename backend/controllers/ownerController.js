@@ -1,9 +1,4 @@
-import axios from "axios";
-import dotenv from "dotenv";
 import { sql } from "../config/db.js";
-import { v4 as uuidv4 } from 'uuid';
-
-dotenv.config();
 
 export const welcome = async (req, res) => {
     try {
