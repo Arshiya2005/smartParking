@@ -129,12 +129,8 @@ export const availableSlot = async (req, res) => {
         var occCar = 0;
         const now = new Date();
         const today = now.toISOString().slice(0, 10);
-        //const time = now.toTimeString().split(' ')[0];
-        
-        const istNow = new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" });
-const time = new Date(istNow).toTimeString().split(' ')[0];  // "HH:mm:ss"
-console.log(istNow + " " + time);
-        for(var i = 0; i < bike; i++) {
+        const time = now.toTimeString().split(' ')[0];
+        for(var i = 1; i <= bike; i++) {
             const response = await sql`
                 SELECT * FROM bookings WHERE slot_id = ${id} AND date = ${today} AND sTime <= ${time} AND eTime >= ${time} AND type = ${'bike'} AND slot_no = ${i} AND status = 'active';
             `;
@@ -142,7 +138,7 @@ console.log(istNow + " " + time);
                 occBike++;
             }
         }
-        for(var i = 0; i < car; i++) {
+        for(var i = 1; i <= car; i++) {
             const response = await sql`
                 SELECT * FROM bookings WHERE slot_id = ${id} AND date = ${today} AND sTime <= ${time} AND eTime >= ${time} AND type = ${'car'} AND slot_no = ${i} AND status = 'active';
             `;
@@ -150,7 +146,7 @@ console.log(istNow + " " + time);
                 occCar++;
             }
         }
-        console.log(occCar + " " + occBike);
+        //console.log(occCar + " " + occBike);
         return res.status(200).json({ bikedata : {occ : occBike, bike}, cardata : {occ : occCar, car}});
     } catch (error) {
         return res.status(500).json({ error: "internal server error" });
