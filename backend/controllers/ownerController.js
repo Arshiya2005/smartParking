@@ -37,7 +37,7 @@ export const editFname = async (req, res) => {
         console.log(fname);
         const id = req.user.id;
         await sql`
-            UPDATE owner
+            UPDATE users
             SET fname = ${fname}
             WHERE id = ${id}
         `;
@@ -57,7 +57,7 @@ export const editLname = async (req, res) => {
         const lname = req.body.lname;
         const id = req.user.id;
         await sql`
-            UPDATE owner
+            UPDATE users
             SET lname = ${lname}
             WHERE id = ${id}
         `;
@@ -129,7 +129,11 @@ export const availableSlot = async (req, res) => {
         var occCar = 0;
         const now = new Date();
         const today = now.toISOString().slice(0, 10);
-        const time = now.toTimeString().split(' ')[0];
+        //const time = now.toTimeString().split(' ')[0];
+        
+        const istNow = new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" });
+const time = new Date(istNow).toTimeString().split(' ')[0];  // "HH:mm:ss"
+console.log(istNow + " " + time);
         for(var i = 0; i < bike; i++) {
             const response = await sql`
                 SELECT * FROM bookings WHERE slot_id = ${id} AND date = ${today} AND sTime <= ${time} AND eTime >= ${time} AND type = ${'bike'} AND slot_no = ${i} AND status = 'active';
@@ -146,6 +150,7 @@ export const availableSlot = async (req, res) => {
                 occCar++;
             }
         }
+        console.log(occCar + " " + occBike);
         return res.status(200).json({ bikedata : {occ : occBike, bike}, cardata : {occ : occCar, car}});
     } catch (error) {
         return res.status(500).json({ error: "internal server error" });
@@ -188,7 +193,7 @@ export const Specificbooking = async (req, res) => {
                 o.id AS owner_id,
                 o.fname, o.lname, o.username
             FROM parkingspot p
-            INNER JOIN owner o ON p.owner_id = o.id
+            INNER JOIN users o ON p.owner_id = o.id
             WHERE p.id = ${book.slot_id};
         `;
         const ownerdata = {
