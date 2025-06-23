@@ -6,13 +6,13 @@ const AreaHistory = () => {
   const navigate = useNavigate();
   const area = location.state?.area;
 
-  const [bookings, setBookings] = useState([]);
+  const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     if (!area) {
-      setError("Area data not found");
+      setError("No area data provided.");
       setLoading(false);
       return;
     }
@@ -26,14 +26,11 @@ const AreaHistory = () => {
           { credentials: "include" }
         );
         const data = await res.json();
-        if (res.ok) {
-          setBookings(data.data || []);
-        } else {
-          setError(data.error || "Failed to fetch history");
-        }
+
+        if (!res.ok) throw new Error(data.error || "Failed to fetch history");
+        setHistory(data.data || []);
       } catch (err) {
-        console.error("Fetch error:", err);
-        setError("Error fetching booking history");
+        setError(err.message);
       } finally {
         setLoading(false);
       }
@@ -42,62 +39,53 @@ const AreaHistory = () => {
     fetchHistory();
   }, [area]);
 
+  const formatTime = (time) => time.slice(0, 5); // HH:mm
+  const formatDate = (dateStr) => new Date(dateStr).toLocaleDateString();
+
   return (
-    <div className="container py-5" style={{ backgroundColor: "#f5f5f5", minHeight: "100vh" }}>
-      <button className="btn btn-outline-dark mb-4" onClick={() => navigate(-1)}>
+    <div className="container py-5" style={{ backgroundColor: "#f4f4f4", minHeight: "100vh" }}>
+      <button className="btn btn-secondary mb-4" onClick={() => navigate(-1)}>
         ← Back
       </button>
 
-      <div className="card p-4 shadow-sm">
-        <h2 className="mb-3">Booking History – {area?.name || "Unknown Area"}</h2>
+      <h2 className="mb-4 text-center">Booking History – {area?.name}</h2>
 
-        {loading ? (
-          <div className="text-center">
-            <div className="spinner-border text-secondary" role="status"></div>
-          </div>
-        ) : error ? (
-          <div className="alert alert-danger text-center">{error}</div>
-        ) : bookings.length === 0 ? (
-          <p className="text-muted text-center">No historical bookings for this area yet.</p>
-        ) : (
-          <div className="table-responsive">
-            <table className="table table-bordered table-hover">
-              <thead className="table-light">
-                <tr>
-                  <th>Date</th>
-                  <th>Slot #</th>
-                  <th>Vehicle Type</th>
-                  <th>Start Time</th>
-                  <th>End Time</th>
-                  <th>Status</th>
+      {loading && <div className="text-center">Loading history...</div>}
+
+      {error && (
+        <div className="alert alert-danger text-center">{error}</div>
+      )}
+
+      {!loading && !error && history.length === 0 && (
+        <div className="text-center text-muted">No past bookings found.</div>
+      )}
+
+      <div className="table-responsive">
+        {history.length > 0 && (
+          <table className="table table-bordered table-striped shadow-sm bg-white">
+            <thead className="table-dark">
+              <tr>
+                <th>Date</th>
+                <th>Slot No</th>
+                <th>Type</th>
+                <th>Start Time</th>
+                <th>End Time</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {history.map((b) => (
+                <tr key={b.id}>
+                  <td>{formatDate(b.date)}</td>
+                  <td>{b.slot_no}</td>
+                  <td>{b.type}</td>
+                  <td>{formatTime(b.sTime)}</td>
+                  <td>{formatTime(b.eTime)}</td>
+                  <td>{b.status}</td>
                 </tr>
-              </thead>
-              <tbody>
-                {bookings.map((b) => (
-                  <tr key={b.id}>
-                    <td>{b.date}</td>
-                    <td>{b.slot_no}</td>
-                    <td>{b.type}</td>
-                    <td>{b.sTime}</td>
-                    <td>{b.eTime}</td>
-                    <td>
-                      <span
-                        className={`badge ${
-                          b.status === "completed"
-                            ? "bg-success"
-                            : b.status === "cancelled"
-                            ? "bg-danger"
-                            : "bg-secondary"
-                        }`}
-                      >
-                        {b.status}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+              ))}
+            </tbody>
+          </table>
         )}
       </div>
     </div>

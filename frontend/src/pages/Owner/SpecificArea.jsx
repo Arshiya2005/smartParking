@@ -56,6 +56,11 @@ const SpecificArea = () => {
   }, [area]);
 
   const handleSlotChange = async () => {
+    if (bikeInput === area.bike && carInput === area.car) {
+      setMessage("No changes made to slot counts.");
+      return;
+    }
+
     try {
       const res = await fetch("http://localhost:3000/owner/changeSlotCount", {
         method: "POST",
@@ -113,13 +118,20 @@ const SpecificArea = () => {
   if (!area) {
     return (
       <div className="container py-5 text-center">
-        <div className="alert alert-warning">No area data found. Please try again from MyAreas.</div>
+        <div className="alert alert-warning">No area data found. Please try again from My Areas.</div>
+        <button className="btn btn-secondary mt-3" onClick={() => navigate("/owner/myAreas")}>
+          Back to My Areas
+        </button>
       </div>
     );
   }
 
   return (
     <div className="p-4 d-flex flex-column align-items-center gap-4">
+      <button className="btn btn-outline-dark align-self-start" onClick={() => navigate(-1)}>
+        ← Back
+      </button>
+
       <h2 className="mb-3 text-center">Slot Usage – {area.name}</h2>
 
       {loading ? (
@@ -146,18 +158,14 @@ const SpecificArea = () => {
       <div className="d-flex flex-wrap justify-content-center gap-3 mt-4">
         <button
           className="btn btn-primary"
-          onClick={() =>
-            navigate("/owner/areaActiveBookings", { state: { area } })
-          }
+          onClick={() => navigate("/owner/areaActiveBookings", { state: { area } })}
         >
           Active Bookings
         </button>
 
         <button
           className="btn btn-outline-secondary"
-          onClick={() =>
-            navigate("/owner/areaHistory", { state: { area } })
-          }
+          onClick={() => navigate("/owner/areaHistory", { state: { area } })}
         >
           View Booking History
         </button>
@@ -165,27 +173,31 @@ const SpecificArea = () => {
 
       <div className="mt-4 p-3 border rounded shadow-sm w-100" style={{ maxWidth: 500 }}>
         <h5>Change Slot Count</h5>
-        <div className="d-flex gap-2 align-items-center mb-2">
-          <label className="form-label mb-0">Bike:</label>
-          <input
-            type="number"
-            className="form-control"
-            value={bikeInput}
-            onChange={(e) => setBikeInput(Number(e.target.value))}
-            min="0"
-          />
+        <div className="row mb-2">
+          <label className="col-3 col-form-label">Bike:</label>
+          <div className="col">
+            <input
+              type="number"
+              className="form-control"
+              value={bikeInput}
+              onChange={(e) => setBikeInput(Number(e.target.value))}
+              min="0"
+            />
+          </div>
         </div>
-        <div className="d-flex gap-2 align-items-center mb-3">
-          <label className="form-label mb-0">Car:</label>
-          <input
-            type="number"
-            className="form-control"
-            value={carInput}
-            onChange={(e) => setCarInput(Number(e.target.value))}
-            min="0"
-          />
+        <div className="row mb-3">
+          <label className="col-3 col-form-label">Car:</label>
+          <div className="col">
+            <input
+              type="number"
+              className="form-control"
+              value={carInput}
+              onChange={(e) => setCarInput(Number(e.target.value))}
+              min="0"
+            />
+          </div>
         </div>
-        <button className="btn btn-success" onClick={handleSlotChange}>
+        <button className="btn btn-success w-100" onClick={handleSlotChange}>
           Submit Slot Change Request
         </button>
       </div>
