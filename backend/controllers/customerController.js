@@ -106,7 +106,7 @@ export const editFname = async (req, res) => {
         console.log(fname);
         const id = req.user.id;
         await sql`
-            UPDATE customer
+            UPDATE users
             SET fname = ${fname}
             WHERE id = ${id}
         `;
@@ -126,7 +126,7 @@ export const editLname = async (req, res) => {
         const lname = req.body.lname;
         const id = req.user.id;
         await sql`
-            UPDATE customer
+            UPDATE users
             SET lname = ${lname}
             WHERE id = ${id}
         `;
@@ -229,22 +229,25 @@ export const chooseSlot = async (req, res) => {
         const Vid = spot.Vid;
         const sTime = req.body.sTime;
         const eTime = req.body.eTime;
+        
         const spotdata = await sql`
             SELECT 
                 p.*,  
                 o.id AS owner_id,
                 o.fname, o.lname, o.username
             FROM parkingspot p
-            INNER JOIN owner o ON p.owner_id = o.id
+            INNER JOIN users o ON p.owner_id = o.id
             WHERE p.id = ${id};
         `;
+        console.log("reached here");
+        console.log(spotdata);
         const ownerdata = {
             id : spotdata[0].owner_id,
             fname : spotdata[0].fname,
             lname : spotdata[0].lname,
             username : spotdata[0].username
         }
-        //console.log(spotdata);
+        console.log(spotdata);
         const vehicle = await sql`
             SELECT * FROM vehicle where id = ${Vid}
         `;
@@ -252,6 +255,7 @@ export const chooseSlot = async (req, res) => {
         
         const count = type === "bike" ? spotdata[0].bike : spotdata[0].car;
         const today = new Date().toISOString().slice(0, 10);
+        console.log("reached here before for loop");
         for(var i = 1; i <= count; i++) {
             const response = await sql`
                 SELECT * FROM bookings
@@ -260,9 +264,11 @@ export const chooseSlot = async (req, res) => {
             if (response.length === 0) {
                 return res.status(200).json({ user : req.user, slot : spotdata, vehicle, chosenSlotNo: i, ownerdata });
             }
+            console.log("reached here in loop");
         }
         return res.status(409).json({ message: "slot not available" });
     } catch (error) {
+        console.error(error)
         return res.status(500).json({ error: "internal server error" });
     }
 };
@@ -306,7 +312,7 @@ export const Specificbooking = async (req, res) => {
                 o.id AS owner_id,
                 o.fname, o.lname, o.username
             FROM parkingspot p
-            INNER JOIN owner o ON p.owner_id = o.id
+            INNER JOIN users o ON p.owner_id = o.id
             WHERE p.id = ${book.slot_id};
         `;
         const ownerdata = {

@@ -33,17 +33,17 @@ cron.schedule('* * * * *', async () => {
         booking: b
       });
       await sql`
-        INSERT INTO notifications (customer_id, message, created_at, status)
-        VALUES (${b.customer_id}, ${`Your booking at ${b.sTime} is about to start.`}, ${now}, 'read')
+        INSERT INTO notifications (users_id, message, created_at, status)
+        VALUES (${b.users_id}, ${`Your booking at ${b.sTime} is about to start.`}, ${now}, 'read')
       `;
-      console.log(`Reminder sent to user ${b.customer_id}`);
+      console.log(`Reminder sent to user ${b.users_id}`);
     } else {
       const now = new Date();
       await sql`
-        INSERT INTO notifications (customer_id, message, created_at, status)
-        VALUES (${b.customer_id}, ${`Your booking at ${b.sTime} is about to start.`}, ${now}, 'unread')
+        INSERT INTO notifications (users_id, message, created_at, status)
+        VALUES (${b.users_id}, ${`Your booking at ${b.sTime} is about to start.`}, ${now}, 'unread')
       `;
-      console.log(`User ${b.customer_id} not connected, notification saved`);
+      console.log(`User ${b.users_id} not connected, notification saved`);
     }
   }
 });
