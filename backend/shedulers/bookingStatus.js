@@ -17,15 +17,13 @@ cron.schedule('* * * * *', async () => {
 cron.schedule('* * * * *', async () => {
   
   const now = new Date();
-        const today = now.toISOString().slice(0, 10);
-        const targetTime = now.toTimeString().split(' ')[0];
+  const today = now.toISOString().slice(0, 10);
+  const targetTime = now.toTimeString().split(' ')[0];
   const bookings = await sql`
     SELECT * FROM bookings
     WHERE date = ${today} AND sTime = ${targetTime} AND status = 'active'
   `;
-  console.log(connectedUsers);
-
-
+  
   for (const b of bookings) {
     const userSocketId = connectedUsers.get(b.customer_id);
     if (userSocketId) {
