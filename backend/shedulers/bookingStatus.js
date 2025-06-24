@@ -96,7 +96,7 @@ cron.schedule('* * * * *', async () => {
   for (const b of bookings) {
     const userSocketId = connectedUsers.get(b.customer_id);
     if (userSocketId) {
-      io.to(userSocketId).emit('booking-reminder', {
+      io.to(userSocketId).emit('booking-ended', {
         message: `Your parking at ${b.name} has ended`,
       });
       await sql`
