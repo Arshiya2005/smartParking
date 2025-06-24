@@ -6,6 +6,7 @@ import CardActive from "../../components/cardActive";
 import CardBookNow from "../../components/cardBookNow";
 import peaach from "../../assets/green_back.jpg";
 import socket from "../../socket";
+import { toast } from "react-toastify";
 
 const CustomerHome = () => {
   useAuthRedirect("customer");
@@ -19,48 +20,46 @@ const CustomerHome = () => {
           method: "GET",
           credentials: "include",
         });
-  
+
         const result = await response.json();
         const user = result?.data;
-  
-        console.log("👀 User received from /customer/welcome:", user);
-  
-        // More reliable check with debug
-        if (response.ok) {
-          if (!user) {
-            console.warn("❌ No user object found in response");
-            return;
-          }
-  
-          if (user.type !== "customer") {
-            console.warn("⚠️ User is not a customer. type =", user.type);
-            return;
-          }
-  
-          if (!user.id && !user._id) {
-            console.warn("❌ No user ID found");
-            return;
-          }
-  
-          const id = user.id;
+
+        if (response.ok && user?.type === "customer" && (user.id || user._id)) {
+          const id = user.id || user._id;
           setUserId(id);
-  
+
           socket.connect();
           socket.emit("register-user", id);
-  
+
           console.log("✅ Socket.IO connected and registered user:", id);
-          alert("✅ Socket.IO connected for user: " + id);
+
+          // Listen for reminder event
+          socket.on("booking-reminder", (data) => {
+            console.log("📦 Booking reminder received:", data);
           
+            // Just show the message directly (it already includes the time)
+            if (data?.message) {
+              toast.info(data.message); // ✅ Shows: "Your parking starts at 14:00"
+            } else {
+              toast.info("🚗 Your parking is starting soon!");
+            }
+          });
         } else {
-          console.warn("❌ /welcome response not OK:", response.status);
+          console.warn("⚠️ User not authorized or not a customer.");
         }
       } catch (err) {
-        console.error("🚨 Exception in fetchUserAndConnectSocket:", err);
-        alert("❌ Failed to fetch user data.");
+        console.error("❌ Error in fetchUserAndConnectSocket:", err);
       }
     };
-  
+
     fetchUserAndConnectSocket();
+
+    return () => {
+      socket.disconnect();
+      console.log("🛑 Socket.IO disconnected from CustomerHome");
+
+      socket.off("booking-reminder");
+    };
   }, []);
 
   return (
