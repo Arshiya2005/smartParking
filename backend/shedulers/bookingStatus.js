@@ -15,15 +15,16 @@ cron.schedule('* * * * *', async () => {
 });
 
 cron.schedule('* * * * *', async () => {
+  
   const now = new Date();
-  const in10min = new Date(now.getTime() + 10 * 60000);
-  const targetTime = in10min.toTimeString().split(' ')[0];
-  const today = now.toISOString().slice(0, 10);
-
+        const today = now.toISOString().slice(0, 10);
+        const targetTime = now.toTimeString().split(' ')[0];
   const bookings = await sql`
     SELECT * FROM bookings
     WHERE date = ${today} AND sTime = ${targetTime} AND status = 'active'
   `;
+  console.log(connectedUsers);
+
 
   for (const b of bookings) {
     const userSocketId = connectedUsers.get(b.customer_id);
@@ -34,16 +35,16 @@ cron.schedule('* * * * *', async () => {
       });
       await sql`
         INSERT INTO notifications (users_id, message, created_at, status)
-        VALUES (${b.users_id}, ${`Your booking at ${b.sTime} is about to start.`}, ${now}, 'read')
+        VALUES (${b.customer_id}, ${`Your booking at ${b.sTime} is about to start.`}, ${now}, 'read')
       `;
-      console.log(`Reminder sent to user ${b.users_id}`);
+      console.log(`Reminder sent to user ${b.customer_id}`);
     } else {
       const now = new Date();
       await sql`
         INSERT INTO notifications (users_id, message, created_at, status)
-        VALUES (${b.users_id}, ${`Your booking at ${b.sTime} is about to start.`}, ${now}, 'unread')
+        VALUES (${b.customer_id}, ${`Your booking at ${b.sTime} is about to start.`}, ${now}, 'unread')
       `;
-      console.log(`User ${b.users_id} not connected, notification saved`);
+      console.log(`User ${b.customer_id} not connected, notification saved`);
     }
   }
 });

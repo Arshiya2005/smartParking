@@ -144,6 +144,7 @@ export const searchNearby = async (req, res) => {
       return res.status(401).json({ error: "No active user" });
     }
     const location = req.body.location;
+    console.log(req.body);
     var lat;
     var lon;
     const Vid = req.body.id;

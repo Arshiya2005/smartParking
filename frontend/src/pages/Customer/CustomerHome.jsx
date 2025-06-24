@@ -61,11 +61,6 @@ const CustomerHome = () => {
     };
   
     fetchUserAndConnectSocket();
-  
-    return () => {
-      socket.disconnect();
-      console.log("🛑 Socket.IO disconnected from CustomerHome");
-    };
   }, []);
 
   return (
