@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -35,31 +34,10 @@ import AreaDetails from './pages/Owner/AreaDetails';
 import SpecificArea from './pages/Owner/SpecificArea';
 import AreaHistory from './pages/Owner/AreaHistory';
 import AreaActiveBookings from './pages/Owner/AreaActiveBookings';
-// 🧠 Custom util to fetch current user from backend
-async function getCurrentUser() {
-  try {
-    const res = await fetch("http://localhost:5000/me", {
-      credentials: "include",
-    });
-    if (!res.ok) return null;
-    return await res.json();
-  } catch {
-    return null;
-  }
-}
 
 function App() {
-  const [userId, setUserId] = useState(null);
-
-  useEffect(() => {
-    getCurrentUser().then(user => {
-      if (user) setUserId(user.id);
-    });
-  }, []);
-
   return (
     <>
-      {userId && <BookingReminderListener userId={userId} />}
       <ToastContainer />
 
       <Routes>
@@ -76,6 +54,7 @@ function App() {
           <Route path="vehicles" element={<CustomerVehicles />} />
           <Route path="historydetails" element={<HistoryBookingDetails />} />
         </Route>
+        
         <Route path="/customer/activebookings" element={<MyActiveBookings />} />
         <Route path="/customer/newbooking" element={<MakeNewBooking />} />
         <Route path="/customer/nearby" element={<NearbySpots />} />
@@ -86,22 +65,20 @@ function App() {
         <Route path="customer/cancelBooking" element={<CancelBooking />} />
        
         <Route path="/owner" element={<OwnerHome />} />
-      <Route path="/owner/profile" element={<OwnerProfile />}>
+        <Route path="/owner/profile" element={<OwnerProfile />}>
           <Route index element={<OwnerInfo />} />
           <Route path="info" element={<OwnerInfo />} />
           <Route path="history" element={<OwnerHistory />} />
           <Route path="notifications" element={<OwnerNotifications />} />
         </Route>
-        <Route path="/owner/addarea" element={<AddArea/>}></Route>
-        <Route path="/owner/myarea" element={<MyArea/>}></Route>
+        
+        <Route path="/owner/addarea" element={<AddArea />} />
+        <Route path="/owner/myarea" element={<MyArea />} />
         <Route path="/owner/areaDetails" element={<AreaDetails />} />
-        <Route path="/owner/specificArea" element={<SpecificArea/>}></Route>
-        <Route path="/owner/areaHistory" element={<AreaHistory/>}></Route>
-        <Route path="/owner/areaActiveBookings" element={<AreaActiveBookings/>}></Route>
+        <Route path="/owner/specificArea" element={<SpecificArea />} />
+        <Route path="/owner/areaHistory" element={<AreaHistory />} />
+        <Route path="/owner/areaActiveBookings" element={<AreaActiveBookings />} />
       </Routes>
-     
-      
-      
     </>
   );
 }

@@ -5,6 +5,7 @@ import { sql } from "../config/db.js";
 dotenv.config();
 
 export const welcome = async (req, res) => {
+    console.log("req.user =", req.user);
     try {
         if(req.user.type === "customer") {
             return res.status(200).json({ data: req.user });
