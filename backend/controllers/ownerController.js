@@ -74,21 +74,14 @@ export const addArea = async (req, res) => {
         `;
         if (existing.length > 0) {
             const spot = existing[0];
-            if (spot.is_active === false && spot.owner_id == req.user.id) {
-                await sql`
-                    UPDATE parkingspot 
-                    SET is_active = TRUE, name = ${name}, bike = ${bike}, car = ${car}
-                    WHERE id = ${spot.id};
-                `;
-                return res.status(200).json({ message: "Parking area reactivated successfully" });
-            } else {
+            if (!(spot.is_active === false && spot.owner_id == req.user.id)) {
                 return res.status(409).json({ error: "Parking area already exists" });
             }
         }
         await sql`
             INSERT INTO parkingspot (name, lon, lat, bike, car, owner_id) VALUES (${name}, ${lon}, ${lat}, ${bike}, ${car}, ${req.user.id})
         `;
-        return res.status(200).json({ message: "Updated successfully" });
+        return res.status(200).json({ message: "added successfully" });
     } catch (error) {
         console.error("addArea error:", error);
         return res.status(500).json({ error: "internal server error" });
@@ -102,7 +95,7 @@ export const parkingAreas = async (req, res) => {
         }
         const id = req.user.id;
         const response = await sql`
-            SELECT * FROM parkingspot WHERE owner_id = ${id}
+            SELECT * FROM parkingspot WHERE owner_id = ${id} AND is_active = true
         `;
         return res.status(200).json({ data : response });
     } catch (error) {
