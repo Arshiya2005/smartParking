@@ -16,6 +16,7 @@ import customerRoutes from "./routes/customerRoutes.js";
 import ownerRoutes from "./routes/ownerRoutes.js"; 
 import authRoutes from "./routes/authRoutes.js"; 
 import usersRoutes from "./routes/usersRoutes.js"; 
+import adminRoutes from "./routes/adminRoutes.js"; 
 import { initDb } from "./config/db.js";
 import { aj  } from "./lib/arcjet.js";
 
@@ -81,6 +82,7 @@ app.use(passport.session());
 
 app.use("/customer", customerRoutes);
 app.use("/owner", ownerRoutes);
+app.use("/admin", adminRoutes);
 app.use("/", authRoutes);
 app.use("/", usersRoutes);
 
