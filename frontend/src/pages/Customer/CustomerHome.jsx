@@ -7,60 +7,46 @@ import CardBookNow from "../../components/cardBookNow";
 import peaach from "../../assets/green_back.jpg";
 import socket from "../../socket";
 import { toast } from "react-toastify";
-
+import useBookingReminders from "../../hooks/useBookingReminders";
 const CustomerHome = () => {
   useAuthRedirect("customer");
 
   const [userId, setUserId] = useState(null);
 
   useEffect(() => {
-    const fetchUserAndConnectSocket = async () => {
+    const fetchUser = async () => {
       try {
-        const response = await fetch("http://localhost:3000/customer/welcome", {
-          method: "GET",
+        const res = await fetch("http://localhost:3000/customer/welcome", {
           credentials: "include",
         });
-
-        const result = await response.json();
+        const result = await res.json();
         const user = result?.data;
-
-        if (response.ok && user?.type === "customer" && (user.id || user._id)) {
+  
+        if (res.ok && user?.type === "customer") {
           const id = user.id || user._id;
           setUserId(id);
-
-          socket.connect();
+  
+          if (!socket.connected) {
+            socket.connect(); // ✅ Actually connect now
+            console.log("🔌 Socket connected from CustomerHome");
+          }
+  
           socket.emit("register-user", id);
-
-          console.log("✅ Socket.IO connected and registered user:", id);
-
-          // Listen for reminder event
-          socket.on("booking-reminder", (data) => {
-            console.log("📦 Booking reminder received:", data);
-          
-            // Just show the message directly (it already includes the time)
-            if (data?.message) {
-              toast.info(data.message); // ✅ Shows: "Your parking starts at 14:00"
-            } else {
-              toast.info("🚗 Your parking is starting soon!");
-            }
-          });
-        } else {
-          console.warn("⚠️ User not authorized or not a customer.");
+          console.log("📌 Re-emitted register-user:", id);
         }
       } catch (err) {
-        console.error("❌ Error in fetchUserAndConnectSocket:", err);
+        console.error("❌ Failed to fetch user in CustomerHome:", err);
       }
     };
-
-    fetchUserAndConnectSocket();
-
-    return () => {
-      socket.disconnect();
-      console.log("🛑 Socket.IO disconnected from CustomerHome");
-
-      socket.off("booking-reminder");
-    };
+  
+    fetchUser();
   }, []);
+    
+      // Don't disconnect here anymore
+      // socket.disconnect(); ❌ remove this
+   
+
+  useBookingReminders(userId);
 
   return (
     <div

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import green from "../../assets/green_back.jpg"
+import socket from "../../socket";
 const CustomerInfo = () => {
   const [info, setInfo] = useState(null);
   const [newFname, setNewFname] = useState("");
@@ -75,15 +76,19 @@ const CustomerInfo = () => {
     }
   };
 
-  // Handle Logout
   const handleLogout = async () => {
     try {
       const res = await fetch("http://localhost:3000/logout", {
         method: "GET",
         credentials: "include",
       });
-
+  
       if (res.ok) {
+        // ✅ Disconnect socket and clean up
+        socket.disconnect();
+        socket.removeAllListeners();
+        alert("🛑 Socket disconnected and listeners removed");
+  
         alert("Logged out successfully!");
         window.location.href = "/login?type=customer";
       } else {

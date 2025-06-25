@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate, Link, useLocation } from "react-router-dom";
+import socket  from "../socket"; // ✅ import socket.io-client
 import BackgroundImg from "../assets/green_back.jpg";
 
 const LoginUser = () => {
@@ -15,6 +16,7 @@ const LoginUser = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log(`🚀 Attempting login as ${type} with:`, form);
 
     try {
       const res = await fetch("http://localhost:3000/login", {
@@ -25,15 +27,31 @@ const LoginUser = () => {
       });
 
       const data = await res.json();
+
       if (res.ok) {
+        console.log("✅ Login response received:", data);
+
         localStorage.setItem("token", data.token || "");
         alert("Login successful!");
+        console.log("👤 Raw user object from response:", data.user);
+
+        const userId = data.user?.id || data.user?._id;
+        console.log(`hellooooo", ${userId}`)
+        // ✅ Only connect socket for customers (if needed, extend this check)
+        if (type === "customer" && userId) {
+          socket.connect();
+          console.log(`🔌 Socket connected & user registered: ${userId}`);
+          socket.emit("register-user", userId);
+          
+        }
+
         navigate(`/${type}`);
       } else {
+        console.warn("❌ Login failed:", data.error);
         alert(data.error || "Login failed.");
       }
     } catch (error) {
-      console.error("Login error:", error);
+      console.error("❌ Login error:", error);
       alert("Something went wrong.");
     }
   };
@@ -87,12 +105,12 @@ const LoginUser = () => {
             required
           />
           <button
-  type="submit"
-  className="btn w-100 mb-3"
-  style={{ backgroundColor: "#2C786C", color: "#fff", fontWeight: "500" }}
->
-  Login
-</button>
+            type="submit"
+            className="btn w-100 mb-3"
+            style={{ backgroundColor: "#2C786C", color: "#fff", fontWeight: "500" }}
+          >
+            Login
+          </button>
 
           <div className="text-center mb-3">
             Not registered?{" "}
