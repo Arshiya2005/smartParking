@@ -36,7 +36,6 @@ export const verifyPayment = async (req, res) => {
         
         if (isValid) {
             console.log("Payment verification successful");
-            //confirm add booking
             return res.status(200).json({ message: 'Payment verification successful' });
         } else {
             console.log("Payment verification failed");
