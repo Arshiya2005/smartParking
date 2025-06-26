@@ -375,25 +375,6 @@ export const bookingHistory = async (req, res) => {
         return res.status(500).json({ error: "internal server error" });
     }
 };
-/**
-export const cancelBooking = async (req, res) => {
-    try {
-        if(req.user.type !== "customer") {
-            return res.status(401).json({ error: "no active user" });
-        }
-        const id = req.query.id;
-        await sql`
-            UPDATE bookings
-            SET status = 'cancelled'
-            WHERE id = ${id}
-        `;
-        return res.status(200).json({ message: "booking cancelled successfully !" });
-    } catch (error) {
-        return res.status(500).json({ error: "internal server error" });
-    }
-};
-
- */
 
 export const cancelBooking = async (req, res) => {
     try {
