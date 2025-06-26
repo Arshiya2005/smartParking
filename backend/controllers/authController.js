@@ -1,7 +1,10 @@
 import passport from "passport";
 import bcrypt from "bcrypt";
+import dotenv from "dotenv";
 
 import { sql } from "../config/db.js";
+
+dotenv.config();
 
 export const register = async (req, res) => {
     const username = req.body.username;
@@ -10,6 +13,10 @@ export const register = async (req, res) => {
     const fname = req.body.firstName;
     const lname = req.body.lastName;
     const today = new Date();
+
+    if(type === "admin" && process.env.ADMIN_SECRET != req.body.secret) {
+      return res.status(401).json({ error: "Unauthorised" });
+    }
 
     try {
       const checkResult = await sql`
