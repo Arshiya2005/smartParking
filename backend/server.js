@@ -11,12 +11,15 @@ import { Strategy } from "passport-local";
 import GoogleStrategy from "passport-google-oauth2";
 import http from 'http';
 import { Server } from 'socket.io';
+import Razorpay from "razorpay";
 
 import customerRoutes from "./routes/customerRoutes.js"; 
 import ownerRoutes from "./routes/ownerRoutes.js"; 
 import authRoutes from "./routes/authRoutes.js"; 
 import usersRoutes from "./routes/usersRoutes.js"; 
 import adminRoutes from "./routes/adminRoutes.js"; 
+import payment from "./routes/paymentRoutes.js"; 
+
 import { initDb } from "./config/db.js";
 import { aj  } from "./lib/arcjet.js";
 
@@ -85,6 +88,7 @@ app.use("/owner", ownerRoutes);
 app.use("/admin", adminRoutes);
 app.use("/", authRoutes);
 app.use("/", usersRoutes);
+app.use("/", payment);
 
 const server = http.createServer(app);
 
@@ -94,6 +98,11 @@ const io = new Server(server, {
     methods: ["GET", "POST"],
     credentials:true
   }
+});
+
+const razorpay = new Razorpay({
+  key_id: process.env.KEY_ID,
+  key_secret: process.env.KEY_SECRET,
 });
 
 app.get("/", (req, res) => {
@@ -144,4 +153,4 @@ initDb()
 
 
 
-export { io };
+export { io, razorpay };
