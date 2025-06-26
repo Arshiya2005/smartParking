@@ -27,22 +27,29 @@ export const verifyPayment = async (req, res) => {
         if(req.user.type !== "customer") {
             return res.status(401).json({ error: "no active user" });
         }
-        const { razorpay_order_id, razorpay_payment_id, razorpay_signature, id } = req.body;
+        const { razorpay_order_id, razorpay_payment_id, razorpay_signature, id, amount } = req.body;
         const secret = process.env.KEY_SECRET;
         const body = razorpay_order_id + "|" + razorpay_payment_id;
 
         const expectedSignature = crypto.createHmac("sha256", secret).update(body.toString()).digest("hex");
         const isValid = expectedSignature === razorpay_signature;
+
+        const newStatus = isValid ? 'active' : 'failed';
+
+        await sql`
+        UPDATE bookings SET 
+            status = ${newStatus},
+            payment_id = ${razorpay_payment_id},
+            order_id = ${razorpay_order_id},
+            amount = ${amount}
+        WHERE id = ${id};
+        `;
         
         if (isValid) {
             console.log("Payment verification successful");
             return res.status(200).json({ message: 'Payment verification successful' });
         } else {
             console.log("Payment verification failed");
-            await sql`
-                UPDATE bookings SET status = 'failed'
-                WHERE status = 'active' AND id = ${id}
-            `;
             return res.status(400).json({ message: 'Payment verification failed' });
         }
     } catch (error) {

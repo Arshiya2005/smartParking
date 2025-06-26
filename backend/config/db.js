@@ -71,17 +71,20 @@ export async function initDb() {
 
         await sql`
           CREATE TABLE IF NOT EXISTS bookings (
-              id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-              type TEXT NOT NULL,
-              sTime TIME NOT NULL,
-              eTime TIME NOT NULL,
-              date DATE NOT NULL,
-              slot_no INTEGER NOT NULL,
-              status TEXT NOT NULL DEFAULT 'active',
-              customer_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-              owner_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-              vehicle_id UUID NOT NULL REFERENCES vehicle(id) ON DELETE CASCADE,
-              slot_id UUID NOT NULL REFERENCES parkingspot(id) ON DELETE CASCADE
+                id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+                type TEXT NOT NULL,
+                sTime TIME NOT NULL,
+                eTime TIME NOT NULL,
+                date DATE NOT NULL,
+                slot_no INTEGER NOT NULL,
+                status TEXT NOT NULL DEFAULT 'active',
+                payment_id VARCHAR(255),
+                order_id VARCHAR(255),
+                amount INTEGER,       
+                customer_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                owner_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                vehicle_id UUID NOT NULL REFERENCES vehicle(id) ON DELETE CASCADE,
+                slot_id UUID NOT NULL REFERENCES parkingspot(id) ON DELETE CASCADE
           );
 
         `;
