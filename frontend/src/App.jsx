@@ -34,7 +34,20 @@ import AreaDetails from './pages/Owner/AreaDetails';
 import SpecificArea from './pages/Owner/SpecificArea';
 import AreaHistory from './pages/Owner/AreaHistory';
 import AreaActiveBookings from './pages/Owner/AreaActiveBookings';
+//now admin routes
+import AdminDashboard from './pages/Admin/AdminDashboard';
+import AdminProfile from './pages/Admin/AdminProfile';
+import OwnerManagement from './pages/Admin/OwnerManagement';
+import CustomerManagement from './pages/Admin/CustomerManagement';
+import SpecificCustomer from './pages/Admin/SpecificCustomer';
 
+import SpecificCustVehicles from "./pages/Admin/SpecificCustVehicles";
+import SpecificCustHistory from "./pages/Admin/SpecificCustHistory";
+import SpecificCustActive from './pages/Admin/SpecificCustActive';
+import SpecificOwner from './pages/Admin/SpecificOwner';
+import OwnerActiveBookings from './pages/Admin/OwnerActiveBookings';
+import OwnerBookingHistory from './pages/Admin/OwnerBookingHistory';
+import OwnerAreas from './pages/Admin/OwnerAreas';
 function App() {
   return (
     <>
@@ -78,6 +91,23 @@ function App() {
         <Route path="/owner/specificArea" element={<SpecificArea />} />
         <Route path="/owner/areaHistory" element={<AreaHistory />} />
         <Route path="/owner/areaActiveBookings" element={<AreaActiveBookings />} />
+        //admin routes now
+        <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/admin/profile" element={<AdminProfile />} />
+        <Route path="/admin/owners" element={<OwnerManagement />} />
+        <Route path="/admin/customers" element={<CustomerManagement />} />
+        <Route path="/admin/specificCustomer" element={<SpecificCustomer />}>
+  <Route index element={<SpecificCustActive />} />
+  <Route path="active" element={<SpecificCustActive />} />
+  <Route path="vehicles" element={<SpecificCustVehicles />} />
+  <Route path="history" element={<SpecificCustHistory />} />
+</Route>
+<Route path="/admin/specificOwner" element={<SpecificOwner />}>
+  <Route index element={<OwnerAreas />} />
+  <Route path="areas" element={<OwnerAreas />} />
+  <Route path="active" element={<OwnerActiveBookings />} />
+  <Route path="history" element={<OwnerBookingHistory />} />
+</Route>
       </Routes>
     </>
   );

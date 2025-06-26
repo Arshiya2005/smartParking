@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate, Link, useLocation } from "react-router-dom";
-import socket  from "../socket"; // ✅ import socket.io-client
+import socket from "../socket";
 import BackgroundImg from "../assets/green_back.jpg";
 
 const LoginUser = () => {
@@ -30,19 +30,15 @@ const LoginUser = () => {
 
       if (res.ok) {
         console.log("✅ Login response received:", data);
-
         localStorage.setItem("token", data.token || "");
         alert("Login successful!");
         console.log("👤 Raw user object from response:", data.user);
 
         const userId = data.user?.id || data.user?._id;
-        console.log(`hellooooo", ${userId}`)
-        // ✅ Only connect socket for customers (if needed, extend this check)
         if (type === "customer" && userId) {
           socket.connect();
           console.log(`🔌 Socket connected & user registered: ${userId}`);
           socket.emit("register-user", userId);
-          
         }
 
         navigate(`/${type}`);
@@ -83,8 +79,14 @@ const LoginUser = () => {
         }}
       >
         <h2 className="text-center mb-4">
-          Login as {type === "owner" ? "Owner" : "User"}
+          Login as{" "}
+          {type === "owner"
+            ? "Owner"
+            : type === "admin"
+            ? "Admin"
+            : "User"}
         </h2>
+
         <form onSubmit={handleSubmit}>
           <input
             type="text"
@@ -107,7 +109,11 @@ const LoginUser = () => {
           <button
             type="submit"
             className="btn w-100 mb-3"
-            style={{ backgroundColor: "#2C786C", color: "#fff", fontWeight: "500" }}
+            style={{
+              backgroundColor: "#2C786C",
+              color: "#fff",
+              fontWeight: "500",
+            }}
           >
             Login
           </button>
@@ -118,13 +124,16 @@ const LoginUser = () => {
           </div>
         </form>
 
-        <button
-          onClick={handleGoogleLogin}
-          className="btn btn-outline-danger w-100"
-          style={{ fontWeight: "500" }}
-        >
-          <i className="bi bi-google me-2"></i> Continue with Google
-        </button>
+        {/* ✅ Hide Google login for admin */}
+        {type !== "admin" && (
+          <button
+            onClick={handleGoogleLogin}
+            className="btn btn-outline-danger w-100"
+            style={{ fontWeight: "500" }}
+          >
+            <i className="bi bi-google me-2"></i> Continue with Google
+          </button>
+        )}
       </div>
     </div>
   );

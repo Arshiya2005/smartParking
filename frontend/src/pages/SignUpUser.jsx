@@ -9,6 +9,7 @@ const SignUpUser = () => {
     username: "",
     password: "",
     confirmPassword: "",
+    secret: "", // Add secret key field
   });
 
   const navigate = useNavigate();
@@ -25,17 +26,23 @@ const SignUpUser = () => {
       return alert("Passwords do not match.");
     }
 
+    const payload = {
+      firstName: form.firstName,
+      lastName: form.lastName,
+      username: form.username,
+      password: form.password,
+      type: type,
+    };
+
+    if (type === "admin") {
+      payload.secret = form.secret; // only send secret for admin
+    }
+
     try {
       const res = await fetch("http://localhost:3000/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          firstName: form.firstName,
-          lastName: form.lastName,
-          username: form.username,
-          password: form.password,
-          type: type,
-        }),
+        body: JSON.stringify(payload),
       });
 
       const data = await res.json();
@@ -74,8 +81,9 @@ const SignUpUser = () => {
         }}
       >
         <h2 className="text-center mb-4">
-          Create a {type === "owner" ? "Owner" : "User"} Account
+          Create a {type === "owner" ? "Owner" : type === "admin" ? "Admin" : "User"} Account
         </h2>
+
         <form onSubmit={handleSubmit}>
           <div className="row g-2 mb-3">
             <div className="col">
@@ -99,6 +107,7 @@ const SignUpUser = () => {
               />
             </div>
           </div>
+
           <input
             type="text"
             name="username"
@@ -107,6 +116,7 @@ const SignUpUser = () => {
             required
             onChange={handleChange}
           />
+
           <input
             type="password"
             name="password"
@@ -115,6 +125,7 @@ const SignUpUser = () => {
             required
             onChange={handleChange}
           />
+
           <input
             type="password"
             name="confirmPassword"
@@ -123,6 +134,18 @@ const SignUpUser = () => {
             required
             onChange={handleChange}
           />
+
+          {type === "admin" && (
+            <input
+              type="text"
+              name="secret"
+              className="form-control mb-3"
+              placeholder="Admin Secret Key"
+              required
+              onChange={handleChange}
+            />
+          )}
+
           <button
             className="btn w-100"
             style={{ backgroundColor: "#2C786C", color: "#fff" }}
@@ -130,6 +153,7 @@ const SignUpUser = () => {
           >
             Sign Up
           </button>
+
           <div className="text-center mt-3">
             Already have an account?{" "}
             <Link to={`/login?type=${type}`}>Login here</Link>
