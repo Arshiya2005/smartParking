@@ -29,7 +29,7 @@ cron.schedule('* * * * *', async () => {
     const userSocketId = connectedUsers.get(b.customer_id);
     if (userSocketId) {
       io.to(userSocketId).emit('booking-reminder', {
-        message: `Your parking at ${b.name} starts at ${b.stime}}`,
+        message: `Your parking at ${b.name} starts at ${b.stime}`,
       });
       await sql`
         INSERT INTO notifications (users_id, message, created_at, status)
