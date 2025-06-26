@@ -3,7 +3,7 @@ import { sql } from '../config/db.js';
 
 cron.schedule('* * * * *', async () => {
   try {
-    const now = new Date().toTimeString().split(' ')[0]; // 'HH:MM:SS'
+    const now = new Date().toTimeString().split(' ')[0]; 
     console.log(now);
     const bookings = await sql`
       UPDATE bookings
@@ -11,7 +11,7 @@ cron.schedule('* * * * *', async () => {
       WHERE eTime < ${now} AND status = 'active'
       RETURNING *
     `;
-    const account_number = "xxxxxxxxxx";
+    const account_number = "2323230000000001";
     for(const b of bookings) {
       const response = await sql`
           SELECT * FROM pending_payouts 
