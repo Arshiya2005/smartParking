@@ -41,27 +41,31 @@ export async function initDb() {
         
         await sql`
           CREATE TABLE IF NOT EXISTS vehicle (
-              id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-              model TEXT NOT NULL,
-              type TEXT NOT NULL,
-              number TEXT NOT NULL UNIQUE,
-              customer_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-              is_active BOOLEAN DEFAULT true
+                id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+                model TEXT NOT NULL,
+                type TEXT NOT NULL,
+                number TEXT NOT NULL UNIQUE,
+                customer_id UUID NOT NULL REFERENCES users(id),
+                is_active BOOLEAN DEFAULT true,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                deleted_at TIMESTAMP
           );
 
         `;
 
         await sql`
           CREATE TABLE IF NOT EXISTS parkingspot (
-              id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-              name TEXT NOT NULL,
-              lon DOUBLE PRECISION NOT NULL,
-              lat DOUBLE PRECISION NOT NULL,
-              bike INTEGER DEFAULT 0,      
-              car INTEGER DEFAULT 0,      
-              is_active BOOLEAN DEFAULT TRUE, 
-              owner_id UUID NOT NULL,
-              FOREIGN KEY (owner_id) REFERENCES users(id)
+                id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+                name TEXT NOT NULL,
+                lon DOUBLE PRECISION NOT NULL,
+                lat DOUBLE PRECISION NOT NULL,
+                bike INTEGER DEFAULT 0,      
+                car INTEGER DEFAULT 0,      
+                is_active BOOLEAN DEFAULT TRUE, 
+                owner_id UUID NOT NULL,
+                FOREIGN KEY (owner_id) REFERENCES users(id),
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                deleted_at TIMESTAMP
           );
         `;
 
