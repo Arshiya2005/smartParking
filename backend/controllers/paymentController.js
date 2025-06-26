@@ -1,6 +1,10 @@
 import { sql } from "../config/db.js";
 import { razorpay } from "../server.js"
+import axios from 'axios';
+import dotenv from 'dotenv';
+import crypto from 'crypto';
 
+dotenv.config();
 
 export const createOrder = async (req, res) => {
     try {
@@ -47,6 +51,10 @@ export const verifyPayment = async (req, res) => {
         
         if (isValid) {
             console.log("Payment verification successful");
+            await sql`
+                INSERT INTO pending_payouts ( amount, status, created_at, owner_id ) 
+                VALUES ( ${amount}, ${'pending'}, ${new Date()}, ${req.user.id});
+            `;
             return res.status(200).json({ message: 'Payment verification successful' });
         } else {
             console.log("Payment verification failed");
@@ -55,4 +63,110 @@ export const verifyPayment = async (req, res) => {
     } catch (error) {
         return res.status(500).json({ error: "internal server error" });
     }
+};
+
+
+export const createFundAcc = async (req, res) => {
+    try {
+        if(req.user.type !== "owner") {
+            return res.status(401).json({ error: "no active user" });
+        }
+        const razorpayAuth = Buffer.from(`${process.env.KEY_ID}:${process.env.KEY_SECRET}`).toString('base64');
+        const { contact, bank_account } = req.body;
+        const name = req.user.fname + " " + req.user.lname;
+        const email = req.user.username;
+        const contactResponse = await axios.post('https://api.razorpay.com/v1/contacts', 
+            {name, email, contact, type : "owner",  },
+            {
+                headers: {
+                Authorization: `Basic ${razorpayAuth}`,
+                'Content-Type': 'application/json'
+                }
+            }
+        );
+        const contact_id = contactResponse.data.id;
+        console.log("contact_id : " + contact_id);
+        const fundAccountResponse = await axios.post('https://api.razorpay.com/v1/fund_accounts',
+            {
+                contact_id,
+                account_type: 'bank_account',
+                bank_account: {
+                    name: bank_account.name,
+                    ifsc: bank_account.ifsc,
+                    account_number: bank_account.account_number
+                }
+            },
+            {
+                headers: {
+                    Authorization: `Basic ${razorpayAuth}`,
+                    'Content-Type': 'application/json'
+                }
+            }
+        );
+        await sql`
+        INSERT INTO payout_accounts ( owner_id, contact_id, fund_account_id , created_at) 
+            VALUES ( ${req.user.id}, ${contact_id}, ${fund_account_id}, ${new Date()});
+        `;
+        return res.status(200).json({ data: order });
+    } catch (error) {
+        console.error("Error creating Razorpay order:", error);
+    res.status(500).send("Internal server error");
+    }
+};
+
+export const createPayout = async (req, res) => {
+  try {
+    const account_number = "xxxxxxxxxx";
+    const response = await sql`
+        SELECT * FROM pending_payouts 
+        INNER JOIN payout_accounts 
+        ON pending_payouts.owner_id = payout_accounts.owner_id
+        WHERE pending_payouts.status = ${'pending'};
+    `;
+    for(const p of response) {
+        console.log("pending payout : ");
+        console.log(p);
+        const amount = p.amount;
+        const fund_account_id = p.fund_account_id;
+        try {
+            await axios.post('https://api.razorpay.com/v1/payouts',
+                {
+                    account_number,
+                    fund_account_id,
+                    amount,
+                    currency: "INR",
+                    mode: "IMPS",
+                    purpose: "payout",
+                    reference_id: `payout_${p.id}`,
+                    queue_if_low_balance: true,
+                    narration: "SmartParking: Slot Rent"
+                },
+                {
+                    auth: {
+                    username: process.env.KEY_ID,
+                    password: process.env.KEY_SECRET
+                    },
+                    headers: {
+                    'Content-Type': 'application/json',
+                    'X-Payout-Idempotency': crypto.randomUUID()
+                    }
+                }
+            );
+            await sql`
+                UPDATE pending_payouts SET status = 'completed', processed_at = ${new Date()}
+                WHERE id = ${p.id};
+            `;
+        }catch(error) {
+            console.log(p.id + " : payout failed");
+            await sql`
+                UPDATE pending_payouts SET status = 'failed', processed_at = ${new Date()}
+                WHERE id = ${p.id};
+            `;
+        }
+    }
+    return res.status(200).json({message: 'Payout created successfully'});
+  }catch (error) {
+    console.error("Razorpay Payout Error:", error.response?.data || error.message);
+    return res.status(500).json({error: "Failed to create payout"});
+  }
 };

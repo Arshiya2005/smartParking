@@ -106,6 +106,26 @@ export async function initDb() {
                 created_at TIMESTAMP
             );
         `;
+
+        await sql`
+            CREATE TABLE IF NOT EXISTS payout_accounts (
+                owner_id UUID PRIMARY KEY REFERENCES users(id),
+                contact_id VARCHAR(255) NOT NULL,
+                fund_account_id VARCHAR(255) NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+        `;
+        await sql`
+            CREATE TABLE IF NOT EXISTS pending_payouts (
+                id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+                amount INTEGER NOT NULL,
+                status TEXT DEFAULT 'pending',
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                processed_at TIMESTAMP,
+                owner_id UUID NOT NULL REFERENCES users(id)
+            );
+
+        `;
         console.log("Database initiated successfully");
     } catch (error) {
         console.log("Error initDb", error);
