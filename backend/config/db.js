@@ -117,7 +117,7 @@ export async function initDb() {
         `;
         await sql`
             CREATE TABLE IF NOT EXISTS pending_payouts (
-                id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+                booking_id UUID PRIMARY KEY REFERENCES bookings(id),
                 amount INTEGER NOT NULL,
                 status TEXT DEFAULT 'pending',
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

@@ -114,7 +114,7 @@ export const createFundAcc = async (req, res) => {
     }
 };
 
-export const createPayout = async (req, res) => {
+export async function createPayout()  {
   try {
     const account_number = "xxxxxxxxxx";
     const response = await sql`
@@ -164,9 +164,7 @@ export const createPayout = async (req, res) => {
             `;
         }
     }
-    return res.status(200).json({message: 'Payout created successfully'});
   }catch (error) {
     console.error("Razorpay Payout Error:", error.response?.data || error.message);
-    return res.status(500).json({error: "Failed to create payout"});
   }
 };
