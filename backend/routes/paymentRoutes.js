@@ -9,6 +9,5 @@ const router = express.Router();
 router.post("/createOrder", isAuthenticated, createOrder);
 router.post("/verifyPayment", isAuthenticated, verifyPayment);
 router.post("/createFundAcc", createFundAcc);
-router.post('/create-payout', createPayout);
 
 export default router;
