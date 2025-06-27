@@ -352,7 +352,8 @@ export const addbooking = async (req, res) => {
                 ${req.user.id}, ${owner.id}, ${vehicle.id}, ${slot.id}
             ) RETURNING *
         `;
-        return res.status(200).json({message : "booked successfully", id : data.id });
+        console.log(data);
+        return res.status(200).json({message : "booked successfully", id : data[0].id });
     } catch (error) {
         return res.status(500).json({ error: "internal server error" });
     }

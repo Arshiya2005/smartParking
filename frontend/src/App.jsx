@@ -48,6 +48,7 @@ import SpecificOwner from './pages/Admin/SpecificOwner';
 import OwnerActiveBookings from './pages/Admin/OwnerActiveBookings';
 import OwnerBookingHistory from './pages/Admin/OwnerBookingHistory';
 import OwnerAreas from './pages/Admin/OwnerAreas';
+import RazorpayPayment from './pages/Customer/RazorPayPayment';
 function App() {
   return (
     <>
@@ -75,6 +76,7 @@ function App() {
         <Route path="/customer/confirm" element={<ConfirmBooking />} />
         <Route path="/customer/pay" element={<PaymentsPage />} />
         <Route path="/customer/bookingdetails" element={<BookingDetails />} />
+        <Route path="/customer/razorpay" element={<RazorpayPayment/>} />
         <Route path="customer/cancelBooking" element={<CancelBooking />} />
        
         <Route path="/owner" element={<OwnerHome />} />
