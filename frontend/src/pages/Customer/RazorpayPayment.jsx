@@ -9,7 +9,6 @@ const RazorpayPayment = () => {
   const price = state?.price;
   const bookingId = state?.bookingId;
 
-  // Debug logs
   useEffect(() => {
     console.log("🔍 Razorpay Payment Page:");
     console.log("Price (₹):", price);
@@ -44,12 +43,11 @@ const RazorpayPayment = () => {
     }
 
     try {
-      // Step 1: Create Razorpay Order
       const orderRes = await fetch("http://localhost:3000/createOrder", {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ amount: price }), // in ₹
+        body: JSON.stringify({ amount: price }),
       });
 
       const result = await orderRes.json();
@@ -61,10 +59,9 @@ const RazorpayPayment = () => {
 
       console.log("✅ Razorpay Order Created:", order);
 
-      // Step 2: Open Razorpay Checkout
       const options = {
-        key: 'rzp_test_cou9d0vpO2wfAS', // 🔐 Replace with live key in production
-        amount: order.amount,           // in paise
+        key: 'rzp_test_PfCHQfot63V69Z', // ✅ Directly use test key here
+        amount: order.amount,
         currency: order.currency,
         name: "Smart Parking",
         description: "Parking Fee",
@@ -72,17 +69,16 @@ const RazorpayPayment = () => {
         handler: async function (response) {
           console.log("💸 Razorpay Response:", response);
           try {
-            // Step 3: Verify Payment
             const verifyRes = await fetch("http://localhost:3000/verifyPayment", {
-  method: "POST",
-  credentials: "include",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({
-    ...response,
-    id: bookingId,
-    amount: order?.amount || Math.round(price * 100), // ✅ Fallback ensures safety
-  }),
-});
+              method: "POST",
+              credentials: "include",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                ...response,
+                id: bookingId,
+                amount: order?.amount || Math.round(price * 100),
+              }),
+            });
 
             const verifyData = await verifyRes.json();
 

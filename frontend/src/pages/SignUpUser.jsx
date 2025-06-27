@@ -9,7 +9,11 @@ const SignUpUser = () => {
     username: "",
     password: "",
     confirmPassword: "",
-    secret: "", // Add secret key field
+    secret: "",
+    contact: "",
+    bankName: "",
+    ifsc: "",
+    accountNumber: "",
   });
 
   const navigate = useNavigate();
@@ -35,7 +39,16 @@ const SignUpUser = () => {
     };
 
     if (type === "admin") {
-      payload.secret = form.secret; // only send secret for admin
+      payload.secret = form.secret;
+    }
+
+    if (type === "owner") {
+      payload.contact = form.contact;
+      payload.bank_account = {
+        name: form.bankName,
+        ifsc: form.ifsc,
+        account_number: form.accountNumber,
+      };
     }
 
     try {
@@ -144,6 +157,46 @@ const SignUpUser = () => {
               required
               onChange={handleChange}
             />
+          )}
+
+          {type === "owner" && (
+            <>
+              <input
+                type="tel"
+                name="contact"
+                className="form-control mb-3"
+                placeholder="Phone Number"
+                required
+                onChange={handleChange}
+              />
+
+              <input
+                type="text"
+                name="bankName"
+                className="form-control mb-3"
+                placeholder="Account Holder Name"
+                required
+                onChange={handleChange}
+              />
+
+              <input
+                type="text"
+                name="ifsc"
+                className="form-control mb-3"
+                placeholder="IFSC Code"
+                required
+                onChange={handleChange}
+              />
+
+              <input
+                type="text"
+                name="accountNumber"
+                className="form-control mb-3"
+                placeholder="Account Number"
+                required
+                onChange={handleChange}
+              />
+            </>
           )}
 
           <button
