@@ -74,7 +74,12 @@ export const deleteVehicle = async (req, res) => {
         }
         const id = req.body.id;
         const userId = req.user.id;
-
+        const data = await sql`
+            SELECT * FROM bookings WHERE vehicle_id = ${id} AND status = 'active'
+        `;
+        if(data.length > 0) {
+            return res.status(409).json({ message: "Cant' delete vehicle have active bookings." });
+        }
         await sql`
             UPDATE vehicle SET is_active = FALSE  WHERE id = ${id} AND customer_id = ${userId};
         `;
@@ -84,7 +89,6 @@ export const deleteVehicle = async (req, res) => {
     }
 };
 
-//info, editFname, editLname
 
 export const info = async (req, res) => {
     try {
