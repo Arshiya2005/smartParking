@@ -405,7 +405,9 @@ export const cancelBooking = async (req, res) => {
             UPDATE bookings SET status = 'cancelled' WHERE id = ${id};
         `;
         console.log("updated booking status");
-
+        await sql`
+            UPDATE pending_payouts SET status = 'cancelled', processed_at = ${new Date()}  WHERE booking_id = ${id};
+        `;
         return res.status(200).json({ message: "booking cancelled successfully & refund precessed" });
     } catch (error) {
         console.error(error);
