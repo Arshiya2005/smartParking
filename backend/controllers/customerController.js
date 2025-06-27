@@ -343,16 +343,16 @@ export const addbooking = async (req, res) => {
         const today = now.toISOString().slice(0, 10);
         console.log(today);
         const {slot, vehicle, chosenSlotNo, owner} = req.body;
-        await sql`
+        const data = await sql`
             INSERT INTO bookings (
                 type, sTime, eTime, date, slot_no,
                 customer_id, owner_id, vehicle_id, slot_id
             ) VALUES (
                 ${vehicle.type}, ${slot.sTime}, ${slot.eTime}, ${today}, ${chosenSlotNo},
                 ${req.user.id}, ${owner.id}, ${vehicle.id}, ${slot.id}
-            )
+            ) RETURNING *
         `;
-        return res.status(200).json({message : "booked successfully"});
+        return res.status(200).json({message : "booked successfully", id : data.id });
     } catch (error) {
         return res.status(500).json({ error: "internal server error" });
     }
@@ -382,12 +382,25 @@ export const cancelBooking = async (req, res) => {
             return res.status(401).json({ error: "no active user" });
         }
         const id = req.query.id;
-        await sql`
-            UPDATE bookings
-            SET status = 'cancelled'
-            WHERE id = ${id}
+        const booking = await sql`
+            SELECT * FROM bookings WHERE id = ${id}
         `;
-        return res.status(200).json({ message: "booking cancelled successfully !" });
+        const idB = booking[0].payment_id;
+        await axios.post(`https://api.razorpay.com/v1/payments/${idB}/refund`,
+            { amount: booking[0].amount },
+            {
+                auth: {
+                username: process.env.KEY_ID,
+                password: process.env.KEY_SECRET,
+                },
+                headers: { 'Content-Type': 'application/json' },
+            }
+        );
+        await sql`
+            UPDATE bookings SET status = 'cancelled' WHERE id = ${id};
+        `;
+
+        return res.status(200).json({ message: "booking cancelled successfully & refund precessed" });
     } catch (error) {
         return res.status(500).json({ error: "internal server error" });
     }

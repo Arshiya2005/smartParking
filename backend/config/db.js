@@ -71,17 +71,20 @@ export async function initDb() {
 
         await sql`
           CREATE TABLE IF NOT EXISTS bookings (
-              id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-              type TEXT NOT NULL,
-              sTime TIME NOT NULL,
-              eTime TIME NOT NULL,
-              date DATE NOT NULL,
-              slot_no INTEGER NOT NULL,
-              status TEXT NOT NULL DEFAULT 'active',
-              customer_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-              owner_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-              vehicle_id UUID NOT NULL REFERENCES vehicle(id) ON DELETE CASCADE,
-              slot_id UUID NOT NULL REFERENCES parkingspot(id) ON DELETE CASCADE
+                id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+                type TEXT NOT NULL,
+                sTime TIME NOT NULL,
+                eTime TIME NOT NULL,
+                date DATE NOT NULL,
+                slot_no INTEGER NOT NULL,
+                status TEXT NOT NULL DEFAULT 'active',
+                payment_id VARCHAR(255),
+                order_id VARCHAR(255),
+                amount INTEGER,       
+                customer_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                owner_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                vehicle_id UUID NOT NULL REFERENCES vehicle(id) ON DELETE CASCADE,
+                slot_id UUID NOT NULL REFERENCES parkingspot(id) ON DELETE CASCADE
           );
 
         `;
@@ -102,6 +105,26 @@ export async function initDb() {
                 car INTEGER,
                 created_at TIMESTAMP
             );
+        `;
+
+        await sql`
+            CREATE TABLE IF NOT EXISTS payout_accounts (
+                owner_id UUID PRIMARY KEY REFERENCES users(id),
+                contact_id VARCHAR(255) NOT NULL,
+                fund_account_id VARCHAR(255) NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+        `;
+        await sql`
+            CREATE TABLE IF NOT EXISTS pending_payouts (
+                booking_id UUID PRIMARY KEY REFERENCES bookings(id),
+                amount INTEGER NOT NULL,
+                status TEXT DEFAULT 'pending',
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                processed_at TIMESTAMP,
+                owner_id UUID NOT NULL REFERENCES users(id)
+            );
+
         `;
         console.log("Database initiated successfully");
     } catch (error) {

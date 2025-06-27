@@ -4,18 +4,6 @@ import { io } from '../server.js';
 import { connectedUsers } from '../sockets/socket.js';
 
 cron.schedule('* * * * *', async () => {
-  const now = new Date().toTimeString().split(' ')[0]; // 'HH:MM:SS'
-  console.log(now);
-  await sql`
-    UPDATE bookings
-    SET status = 'inactive'
-    WHERE eTime < ${now} AND status = 'active'
-  `;
-  
-});
-
-cron.schedule('* * * * *', async () => {
-  
   const now = new Date();
   const today = now.toISOString().slice(0, 10);
   const targetTime = now.toTimeString().split(' ')[0];

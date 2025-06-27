@@ -1,5 +1,6 @@
 import cron from "node-cron";
 import { sql } from "../config/db.js";
+import {createPayout} from "../controllers/paymentController.js"
 
 cron.schedule("0 0 * * *", async () => {
   console.log("Running scheduled deletion job...");
@@ -22,7 +23,7 @@ cron.schedule("0 0 * * *", async () => {
                 UPDATE parkingspot SET bike = ${bike}, car = ${car} WHERE id = ${spot_id};
             `;
         }
-      
+        
 
       await sql`
         DELETE FROM scheduled_task

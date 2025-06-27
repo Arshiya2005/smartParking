@@ -143,8 +143,9 @@ initDb()
   .then(() => {
     server.listen(PORT, () => {
       console.log("Server is running on " + PORT);
-      import('./shedulers/bookingStatus.js');//This line executes the bookingStatus.js file at startup
+      import('./shedulers/payout.js');//This line executes the bookingStatus.js file at startup
       import('./shedulers/ownerTasks.js');
+      import('./shedulers/notifications.js');
     });
   })
   .catch(() => {
