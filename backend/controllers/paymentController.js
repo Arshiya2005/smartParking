@@ -3,6 +3,7 @@ import { razorpay } from "../server.js"
 import axios from 'axios';
 import dotenv from 'dotenv';
 import crypto from 'crypto';
+import { console } from "inspector";
 
 dotenv.config();
 
@@ -33,7 +34,9 @@ export const verifyPayment = async (req, res) => {
         if(req.user.type !== "customer") {
             return res.status(401).json({ error: "no active user" });
         }
+        console.log(req.body);
         const { razorpay_order_id, razorpay_payment_id, razorpay_signature, id, amount } = req.body;
+        
         const secret = process.env.KEY_SECRET;
         const body = razorpay_order_id + "|" + razorpay_payment_id;
 

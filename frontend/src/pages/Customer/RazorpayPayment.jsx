@@ -69,16 +69,20 @@ const RazorpayPayment = () => {
         handler: async function (response) {
           console.log("💸 Razorpay Response:", response);
           try {
-            const verifyRes = await fetch("http://localhost:3000/verifyPayment", {
-              method: "POST",
-              credentials: "include",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
+            const verifyBody = {
                 ...response,
                 id: bookingId,
                 amount: order?.amount || Math.round(price * 100),
-              }),
-            });
+              };
+              
+              console.log("📦 Verifying Payment with body:", verifyBody); // ✅ This logs what you're sending
+              
+              const verifyRes = await fetch("http://localhost:3000/verifyPayment", {
+                method: "POST",
+                credentials: "include",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(verifyBody),
+              });
 
             const verifyData = await verifyRes.json();
 
