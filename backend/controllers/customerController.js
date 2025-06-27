@@ -343,6 +343,7 @@ export const addbooking = async (req, res) => {
         const today = now.toISOString().slice(0, 10);
         console.log(today);
         const {slot, vehicle, chosenSlotNo, owner} = req.body;
+        console.log(req.body);
         const data = await sql`
             INSERT INTO bookings (
                 type, sTime, eTime, date, slot_no,
