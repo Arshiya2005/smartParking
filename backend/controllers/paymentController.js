@@ -78,45 +78,51 @@ export const createRazorpayFundAccount = async (user, bank_account) => {
     const email = user.username;
     const contact = user.contact;
     
-    const contactResponse = await axios.post(
-        'https://api.razorpay.com/v1/contacts',
-        { name, email, contact, type: "owner" },
-        {
-            headers: {
-                Authorization: `Basic ${razorpayAuth}`,
-                'Content-Type': 'application/json',
+    try {
+        const contactResponse = await axios.post(
+            'https://api.razorpay.com/v1/contacts',
+            { name, email, contact, type: "vendor" },
+            {
+                headers: {
+                    Authorization: `Basic ${razorpayAuth}`,
+                    'Content-Type': 'application/json',
+                }
             }
-        }
-    );
-    const contact_id = contactResponse.data.id;
-    
-    const fundAccountResponse = await axios.post(
-        'https://api.razorpay.com/v1/fund_accounts',
-        {
-            contact_id,
-            account_type: 'bank_account',
-            bank_account: {
-                name: bank_account.name,
-                ifsc: bank_account.ifsc,
-                account_number: bank_account.account_number,
+        );
+        const contact_id = contactResponse.data.id;
+
+        const fundAccountResponse = await axios.post(
+            'https://api.razorpay.com/v1/fund_accounts',
+            {
+                contact_id,
+                account_type: 'bank_account',
+                bank_account: {
+                    name: bank_account.name,
+                    ifsc: bank_account.ifsc,
+                    account_number: bank_account.account_number,
+                },
             },
-        },
-        {
-            headers: {
-                Authorization: `Basic ${razorpayAuth}`,
-                'Content-Type': 'application/json',
+            {
+                headers: {
+                    Authorization: `Basic ${razorpayAuth}`,
+                    'Content-Type': 'application/json',
+                }
             }
-        }
-    );
+        );
 
-    const fund_account_id = fundAccountResponse.data.id;
+        const fund_account_id = fundAccountResponse.data.id;
+        
+        await sql`
+            INSERT INTO payout_accounts ( owner_id, contact_id, fund_account_id, created_at ) 
+            VALUES ( ${user.id}, ${contact_id}, ${fund_account_id}, ${new Date()});
+        `;
+
+        return { contact_id, fund_account_id };
+    } catch (error) {
+        console.error("Razorpay Contact Error:", error.response?.data || error.message);
+        throw error;
+    }
     
-    await sql`
-        INSERT INTO payout_accounts ( owner_id, contact_id, fund_account_id, created_at ) 
-        VALUES ( ${user.id}, ${contact_id}, ${fund_account_id}, ${new Date()});
-    `;
-
-    return { contact_id, fund_account_id };
 };
 
 /**

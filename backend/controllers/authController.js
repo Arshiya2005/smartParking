@@ -34,12 +34,19 @@ export const register = async (req, res) => {
           INSERT INTO users ( fname, lname, username, password, contact,  type, created_at) VALUES ( ${fname}, ${lname}, ${username}, ${hash}, ${contact}, ${type}, ${today})
           RETURNING *
         `;
-
+        
         if(type == "owner") {
-          const {contact, bank_account} = req.body;
-          await createRazorpayFundAccount(data[0], bank_account);
+          try {
+            const { bank_account} = req.body;
+            await createRazorpayFundAccount(data[0], bank_account);
+          }catch (err) {
+              console.error("Fund account creation failed, rolling back user...");
+              await sql`
+                  DELETE FROM users WHERE id = ${data[0].id};
+              `;
+              return res.status(500).json({ error: "Fund account creation failed" });
+          }
         }
-
         return res.status(200).json({ message: "User registered successfully" });
       }
     } catch (err) {
