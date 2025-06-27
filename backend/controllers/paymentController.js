@@ -105,6 +105,7 @@ export const createFundAcc = async (req, res) => {
                 }
             }
         );
+        const fund_account_id = fundAccountResponse.data.id;
         await sql`
         INSERT INTO payout_accounts ( owner_id, contact_id, fund_account_id , created_at) 
             VALUES ( ${req.user.id}, ${contact_id}, ${fund_account_id}, ${new Date()});
