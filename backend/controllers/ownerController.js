@@ -222,10 +222,25 @@ export const chnageSlotCount = async (req, res) => {
         }
         const now = new Date();
         const {bike, car, area} = req.body;
-        await sql`
-            INSERT INTO scheduled_task (spot_id, bike, car, created_at)
-            VALUES (${area.id}, ${bike}, ${car}, ${now});
+        const data = await sql`
+            SELECT * FROM scheduled_task WHERE spot_id = ${area.id} AND status = 'pending'
         `;
+        if(data.length > 0 && data[0].bike != null) {
+            const task = data[0];
+            if(!(task.bike == bike && task.car == car)) {
+                await sql`
+                    UPDATE scheduled_task SET bike = ${bike}, car = ${car} WHERE spot_id = ${area.id} AND created_at = ${now};
+                `;
+            }
+        }else if(data.length > 0) {
+            return res.status(409).json({ message : "Area is requested to delete. Can't change slot count "});
+        } else {
+            await sql`
+                INSERT INTO scheduled_task (spot_id, bike, car, created_at)
+                VALUES (${area.id}, ${bike}, ${car}, ${now});
+            `;
+        }
+        
         return res.status(200).json({ message : "request is sent. slots will be be updated by tomorrow"});
     } catch (error) {
         return res.status(500).json({ error: "internal server error" });
@@ -240,6 +255,16 @@ export const deleteArea = async (req, res) => {
         }
         const now = new Date();
         const area = req.body.area;
+        const data = await sql`
+            SELECT * FROM scheduled_task WHERE spot_id = ${area.id} AND status = 'pending'
+        `;
+        if(data.length > 0 && data[0].bike == null) {
+            return res.status(409).json({ message: "Deletion already requested. Please wait." });
+        }else if(data.length > 0) {
+            await sql`
+                UPDATE scheduled_task SET status = 'cancelled' WHERE spot_id = ${area.id} AND status = 'pending'
+            `;
+        }
         await sql`
             INSERT INTO scheduled_task (spot_id, created_at) VALUES (${area.id}, ${now})
         `;

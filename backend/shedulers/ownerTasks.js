@@ -6,31 +6,26 @@ cron.schedule("0 0 * * *", async () => {
 
   try {
     const spotsToDelete = await sql`
-      SELECT * FROM scheduled_task;
+      SELECT * FROM scheduled_task WHERE status = 'pending';
     `;
-
+    const now = new Date();
     for (const spot of spotsToDelete) {
         const { spot_id,  bike, car } = spot;
         if(bike === null && car === null) {
             await sql`
                 UPDATE parkingspot
-                SET is_active = FALSE
+                SET is_active = FALSE, status = 'completed', completed_at = ${now}
                 WHERE id = ${spot_id};
             `;
         }else {
             await sql`
-                UPDATE parkingspot SET bike = ${bike}, car = ${car} WHERE id = ${spot_id};
+                UPDATE parkingspot SET bike = ${bike}, car = ${car}, status = 'completed', completed_at = ${now}  WHERE id = ${spot_id};
             `;
         }
         
-
-      await sql`
-        DELETE FROM scheduled_task
-        WHERE id = ${spot.id};
-      `;
     }
 
-    console.log(`Deleted ${spotsToDelete.length} scheduled spot(s).`);
+    console.log(`completed ${spotsToDelete.length} scheduled tasks.`);
   } catch (err) {
     console.error("Error running deletion job:", err);
   }

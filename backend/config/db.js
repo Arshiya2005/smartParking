@@ -104,7 +104,9 @@ export async function initDb() {
                 spot_id UUID NOT NULL REFERENCES parkingspot(id),
                 bike INTEGER,
                 car INTEGER,
-                created_at TIMESTAMP
+                status VARCHAR(10) NOT NULL DEFAULT 'pending',
+                created_at TIMESTAMP,
+                completed_at TIMESTAMP
             );
         `;
 
