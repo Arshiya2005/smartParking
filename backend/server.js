@@ -82,7 +82,6 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-
 app.use("/customer", customerRoutes);
 app.use("/owner", ownerRoutes);
 app.use("/admin", adminRoutes);
