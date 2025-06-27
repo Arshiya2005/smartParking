@@ -384,10 +384,12 @@ export const cancelBooking = async (req, res) => {
             return res.status(401).json({ error: "no active user" });
         }
         const id = req.query.id;
+        console.log(id);
         const booking = await sql`
             SELECT * FROM bookings WHERE id = ${id}
         `;
         const idB = booking[0].payment_id;
+        console.log("payment id : " + idB);
         await axios.post(`https://api.razorpay.com/v1/payments/${idB}/refund`,
             { amount: booking[0].amount },
             {
@@ -398,12 +400,15 @@ export const cancelBooking = async (req, res) => {
                 headers: { 'Content-Type': 'application/json' },
             }
         );
+        console.log("refund processed");
         await sql`
             UPDATE bookings SET status = 'cancelled' WHERE id = ${id};
         `;
+        console.log("updated booking status");
 
         return res.status(200).json({ message: "booking cancelled successfully & refund precessed" });
     } catch (error) {
+        console.error(error);
         return res.status(500).json({ error: "internal server error" });
     }
 };

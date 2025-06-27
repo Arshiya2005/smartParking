@@ -3,7 +3,6 @@ import { razorpay } from "../server.js"
 import axios from 'axios';
 import dotenv from 'dotenv';
 import crypto from 'crypto';
-import { console } from "inspector";
 
 dotenv.config();
 
@@ -13,14 +12,13 @@ export const createOrder = async (req, res) => {
             return res.status(401).json({ error: "no active user" });
         }
         const { amount } = req.body;
-        console.log("amount :"+ amount);
         const options = {
             amount: amount * 100,
             currency: 'INR',              
             receipt: `parking_${Date.now()}`
         };
-        console.log(options);
         const order = await razorpay.orders.create(options);
+        console.log("created order successfully!")
         return res.status(200).json({ data: order });
     } catch (error) {
         console.error("Error creating Razorpay order:", error);
@@ -32,9 +30,9 @@ export const createOrder = async (req, res) => {
 export const verifyPayment = async (req, res) => {
     try {
         if(req.user.type !== "customer") {
+            console.log("authentication failed!");
             return res.status(401).json({ error: "no active user" });
         }
-        console.log(req.body);
         const { razorpay_order_id, razorpay_payment_id, razorpay_signature, id, amount } = req.body;
         
         const secret = process.env.KEY_SECRET;
@@ -42,30 +40,29 @@ export const verifyPayment = async (req, res) => {
 
         const expectedSignature = crypto.createHmac("sha256", secret).update(body.toString()).digest("hex");
         const isValid = expectedSignature === razorpay_signature;
-
         const newStatus = isValid ? 'active' : 'failed';
 
-        await sql`
-        UPDATE bookings SET 
-            status = ${newStatus},
-            payment_id = ${razorpay_payment_id},
-            order_id = ${razorpay_order_id},
-            amount = ${amount}
-        WHERE id = ${id};
-        `;
-        
+        const data = await sql`
+            UPDATE bookings SET 
+                status = ${newStatus},
+                payment_id = ${razorpay_payment_id},
+                order_id = ${razorpay_order_id},
+                amount = ${amount}
+            WHERE id = ${id}
+            RETURNING *;
+            `;
+            console.log(data[0]);
         if (isValid) {
-            console.log("Payment verification successful");
             await sql`
-                INSERT INTO pending_payouts ( amount, status, created_at, owner_id ) 
-                VALUES ( ${amount}, ${'pending'}, ${new Date()}, ${req.user.id});
+                INSERT INTO pending_payouts (booking_id, amount, status, created_at, owner_id ) 
+                VALUES ( ${id}, ${amount}, ${'pending'}, ${new Date()}, ${data[0].owner_id});
             `;
             return res.status(200).json({ message: 'Payment verification successful' });
         } else {
-            console.log("Payment verification failed");
             return res.status(400).json({ message: 'Payment verification failed' });
         }
     } catch (error) {
+        console.error(error);
         return res.status(500).json({ error: "internal server error" });
     }
 };
