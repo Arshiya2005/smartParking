@@ -14,7 +14,7 @@ cron.schedule('* * * * *', async () => {
       WHERE eTime < ${now} AND status = 'active'
       RETURNING *
     `;
-    const account_number = "2323230000000001";
+    const account_number = process.env.ACCOUNT_NUMBER;
     for(const b of bookings) {
       const response = await sql`
           SELECT * FROM pending_payouts 
