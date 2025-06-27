@@ -129,5 +129,6 @@ export async function initDb() {
         console.log("Database initiated successfully");
     } catch (error) {
         console.log("Error initDb", error);
+        throw error;
     }
 }
