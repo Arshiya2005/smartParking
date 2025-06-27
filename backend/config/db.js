@@ -33,6 +33,7 @@ export async function initDb() {
                 lname TEXT,
                 username VARCHAR(255) NOT NULL,
                 password TEXT NOT NULL,
+                contact VARCHAR(15), 
                 type VARCHAR(10) NOT NULL,
                 created_at TIMESTAMPTZ DEFAULT NOW()
             );

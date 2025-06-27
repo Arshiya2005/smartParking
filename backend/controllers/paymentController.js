@@ -68,7 +68,60 @@ export const verifyPayment = async (req, res) => {
 };
 
 
-export const createFundAcc = async (req, res) => {
+
+export const createRazorpayFundAccount = async (user, bank_account) => {
+    if (user.type !== "owner") {
+        throw new Error("Unauthorized: User is not an owner");
+    }
+    const razorpayAuth = Buffer.from(`${process.env.KEY_ID}:${process.env.KEY_SECRET}`).toString('base64');
+    const name = user.fname + " " + user.lname;
+    const email = user.username;
+    const contact = user.contact;
+    
+    const contactResponse = await axios.post(
+        'https://api.razorpay.com/v1/contacts',
+        { name, email, contact, type: "owner" },
+        {
+            headers: {
+                Authorization: `Basic ${razorpayAuth}`,
+                'Content-Type': 'application/json',
+            }
+        }
+    );
+    const contact_id = contactResponse.data.id;
+    
+    const fundAccountResponse = await axios.post(
+        'https://api.razorpay.com/v1/fund_accounts',
+        {
+            contact_id,
+            account_type: 'bank_account',
+            bank_account: {
+                name: bank_account.name,
+                ifsc: bank_account.ifsc,
+                account_number: bank_account.account_number,
+            },
+        },
+        {
+            headers: {
+                Authorization: `Basic ${razorpayAuth}`,
+                'Content-Type': 'application/json',
+            }
+        }
+    );
+
+    const fund_account_id = fundAccountResponse.data.id;
+    
+    await sql`
+        INSERT INTO payout_accounts ( owner_id, contact_id, fund_account_id, created_at ) 
+        VALUES ( ${user.id}, ${contact_id}, ${fund_account_id}, ${new Date()});
+    `;
+
+    return { contact_id, fund_account_id };
+};
+
+/**
+ * 
+ * export const createFundAcc = async (req, res) => {
     try {
         if(req.user.type !== "owner") {
             return res.status(401).json({ error: "no active user" });
@@ -116,3 +169,4 @@ export const createFundAcc = async (req, res) => {
     res.status(500).send("Internal server error");
     }
 };
+ */

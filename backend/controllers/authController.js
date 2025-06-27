@@ -3,6 +3,7 @@ import bcrypt from "bcrypt";
 import dotenv from "dotenv";
 
 import { sql } from "../config/db.js";
+import {createRazorpayFundAccount} from "./paymentController.js"
 
 dotenv.config();
 
@@ -13,11 +14,12 @@ export const register = async (req, res) => {
     const fname = req.body.firstName;
     const lname = req.body.lastName;
     const today = new Date();
-
+    
     if(type === "admin" && process.env.ADMIN_SECRET != req.body.secret) {
       return res.status(401).json({ error: "Unauthorised" });
     }
-
+    
+    const contact = type == "owner" ? req.body.contact : "NA";
     try {
       const checkResult = await sql`
           SELECT * FROM users WHERE username = ${username} AND type = ${type}
@@ -28,11 +30,18 @@ export const register = async (req, res) => {
       } else {
         const saltRounds = 10;
         const hash = await bcrypt.hash(password, saltRounds); 
-        await sql`
-          INSERT INTO users ( fname, lname, username, password, type, created_at) VALUES ( ${fname}, ${lname}, ${username}, ${hash}, ${type}, ${today})
+        const data = await sql`
+          INSERT INTO users ( fname, lname, username, password, contact,  type, created_at) VALUES ( ${fname}, ${lname}, ${username}, ${hash}, ${contact}, ${type}, ${today})
+          RETURNING *
         `;
-        return res.status(201).json({ message: "User registered successfully" });
+
+        if(type == "owner") {
+          const {contact, bank_account} = req.body;
+          await createRazorpayFundAccount(data[0], bank_account);
         }
+
+        return res.status(200).json({ message: "User registered successfully" });
+      }
     } catch (err) {
         console.log(err);
         return res.status(500).json({ error: "Internal server error" });
