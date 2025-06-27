@@ -12,11 +12,13 @@ export const createOrder = async (req, res) => {
             return res.status(401).json({ error: "no active user" });
         }
         const { amount } = req.body;
+        console.log("amount :"+ amount);
         const options = {
             amount: amount * 100,
             currency: 'INR',              
             receipt: `parking_${Date.now()}`
         };
+        console.log(options);
         const order = await razorpay.orders.create(options);
         return res.status(200).json({ data: order });
     } catch (error) {
