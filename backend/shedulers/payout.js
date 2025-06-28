@@ -1,6 +1,8 @@
 import cron from 'node-cron';
 import axios from "axios";
 import { sql } from '../config/db.js';
+import { io } from '../server.js';
+import { connectedUsers } from '../sockets/socket.js';
 
 cron.schedule('* * * * *', async () => {
   try {
@@ -12,9 +14,7 @@ cron.schedule('* * * * *', async () => {
       WHERE eTime < ${now} AND status = 'active'
       RETURNING *
     `;
-    console.log("booking in sheduler : ");
-    console.log(bookings);
-    const account_number = "2323230000000001";
+    const account_number = process.env.ACCOUNT_NUMBER;
     for(const b of bookings) {
       const response = await sql`
           SELECT * FROM pending_payouts 
@@ -56,6 +56,11 @@ cron.schedule('* * * * *', async () => {
                   UPDATE pending_payouts SET status = 'completed', processed_at = ${new Date()}
                   WHERE booking_id = ${p.booking_id};
               `;
+              try {
+                await paymentSuccessful(p.owner_id, amount);
+              } catch (error) {
+                console.error(`Failed to send payment notification to user ${p.owner_id}:`, error);
+              }
             }catch(error) {
                 console.log(p.booking_id + " : payout failed");
                 if (error.response) {
@@ -75,3 +80,27 @@ cron.schedule('* * * * *', async () => {
   }
 });
 
+export const paymentSuccessful = async (id, amount) => {
+  try {
+    const userSocketId = connectedUsers.get(id);
+    const now = new Date();
+    const message = `Payment Successful of ₹${(amount / 100).toFixed(2)}`;
+
+    if (userSocketId) {
+      io.to(userSocketId).emit('parking-payment', { message });
+      await sql`
+        INSERT INTO notifications (users_id, message, created_at, status)
+        VALUES (${id}, ${message}, ${now}, 'read')
+      `;
+      console.log(`Payment notification sent to user ${id}`);
+    } else {
+      await sql`
+        INSERT INTO notifications (users_id, message, created_at, status)
+        VALUES (${id}, ${message}, ${now}, 'unread')
+      `;
+      console.log(`User ${id} not connected, notification saved`);
+    }
+  } catch (error) {
+    throw error;
+  }
+};
