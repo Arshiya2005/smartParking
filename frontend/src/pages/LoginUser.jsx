@@ -124,16 +124,6 @@ const LoginUser = () => {
           </div>
         </form>
 
-        {/* ✅ Hide Google login for admin */}
-        {type !== "admin" && (
-          <button
-            onClick={handleGoogleLogin}
-            className="btn btn-outline-danger w-100"
-            style={{ fontWeight: "500" }}
-          >
-            <i className="bi bi-google me-2"></i> Continue with Google
-          </button>
-        )}
       </div>
     </div>
   );

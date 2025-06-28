@@ -1,6 +1,6 @@
 import React from 'react';
-import NavbarLanding from '../components/NavbarLanding';
 import { Link } from 'react-router-dom';
+import NavbarLanding from '../components/NavbarLanding';
 import TripIllustration from '../assets/car.svg';
 import LocationSearchIcon from '../assets/locationSearch.svg';
 import ClockIcon from '../assets/clock.svg';
@@ -87,9 +87,9 @@ const LandingPage = () => {
       <section
         id="join"
         className="py-5 text-center"
-        style={{ backgroundColor: '#537d8', color: 'var(--text-color)' }}
+        style={{ backgroundColor: '#537d8d', color: 'var(--text-color)' }}
       >
-        <div className="container" style={{ backgroundColor: '#537d8' }}>
+        <div className="container">
           <h2 className="mb-4">Join SmartPark</h2>
           <div className="row justify-content-center g-4">
 
@@ -108,8 +108,6 @@ const LandingPage = () => {
                       padding: '0.6rem 1.2rem',
                       border: 'none',
                       borderRadius: '0.25rem',
-                      display: 'inline-block',
-                      textDecoration: 'none',
                       fontWeight: '500',
                     }}
                   >
@@ -136,8 +134,6 @@ const LandingPage = () => {
                       padding: '0.6rem 1.2rem',
                       border: 'none',
                       borderRadius: '0.25rem',
-                      display: 'inline-block',
-                      textDecoration: 'none',
                       fontWeight: '500',
                     }}
                   >
@@ -151,13 +147,13 @@ const LandingPage = () => {
         </div>
       </section>
 
-      {/* About Us Section */}
+      {/* About Us + Policies + Contact Section */}
       <section
         id="about"
-        className="py-5 text-center"
+        className="py-5"
         style={{ backgroundColor: 'var(--background-color)', color: 'var(--text-color)' }}
       >
-        <div className="container">
+        <div className="container text-center">
           <h2 className="mb-4">About SmartPark</h2>
           {[
             "SmartPark is more than just a parking solution — it's a movement toward smarter, cleaner, and more efficient urban mobility.",
@@ -166,10 +162,33 @@ const LandingPage = () => {
             "We believe in sustainability, smart infrastructure, and community-driven technology. Each listed spot contributes to less traffic congestion, fewer emissions, and a better city experience.",
             "Our mission is simple: turn everyday hassles into seamless experiences through intuitive design and intelligent systems.",
             "Built by a team of students passionate about tech and urban impact, SmartPark blends innovation with practicality for real-world results.",
-            "Join us in building the future of smarter parking — one slot at a time."
           ].map((text, index) => (
-            <p key={index} className="text-center">{text}</p>
+            <p key={index}>{text}</p>
           ))}
+
+          {/* Policy Links */}
+          <div className="row mt-5 justify-content-center">
+            {[
+              { label: "Privacy Policy", route: "/privacy" },
+              { label: "Terms of Use", route: "/terms" },
+              { label: "Refund & Cancellation Policy", route: "/refund" },
+            ].map((item, idx) => (
+              <div className="col-md-3 mb-3" key={idx}>
+                <Link to={item.route} className="btn btn-outline-primary w-100">
+                  {item.label}
+                </Link>
+              </div>
+            ))}
+          </div>
+
+          {/* Contact Us CTA */}
+          <div className="mt-4">
+            <h5>Have Questions?</h5>
+            <p>We're always here to help!</p>
+            <Link to="/contact" className="btn btn-primary">
+              Contact Us
+            </Link>
+          </div>
         </div>
       </section>
     </>

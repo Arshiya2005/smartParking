@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import AdminNavBar from "../../components/admin/AdminNavBar";
 import { useNavigate } from "react-router-dom";
-
+import useAuthRedirect from "../../hooks/useAuthRedirect";
 const CustomerManagement = () => {
+    useAuthRedirect("admin");
   const [customers, setCustomers] = useState([]);
   const navigate = useNavigate();
 

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
 const AreaDetails = () => {
+  useAuthRedirect("owner");
   const { id } = useParams();
   const [area, setArea] = useState(null);
   const [slotStats, setSlotStats] = useState(null);

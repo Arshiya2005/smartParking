@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useOutletContext } from "react-router-dom";
-
+import useAuthRedirect from "../../hooks/useAuthRedirect";
 const OwnerActiveBookings = () => {
+    useAuthRedirect("admin");
   const { owner } = useOutletContext();
   const [areas, setAreas] = useState([]);
   const [selectedArea, setSelectedArea] = useState("");
@@ -99,20 +100,20 @@ const OwnerActiveBookings = () => {
                 </tr>
               </thead>
               <tbody>
-                {activeBookings.map((b, i) => (
-                  <tr key={b.id || i}>
-                    <td>{i + 1}</td>
-                    <td>{b.customer_name}</td>
-                    <td>{b.vehicle_number}</td>
-                    <td>{new Date(b.date).toLocaleDateString()}</td>
-                    <td>{b.sTime}</td>
-                    <td>{b.eTime}</td>
-                    <td>
-                      <span className="badge bg-success">{b.status}</span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
+  {activeBookings.map((b, i) => (
+    <tr key={b.id || i}>
+      <td>{i + 1}</td>
+      <td>{b.customer_id}</td> {/* Replace with name if available */}
+      <td>{b.vehicle_id}</td>  {/* Replace with number if available */}
+      <td>{new Date(b.date).toLocaleDateString()}</td>
+      <td>{b.stime}</td>
+      <td>{b.etime}</td>
+      <td>
+        <span className="badge bg-success">{b.status}</span>
+      </td>
+    </tr>
+  ))}
+</tbody>
             </table>
           </div>
         )

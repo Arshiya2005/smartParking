@@ -3,6 +3,9 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 import LandingPage from './pages/LandingPage';
+import Privacy from './pages/Privacy';
+import Terms from './pages/Terms';
+import Refund from './pages/Refund';
 import LoginUser from './pages/LoginUser';
 import SignUpUser from './pages/SignUpUser';
 import CustomerHome from './pages/Customer/CustomerHome';
@@ -49,6 +52,7 @@ import OwnerActiveBookings from './pages/Admin/OwnerActiveBookings';
 import OwnerBookingHistory from './pages/Admin/OwnerBookingHistory';
 import OwnerAreas from './pages/Admin/OwnerAreas';
 import RazorpayPayment from './pages/Customer/RazorPayPayment';
+import ContactUs from './pages/ContactUs';
 function App() {
   return (
     <>
@@ -56,6 +60,10 @@ function App() {
 
       <Routes>
         <Route path="/" element={<LandingPage />} />
+        <Route path="/privacy" element={<Privacy />} />
+        <Route path="/terms" element={<Terms />} />
+        <Route path="/refund" element={<Refund />} />
+        <Route path="/contact" element={<ContactUs/>}/>
         <Route path="/login" element={<LoginUser />} />
         <Route path="/signup" element={<SignUpUser />} />
         <Route path="/customer" element={<CustomerHome />} />

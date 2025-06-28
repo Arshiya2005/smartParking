@@ -1,26 +1,29 @@
-// src/pages/customer/CustomerVehicles.jsx
 import React, { useEffect, useState } from "react";
 import VehicleCard from "../../components/vehicleCard";
 import { FaPlus } from "react-icons/fa";
-import peachh from "../../assets/peach_background.jpg"
+import useAuthRedirect from "../../hooks/useAuthRedirect"; // ✅ Ensure this is imported
+import peachh from "../../assets/peach_background.jpg"; // if still used
 
 const CustomerVehicles = () => {
+  useAuthRedirect("customer");
+
   const [vehicles, setVehicles] = useState([]);
   const [newVehicle, setNewVehicle] = useState({ name: "", no: "", type: "car" });
 
   const fetchVehicles = async () => {
     try {
       const res = await fetch("http://localhost:3000/customer/profile/myVehicles", {
-      method: "GET",
-      credentials: "include",
-      headers: {
-      "Cache-Control": "no-cache",
-    },});
+        method: "GET",
+        credentials: "include",
+        headers: {
+          "Cache-Control": "no-cache",
+        },
+      });
       const data = await res.json();
       if (res.ok) {
         setVehicles(data.data);
       } else {
-        console.error("Failed to fetch vehicles");
+        console.error("Failed to fetch vehicles:", data.error || data.message);
       }
     } catch (err) {
       console.error("Error fetching vehicles:", err);
@@ -29,12 +32,12 @@ const CustomerVehicles = () => {
 
   const handleAddVehicle = async () => {
     const { name, no, type } = newVehicle;
-  
+
     if (!name.trim() || !no.trim() || !type) {
       alert("Please fill in all fields before adding a vehicle.");
       return;
     }
-  
+
     try {
       const res = await fetch("http://localhost:3000/customer/profile/myVehicles/add", {
         method: "POST",
@@ -42,17 +45,22 @@ const CustomerVehicles = () => {
         credentials: "include",
         body: JSON.stringify(newVehicle),
       });
+
+      const data = await res.json();
+
       if (res.ok) {
-        alert("Vehicle added successfully");
+        alert(data.message || "Vehicle added successfully");
         setNewVehicle({ name: "", no: "", type: "car" });
-        await fetchVehicles(); // refresh
+        await fetchVehicles(); // Refresh list
       } else {
-        alert("Failed to add vehicle");
+        alert(data.error || data.message || "Failed to add vehicle"); // ✅ Use backend message
       }
     } catch (err) {
       console.error("Add vehicle error:", err);
+      alert("Something went wrong while adding the vehicle.");
     }
   };
+
   const handleDeleteVehicle = async (id) => {
     try {
       const res = await fetch("http://localhost:3000/customer/profile/myVehicles/delete", {
@@ -61,11 +69,14 @@ const CustomerVehicles = () => {
         credentials: "include",
         body: JSON.stringify({ id }),
       });
+
+      const data = await res.json();
+
       if (res.ok) {
-        alert("Vehicle deleted");
+        alert(data.message || "Vehicle deleted");
         setVehicles((prev) => prev.filter((v) => v.id !== id));
       } else {
-        alert("Failed to delete vehicle");
+        alert(data.error || "Failed to delete vehicle");
       }
     } catch (err) {
       console.error("Delete error:", err);

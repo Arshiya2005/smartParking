@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-
+import useAuthRedirect from "../../hooks/useAuthRedirect";
 const CustomerNotifications = () => {
+  useAuthRedirect("customer");
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
 

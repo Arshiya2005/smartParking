@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useOutletContext } from "react-router-dom";
-
+import useAuthRedirect from "../../hooks/useAuthRedirect";
 const OwnerBookingHistory = () => {
+    useAuthRedirect("admin");
   const { owner } = useOutletContext();
   const [areas, setAreas] = useState([]);
   const [selectedArea, setSelectedArea] = useState("");
@@ -100,8 +101,8 @@ const OwnerBookingHistory = () => {
                 <tr key={b.id || i}>
                   <td>{i + 1}</td>
                   <td>{new Date(b.date).toLocaleDateString()}</td>
-                  <td>{b.sTime}</td>
-                  <td>{b.eTime}</td>
+                  <td>{b.stime}</td>
+                  <td>{b.etime}</td>
                   <td>
                     <span
                       className={`badge ${

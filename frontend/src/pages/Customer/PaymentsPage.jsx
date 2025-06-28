@@ -1,8 +1,9 @@
 import React, { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import NavBarCustomer from "../../components/NavBarCustomer";
-
+import useAuthRedirect from "../../hooks/useAuthRedirect";
 const PaymentsPage = () => {
+  useAuthRedirect("customer");
   const { state } = useLocation();
   const navigate = useNavigate();
 
@@ -32,8 +33,21 @@ const PaymentsPage = () => {
     console.log("price:", price);
   }, []);
 
+  const loadRazorpayScript = () => {
+    return new Promise((resolve) => {
+      if (document.getElementById("razorpay-script")) return resolve(true);
+      const script = document.createElement("script");
+      script.src = "https://checkout.razorpay.com/v1/checkout.js";
+      script.id = "razorpay-script";
+      script.onload = () => resolve(true);
+      script.onerror = () => resolve(false);
+      document.body.appendChild(script);
+    });
+  };
+
   const handlePayment = async () => {
     try {
+      // Step 1: Book the slot
       const res = await fetch("http://localhost:3000/customer/addbooking", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -42,45 +56,90 @@ const PaymentsPage = () => {
       });
 
       const result = await res.json();
-console.log("Booking API Response:", result.id); // Add this to debug
+      console.log("📦 Booking Response:", result);
 
-if (res.ok && result.bookingId) {
-  navigate("/customer/razorpay", {
-    state: {
-      slot,
-      vehicle,
-      owner,
-      chosenSlotNo,
-      sTime,
-      eTime,
-      price,
-      bookingId: result.bookingId, // ✅ Use it
-    },
-  });
-}
-
-      let bookingId =
+      const bookingId =
         result.bookingId || result.id || result.data?.id || result.data?.bookingId;
 
-      if (res.ok && bookingId) {
-        navigate("/customer/razorpay", {
-          state: {
-            slot,
-            vehicle,
-            owner,
-            chosenSlotNo,
-            sTime,
-            eTime,
-            price,
-            bookingId, // ✅ MUST pass this to payment page
-          },
-        });
-      } else {
+      if (!res.ok || !bookingId) {
         alert("Booking failed. Please try again.");
+        return;
       }
+
+      // Step 2: Load Razorpay SDK
+      const scriptLoaded = await loadRazorpayScript();
+      if (!scriptLoaded) {
+        alert("Failed to load Razorpay SDK");
+        return;
+      }
+
+      // Step 3: Create Razorpay Order
+      const orderRes = await fetch("http://localhost:3000/createOrder", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ amount: price }),
+      });
+
+      const orderResult = await orderRes.json();
+      const order = orderResult?.data;
+
+      if (!order?.id) {
+        throw new Error("Invalid Razorpay order");
+      }
+
+      console.log("✅ Razorpay Order Created:", order);
+
+      // Step 4: Open Razorpay checkout
+      const options = {
+        key: "rzp_test_PfCHQfot63V69Z",
+        amount: order.amount,
+        currency: order.currency,
+        name: "Smart Parking",
+        description: "Parking Fee",
+        order_id: order.id,
+        handler: async function (response) {
+          console.log("💸 Razorpay Response:", response);
+
+          const verifyBody = {
+            ...response,
+            id: bookingId,
+            amount: order.amount,
+          };
+
+          console.log("📬 Sending to verifyPayment:", verifyBody);
+
+          const verifyRes = await fetch("http://localhost:3000/verifyPayment", {
+            method: "POST",
+            credentials: "include",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(verifyBody),
+          });
+
+          const verifyData = await verifyRes.json();
+
+          if (verifyRes.ok) {
+            alert(verifyData.message || "Payment successful!");
+            navigate("/customer");
+          } else {
+            alert(verifyData.message || "Payment verification failed.");
+          }
+        },
+        prefill: {
+          name: "Test User",
+          email: "test@example.com",
+          contact: "9999999999",
+        },
+        theme: {
+          color: "#0d9488",
+        },
+      };
+
+      const rzp = new window.Razorpay(options);
+      rzp.open();
     } catch (err) {
-      console.error("❌ Booking error:", err);
-      alert("Something went wrong.");
+      console.error("❌ Payment error:", err);
+      alert("Something went wrong. Please try again.");
     }
   };
 

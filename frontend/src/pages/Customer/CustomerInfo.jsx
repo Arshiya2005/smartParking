@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
 import green from "../../assets/green_back.jpg"
 import socket from "../../socket";
+import useAuthRedirect from "../../hooks/useAuthRedirect";
 const CustomerInfo = () => {
+  useAuthRedirect("customer");
   const [info, setInfo] = useState(null);
   const [newFname, setNewFname] = useState("");
   const [newLname, setNewLname] = useState("");

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import green from "../../assets/green_back.jpg";
 
 const OwnerInfo = () => {
+  useAuthRedirect("owner");
   const [info, setInfo] = useState(null);
   const [newFname, setNewFname] = useState("");
   const [newLname, setNewLname] = useState("");

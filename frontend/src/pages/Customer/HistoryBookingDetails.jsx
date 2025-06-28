@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import NavBarCustomer from "../../components/NavBarCustomer";
-
+import useAuthRedirect from "../../hooks/useAuthRedirect";
 const HistoryBookingDetails = () => {
+  useAuthRedirect("customer");
   const { state } = useLocation();
   const booking = state?.booking;
   const [data, setData] = useState(null);

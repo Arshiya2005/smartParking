@@ -5,6 +5,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import { format } from "date-fns";
 
 const AreaActiveBookings = () => {
+  useAuthRedirect("owner");
   const location = useLocation();
   const navigate = useNavigate();
   const area = location.state?.area;

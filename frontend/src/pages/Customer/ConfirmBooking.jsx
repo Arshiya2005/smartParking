@@ -3,8 +3,10 @@
 import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import NavBarCustomer from "../../components/NavBarCustomer";
+import useAuthRedirect from "../../hooks/useAuthRedirect";
 
 const ConfirmBooking = () => {
+  useAuthRedirect("customer");
   const { state } = useLocation();
   const navigate = useNavigate();
 

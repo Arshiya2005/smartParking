@@ -3,6 +3,7 @@ import AreaCard from "../../components/owner/AreaCard";
 import greenBg from "../../assets/green_back.jpg"
 import NavBarOwner from "../../components/owner/NavBarOwner";
 const MyArea = () => {
+  useAuthRedirect("owner");
   const [areas, setAreas] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);

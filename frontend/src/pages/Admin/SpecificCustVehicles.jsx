@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useOutletContext } from "react-router-dom";
-
+import useAuthRedirect from "../../hooks/useAuthRedirect";
 const SpecificCustVehicles = () => {
+    useAuthRedirect("admin");
   const { customer } = useOutletContext();
   const [vehicles, setVehicles] = useState([]);
 

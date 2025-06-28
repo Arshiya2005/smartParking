@@ -8,6 +8,7 @@ import peaach from "../../assets/green_back.jpg";
 import socket from "../../socket";
 import { toast } from "react-toastify";
 import useBookingReminders from "../../hooks/useBookingReminders";
+
 const CustomerHome = () => {
   useAuthRedirect("customer");
 

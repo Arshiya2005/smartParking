@@ -3,8 +3,10 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import NavBarCustomer from "../../components/NavBarCustomer";
+import useAuthRedirect from "../../hooks/useAuthRedirect";
 
 const CancelBooking = () => {
+  useAuthRedirect("customer");
   const location = useLocation();
   const navigate = useNavigate();
   const bookingId = location.state?.bookingId;

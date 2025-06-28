@@ -4,8 +4,9 @@ import { useLocation, useNavigate } from "react-router-dom";
 import NavBarCustomer from "../../components/NavBarCustomer";
 import NearbyMap from "../../components/NearbyMap";
 import SlotCard from "../../components/SlotCard";
-
+import useAuthRedirect from "../../hooks/useAuthRedirect";
 const NearbySpots = () => {
+  useAuthRedirect("customer");
   const location = useLocation();
   const navigate = useNavigate();
   const data = location.state?.data;

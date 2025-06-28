@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import useAuthRedirect from "../../hooks/useAuthRedirect";
 
 const BookingForm = () => {
+  useAuthRedirect("customer");
   const [vehicles, setVehicles] = useState([]);
   const [showAddVehicle, setShowAddVehicle] = useState(false);
   const [newVehicle, setNewVehicle] = useState({ name: "", no: "", type: "car" });

@@ -2,8 +2,9 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { FaChevronRight } from 'react-icons/fa';
-
+import useAuthRedirect from "../../hooks/useAuthRedirect";
 const CustomerHistory = () => {
+  useAuthRedirect("customer");
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();

@@ -1,8 +1,9 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import AdminNavBar from "../../components/admin/AdminNavBar";
-
+import useAuthRedirect from "../../hooks/useAuthRedirect";
 const AdminProfile = () => {
+    useAuthRedirect("admin");
   const navigate = useNavigate();
 
   const adminData = {

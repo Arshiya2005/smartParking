@@ -2,8 +2,9 @@ import React from "react";
 import { Outlet } from "react-router-dom";
 import SpecificOwnerNav from "../../components/admin/SpecificOwnerNav";
 import AdminNavBar from "../../components/admin/AdminNavBar";
-
+import useAuthRedirect from "../../hooks/useAuthRedirect";
 const SpecificOwner = () => {
+    useAuthRedirect("admin");
   const owner = JSON.parse(localStorage.getItem("selectedOwner"));
 
   if (!owner) {

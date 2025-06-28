@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 const AreaHistory = () => {
+  useAuthRedirect("owner");
   const location = useLocation();
   const navigate = useNavigate();
   const area = location.state?.area;

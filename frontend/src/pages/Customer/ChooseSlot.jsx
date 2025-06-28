@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import NavBarCustomer from "../../components/NavBarCustomer";
+import useAuthRedirect from "../../hooks/useAuthRedirect";
 
 const ChooseSlot = () => {
+  useAuthRedirect("customer");
   const location = useLocation();
   const navigate = useNavigate();
   const { spot } = location.state || {};
@@ -30,6 +32,11 @@ const ChooseSlot = () => {
 
     if (endDate <= startDate) {
       return "End time must be after start time";
+    }
+
+    const durationInMinutes = (endDate - startDate) / (1000 * 60);
+    if (durationInMinutes < 30) {
+      return "Minimum booking duration is 30 minutes.";
     }
 
     return null;
@@ -61,13 +68,12 @@ const ChooseSlot = () => {
         setResponse(data);
         setError("");
 
-        // Price calculation
         const [startH, startM] = sTime.split(":").map(Number);
         const [endH, endM] = eTime.split(":").map(Number);
         const durationInMinutes = (endH * 60 + endM) - (startH * 60 + startM);
         const durationInHours = Math.ceil(durationInMinutes / 60);
 
-        const rate = data.slot[0].price_per_hour || 50; // fallback if undefined
+        const rate = data.slot[0].price_per_hour || 50;
         setPrice(rate * durationInHours);
       } else {
         setResponse(null);
@@ -131,13 +137,12 @@ const ChooseSlot = () => {
         {response && (
           <div className="alert alert-success mt-4">
             <h5>✅ Slot Available!</h5>
-            {/* <p><strong>Slot No:</strong> {response.chosenSlotNo}</p> */}
-            {/* <p><strong>Owner:</strong> {response.ownerdata.fname} {response.ownerdata.lname} ({response.ownerdata.email})</p>
-            <p><strong>Vehicle:</strong> {response.vehicle[0].model} ({response.vehicle[0].number})</p> */}
             <p><strong>Start:</strong> {sTime}</p>
             <p><strong>End:</strong> {eTime}</p>
             <p><strong>Total Price:</strong> ₹{price}</p>
-            <button className="btn btn-success mt-2" onClick={handleProceed}>Proceed Ahead</button>
+            <button className="btn btn-success mt-2" onClick={handleProceed}>
+              Proceed Ahead
+            </button>
           </div>
         )}
       </div>

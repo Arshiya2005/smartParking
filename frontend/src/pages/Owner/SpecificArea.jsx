@@ -12,6 +12,7 @@ import {
 } from "recharts";
 
 const SpecificArea = () => {
+  useAuthRedirect("owner");
   const location = useLocation();
   const navigate = useNavigate();
   const area = location.state?.area;

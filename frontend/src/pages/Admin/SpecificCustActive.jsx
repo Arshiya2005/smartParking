@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useOutletContext } from "react-router-dom";
-
+import useAuthRedirect from "../../hooks/useAuthRedirect";
 const SpecificCustActive = () => {
+    useAuthRedirect("admin");
   const { customer } = useOutletContext();
   const [activeBookings, setActiveBookings] = useState([]);
 
@@ -59,8 +60,8 @@ const SpecificCustActive = () => {
                   <td>{i + 1}</td>
                   <td>{b.slot_id}</td>
                   <td>{new Date(b.date).toLocaleDateString()}</td>
-                  <td>{b.sTime}</td>
-                  <td>{b.eTime}</td>
+                  <td>{b.stime}</td>
+                  <td>{b.etime}</td>
                   <td>
                     <span className="badge bg-success">{b.status}</span>
                   </td>

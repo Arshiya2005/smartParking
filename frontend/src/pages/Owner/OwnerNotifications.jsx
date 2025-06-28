@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 
 const OwnerNotifications = () => {
+  useAuthRedirect("owner");
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
 
