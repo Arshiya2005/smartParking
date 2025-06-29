@@ -14,15 +14,19 @@ cron.schedule("0 0 * * *", async () => {
         if(bike === null && car === null) {
             await sql`
                 UPDATE parkingspot
-                SET is_active = FALSE, status = 'completed', completed_at = ${now}
+                SET is_active = FALSE
                 WHERE id = ${spot_id};
             `;
         }else {
             await sql`
-                UPDATE parkingspot SET bike = ${bike}, car = ${car}, status = 'completed', completed_at = ${now}  WHERE id = ${spot_id};
+                UPDATE parkingspot SET bike = ${bike}, car = ${car}  WHERE id = ${spot_id};
             `;
         }
-        
+        await sql`
+            UPDATE scheduled_task
+            SET  status = 'completed', completed_at = ${now}
+            WHERE id = ${spot.id};
+        `;
     }
 
     console.log(`completed ${spotsToDelete.length} scheduled tasks.`);
