@@ -102,3 +102,24 @@ cron.schedule('* * * * *', async () => {
   }
 });
 
+cron.schedule('* * * * *', async () => {
+  const now = new Date();
+  const time = new Date(now.getTime() - 5 * 60000).toTimeString().split(' ')[0];
+  const expiredBookings = await sql`
+    UPDATE bookings SET status = 'failed' WHERE status = 'initiated'
+    AND created_time <= ${time}
+    RETURNING *;
+  `;
+  for (const b of expiredBookings) {
+    const userSocketId = connectedUsers.get(b.customer_id);
+    if (userSocketId) {
+      io.to(userSocketId).emit('timeout', {
+        message: `${b.name} bookings failed due to timeout`,
+      });
+      console.log(`Reminder sent to user ${b.customer_id}`);
+    }
+  }
+  if (expiredBookings.length > 0) {
+    console.log(`⏰ Marked ${expiredBookings.length} bookings as failed due to timeout`);
+  }
+});

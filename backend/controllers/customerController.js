@@ -264,8 +264,9 @@ export const chooseSlot = async (req, res) => {
         for(var i = 1; i <= count; i++) {
             const response = await sql`
                 SELECT * FROM bookings
-                WHERE date = ${today} AND slot_id = ${id} AND slot_no = ${i} AND NOT (${eTime} <= sTime OR ${sTime} >= eTime ) AND status = ${'active'};
+                WHERE date = ${today} AND slot_id = ${id} AND slot_no = ${i} AND NOT (${eTime} <= sTime OR ${sTime} >= eTime ) AND (status = ${'active'} OR status = ${'initiated'});
             `;
+            //changed query 
             if (response.length === 0) {
                 return res.status(200).json({ user : req.user, slot : spotdata, vehicle, chosenSlotNo: i, ownerdata });
             }
@@ -345,19 +346,18 @@ export const addbooking = async (req, res) => {
         }
         const now = new Date();
         const today = now.toISOString().slice(0, 10);
-        console.log(today);
+        const time = now.toTimeString().split(' ')[0];
         const {slot, vehicle, chosenSlotNo, owner} = req.body;
-        console.log(req.body);
         const data = await sql`
             INSERT INTO bookings (
-                type, sTime, eTime, date, slot_no,
+                type, sTime, eTime, date, created_time, slot_no,
                 customer_id, owner_id, vehicle_id, slot_id
             ) VALUES (
-                ${vehicle.type}, ${slot.sTime}, ${slot.eTime}, ${today}, ${chosenSlotNo},
+                ${vehicle.type}, ${slot.sTime}, ${slot.eTime}, ${today}, ${time}, ${chosenSlotNo},
                 ${req.user.id}, ${owner.id}, ${vehicle.id}, ${slot.id}
             ) RETURNING *
         `;
-        console.log(data);
+        //added time
         return res.status(200).json({message : "booked successfully", id : data[0].id });
     } catch (error) {
         return res.status(500).json({ error: "internal server error" });
@@ -388,7 +388,6 @@ export const cancelBooking = async (req, res) => {
             return res.status(401).json({ error: "no active user" });
         }
         const id = req.query.id;
-        console.log(id);
         const booking = await sql`
             SELECT * FROM bookings WHERE id = ${id}
         `;
@@ -408,7 +407,6 @@ export const cancelBooking = async (req, res) => {
         await sql`
             UPDATE bookings SET status = 'cancelled' WHERE id = ${id};
         `;
-        console.log("updated booking status");
         await sql`
             UPDATE pending_payouts SET status = 'cancelled', processed_at = ${new Date()}  WHERE booking_id = ${id};
         `;

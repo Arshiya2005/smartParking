@@ -51,7 +51,6 @@ export const verifyPayment = async (req, res) => {
             WHERE id = ${id}
             RETURNING *;
             `;
-            console.log(data[0]);
         if (isValid) {
             await sql`
                 INSERT INTO pending_payouts (booking_id, amount, status, created_at, owner_id ) 
