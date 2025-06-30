@@ -364,6 +364,27 @@ export const addbooking = async (req, res) => {
     }
 };
 
+export const chechAvailability = async (req, res) => {
+    try {
+        if(req.user.type !== "customer") {
+            return res.status(401).json({ error: "no active user" });
+        }
+        const now = new Date();
+        const today = now.toISOString().slice(0, 10);
+        const {slot, chosenSlotNo} = req.body;
+        const response = await sql`
+            SELECT * FROM bookings
+            WHERE date = ${today} AND slot_id = ${slot.id} AND slot_no = ${chosenSlotNo} AND NOT (${slot.eTime} <= sTime OR ${slot.sTime} >= eTime ) AND (status = ${'active'} OR status = ${'initiated'});
+        `;
+        if (response.length === 0) {
+            return res.status(200).json({message : "available"});
+        }
+        return res.status(409).json({message : "Not available"});
+    } catch (error) {
+        return res.status(500).json({ error: "internal server error" });
+    }
+}
+
 export const bookingHistory = async (req, res) => {
     try {
         if(req.user.type !== "customer") {
