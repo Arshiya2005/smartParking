@@ -1,11 +1,39 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import NavBarCustomer from "../../components/NavBarCustomer";
 import useAuthRedirect from "../../hooks/useAuthRedirect";
+import useBookingReminders from "../../hooks/useBookingReminders";
+
 const PaymentsPage = () => {
   useAuthRedirect("customer");
   const { state } = useLocation();
   const navigate = useNavigate();
+
+  const [userId, setUserId] = useState(null);
+
+  // ✅ Fetch logged-in customer ID
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const res = await fetch("http://localhost:3000/customer/welcome", {
+          credentials: "include",
+        });
+        const result = await res.json();
+        const user = result?.data;
+        if (res.ok && user?.type === "customer") {
+          const id = user.id || user._id;
+          setUserId(id);
+        }
+      } catch (err) {
+        console.error("❌ Error fetching user in PaymentsPage:", err);
+      }
+    };
+
+    fetchUser();
+  }, []);
+
+  // ✅ Booking reminders (includes timeout logic)
+  useBookingReminders(userId);
 
   const slot = state?.data?.slot;
   const vehicle = state?.data?.vehicle;
@@ -47,50 +75,66 @@ const PaymentsPage = () => {
 
   const handlePayment = async () => {
     try {
-      // Step 1: Book the slot
+      // ✅ Step 1: Check Slot Availability First
+      const checkRes = await fetch("http://localhost:3000/customer/checkAvailability", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(bookingDetails),
+      });
+  
+      const checkResult = await checkRes.json();
+  
+      if (!checkRes.ok || !checkResult?.available) {
+        alert(checkResult?.message || "❌ Slot is no longer available. Please try again.");
+        navigate("/customer"); // or redirect to ChooseSlot page
+        return;
+      }
+  
+      // ✅ Step 2: Proceed to Book the Slot
       const res = await fetch("http://localhost:3000/customer/addbooking", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
         body: JSON.stringify(bookingDetails),
       });
-
+  
       const result = await res.json();
       console.log("📦 Booking Response:", result);
-
+  
       const bookingId =
         result.bookingId || result.id || result.data?.id || result.data?.bookingId;
-
+  
       if (!res.ok || !bookingId) {
         alert("Booking failed. Please try again.");
         return;
       }
-
-      // Step 2: Load Razorpay SDK
+  
+      // ✅ Step 3: Load Razorpay SDK
       const scriptLoaded = await loadRazorpayScript();
       if (!scriptLoaded) {
         alert("Failed to load Razorpay SDK");
         return;
       }
-
-      // Step 3: Create Razorpay Order
+  
+      // ✅ Step 4: Create Razorpay Order
       const orderRes = await fetch("http://localhost:3000/createOrder", {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ amount: price }),
       });
-
+  
       const orderResult = await orderRes.json();
       const order = orderResult?.data;
-
+  
       if (!order?.id) {
         throw new Error("Invalid Razorpay order");
       }
-
+  
       console.log("✅ Razorpay Order Created:", order);
-
-      // Step 4: Open Razorpay checkout
+  
+      // ✅ Step 5: Open Razorpay Checkout
       const options = {
         key: "rzp_test_PfCHQfot63V69Z",
         amount: order.amount,
@@ -100,24 +144,24 @@ const PaymentsPage = () => {
         order_id: order.id,
         handler: async function (response) {
           console.log("💸 Razorpay Response:", response);
-
+  
           const verifyBody = {
             ...response,
             id: bookingId,
             amount: order.amount,
           };
-
+  
           console.log("📬 Sending to verifyPayment:", verifyBody);
-
+  
           const verifyRes = await fetch("http://localhost:3000/verifyPayment", {
             method: "POST",
             credentials: "include",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(verifyBody),
           });
-
+  
           const verifyData = await verifyRes.json();
-
+  
           if (verifyRes.ok) {
             alert(verifyData.message || "Payment successful!");
             navigate("/customer");
@@ -134,7 +178,7 @@ const PaymentsPage = () => {
           color: "#0d9488",
         },
       };
-
+  
       const rzp = new window.Razorpay(options);
       rzp.open();
     } catch (err) {

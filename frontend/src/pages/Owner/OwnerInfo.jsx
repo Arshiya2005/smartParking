@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import green from "../../assets/green_back.jpg";
-
+import useAuthRedirect from "../../hooks/useAuthRedirect";
 const OwnerInfo = () => {
   useAuthRedirect("owner");
   const [info, setInfo] = useState(null);

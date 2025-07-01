@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import NavBarOwner from "../../components/owner/NavBarOwner";
 import green from "../../assets/green_back.jpg"
+import useAuthRedirect from "../../hooks/useAuthRedirect";
 const AddArea = () => {
   useAuthRedirect("owner");
   const [formData, setFormData] = useState({

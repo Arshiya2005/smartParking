@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import AreaCard from "../../components/owner/AreaCard";
 import greenBg from "../../assets/green_back.jpg"
 import NavBarOwner from "../../components/owner/NavBarOwner";
+import useAuthRedirect from "../../hooks/useAuthRedirect";
 const MyArea = () => {
   useAuthRedirect("owner");
   const [areas, setAreas] = useState([]);

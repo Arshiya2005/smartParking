@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-
+import useAuthRedirect from "../../hooks/useAuthRedirect";
 const AreaDetails = () => {
   useAuthRedirect("owner");
   const { id } = useParams();

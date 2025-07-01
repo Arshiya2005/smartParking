@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-
+import useAuthRedirect from "../../hooks/useAuthRedirect";
 const AreaHistory = () => {
   useAuthRedirect("owner");
   const location = useLocation();
