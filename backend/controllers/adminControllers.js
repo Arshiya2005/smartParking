@@ -34,6 +34,31 @@ export const welcome = async (req, res) => {
 };
 
 
+export const info = async (req, res) => {
+    try {
+        if(req.user.type !== "admin") {
+            return res.status(401).json({ error: "no active user" });
+        }
+        return res.status(200).json({ data: req.user });
+    } catch (error) {
+        return res.status(500).json({ error: "internal server error" });
+    }
+};
+
+export const adminList = async (req, res) => {
+    try {
+        if(req.user.type !== "admin") {
+            return res.status(401).json({ error: "no active user" });
+        }
+        const admins = await sql`
+             SELECT * FROM users WHERE type = ${"admin"};
+        `;
+        return res.status(200).json({ data: admins });
+    } catch (error) {
+        return res.status(500).json({ error: "internal server error" });
+    }
+};
+
 export const ownerInfo = async (req, res) => {
     try {
         if(req.user.type !== "admin") {
