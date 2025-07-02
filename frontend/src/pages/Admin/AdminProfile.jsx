@@ -1,18 +1,15 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AdminNavBar from "../../components/admin/AdminNavBar";
 import useAuthRedirect from "../../hooks/useAuthRedirect";
+
 const AdminProfile = () => {
-    useAuthRedirect("admin");
+  useAuthRedirect("admin");
   const navigate = useNavigate();
 
-  const adminData = {
-    name: "System Administrator",
-    email: "admin@parksmart.com",
-    role: "Admin",
-    description:
-      "The administrator has full access to user management, system analytics, and platform monitoring.",
-  };
+  const [adminData, setAdminData] = useState(null);
+  const [adminList, setAdminList] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const handleLogout = async () => {
     try {
@@ -34,39 +31,108 @@ const AdminProfile = () => {
     }
   };
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [infoRes, listRes] = await Promise.all([
+          fetch("http://localhost:3000/admin/profile/info", {
+            method: "GET",
+            credentials: "include",
+          }),
+          fetch("http://localhost:3000/admin/profile/adminList", {
+            method: "GET",
+            credentials: "include",
+          }),
+        ]);
+
+        if (!infoRes.ok || !listRes.ok) {
+          throw new Error("Failed to fetch admin data.");
+        }
+
+        const infoData = await infoRes.json();
+        const listData = await listRes.json();
+
+        console.log("Admin Info Response:", infoData);
+        console.log("Admin List Response:", listData);
+
+        setAdminData(infoData.data);
+        setAdminList(listData.data);
+      } catch (err) {
+        console.error("Fetch error:", err);
+        alert("Error loading profile or admin list.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  if (loading) {
+    return <div className="text-center mt-5">Loading admin profile...</div>;
+  }
+
   return (
     <>
-    <AdminNavBar/>
-    <div className="container mt-5">
-      <div className="card shadow p-4 border-0" style={{ borderRadius: "16px" }}>
-        <div className="d-flex flex-column align-items-center">
-          <img
-            src="https://cdn-icons-png.flaticon.com/512/1077/1077063.png"
-            alt="Admin Avatar"
-            className="rounded-circle mb-3"
-            style={{ width: "120px", height: "120px", objectFit: "cover" }}
-          />
-          <h4 className="fw-bold">{adminData.name}</h4>
-          <p className="text-muted mb-1">{adminData.email}</p>
-          <span className="badge bg-primary px-3 py-2 mb-3">{adminData.role}</span>
+      <AdminNavBar />
+      <div className="container mt-5">
+        <div className="card shadow p-4 border-0" style={{ borderRadius: "16px" }}>
+          <div className="d-flex flex-column align-items-center">
+            <img
+              src="https://cdn-icons-png.flaticon.com/512/1077/1077063.png"
+              alt="Admin Avatar"
+              className="rounded-circle mb-3"
+              style={{ width: "120px", height: "120px", objectFit: "cover" }}
+            />
+            <h4 className="fw-bold">{adminData.fname} {adminData.lname}</h4>
+            <p className="text-muted mb-1">{adminData.username}</p>
+            <span className="badge bg-primary px-3 py-2 mb-3">{adminData.type}</span>
 
-          <button
-            className="btn btn-outline-danger"
-            onClick={handleLogout}
-            style={{ fontWeight: "500" }}
-          >
-            Logout
-          </button>
-        </div>
+            <button
+              className="btn btn-outline-danger"
+              onClick={handleLogout}
+              style={{ fontWeight: "500" }}
+            >
+              Logout
+            </button>
+          </div>
 
-        <hr className="my-4" />
+          <hr className="my-4" />
 
-        <div>
-          <h5 className="mb-2">About</h5>
-          <p className="text-muted">{adminData.description}</p>
+          <div>
+            <h5 className="mb-2">Profile Details</h5>
+            <ul className="list-group list-group-flush">
+              <li className="list-group-item">
+                <strong>ID:</strong> {adminData.id}
+              </li>
+              <li className="list-group-item">
+                <strong>Name:</strong> {adminData.fname} {adminData.lname}
+              </li>
+              <li className="list-group-item">
+                <strong>Email:</strong> {adminData.username}
+              </li>
+              <li className="list-group-item">
+                <strong>Role:</strong> {adminData.type}
+              </li>
+            </ul>
+          </div>
+
+          <div className="mt-4">
+            <h5 className="mb-3">All Admins</h5>
+            {adminList.length === 0 ? (
+              <p className="text-muted">No other admins found.</p>
+            ) : (
+              <ul className="list-group">
+                {adminList.map((admin) => (
+                  <li key={admin.id} className="list-group-item">
+                    {admin.fname} {admin.lname}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
         </div>
       </div>
-    </div>
     </>
   );
 };
