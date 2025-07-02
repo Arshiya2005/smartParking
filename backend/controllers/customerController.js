@@ -364,7 +364,7 @@ export const addbooking = async (req, res) => {
     }
 };
 
-export const chechAvailability = async (req, res) => {
+export const checkAvailability = async (req, res) => {
     try {
         if(req.user.type !== "customer") {
             return res.status(401).json({ error: "no active user" });
