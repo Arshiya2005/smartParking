@@ -108,7 +108,7 @@ const SpecificArea = () => {
       setMessage(data.message || "Slot update requested.");
     } catch (err) {
       console.error("Slot update error:", err);
-      setMessage("Failed to request slot update.");
+      setMessage(data.message || "Failed to request slot update.");
     }
   };
 

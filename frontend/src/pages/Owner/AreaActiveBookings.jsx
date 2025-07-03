@@ -105,7 +105,7 @@ const AreaActiveBookings = () => {
               <span>
                 <strong>Slot #{booking.slot_no}</strong> – {booking.type}
               </span>
-              <span>{booking.sTime} to {booking.eTime}</span>
+              <span>{booking.stime} to {booking.etime}</span>
             </li>
           ))}
         </ul>
