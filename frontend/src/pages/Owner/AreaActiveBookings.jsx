@@ -80,7 +80,7 @@ const AreaActiveBookings = () => {
     <div className="container py-5">
       <h2 className="text-center mb-4">Today's Bookings – {area?.name}</h2>
 
-      {/* Calendar (read-only visual) */}
+      {/* Calendar (read-only visual)
       <div className="d-flex justify-content-center mb-4">
         <DatePicker
           selected={today}
@@ -88,7 +88,7 @@ const AreaActiveBookings = () => {
           readOnly
           calendarClassName="border rounded shadow"
         />
-      </div>
+      </div> */}
 
       {loading ? (
         <div className="text-center">
