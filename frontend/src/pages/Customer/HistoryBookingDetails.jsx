@@ -2,8 +2,33 @@ import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import NavBarCustomer from "../../components/NavBarCustomer";
 import useAuthRedirect from "../../hooks/useAuthRedirect";
+import useBookingReminders from "../../hooks/useBookingReminders";
 const HistoryBookingDetails = () => {
   useAuthRedirect("customer");
+  const [userId, setUserId] = useState(null);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const res = await fetch("http://localhost:3000/customer/welcome", {
+          credentials: "include",
+        });
+        const result = await res.json();
+        const user = result?.data;
+
+        if (res.ok && user?.type === "customer") {
+          const id = user.id || user._id;
+          setUserId(id);
+        }
+      } catch (err) {
+        console.error("❌ Error fetching user in MakeNewBooking:", err);
+      }
+    };
+
+    fetchUser();
+  }, []);
+
+  useBookingReminders(userId); // ✅ Listen to reminders here
   const { state } = useLocation();
   const booking = state?.booking;
   const [data, setData] = useState(null);

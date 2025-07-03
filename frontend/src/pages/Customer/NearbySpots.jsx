@@ -1,12 +1,38 @@
 // src/pages/customer/NearbySpots.jsx
 import React from "react";
+import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import NavBarCustomer from "../../components/NavBarCustomer";
 import NearbyMap from "../../components/NearbyMap";
 import SlotCard from "../../components/SlotCard";
 import useAuthRedirect from "../../hooks/useAuthRedirect";
+import useBookingReminders from "../../hooks/useBookingReminders";
 const NearbySpots = () => {
   useAuthRedirect("customer");
+  const [userId, setUserId] = useState(null);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const res = await fetch("http://localhost:3000/customer/welcome", {
+          credentials: "include",
+        });
+        const result = await res.json();
+        const user = result?.data;
+
+        if (res.ok && user?.type === "customer") {
+          const id = user.id || user._id;
+          setUserId(id);
+        }
+      } catch (err) {
+        console.error("❌ Error fetching user in MakeNewBooking:", err);
+      }
+    };
+
+    fetchUser();
+  }, []);
+
+  useBookingReminders(userId); // ✅ Listen to reminders here
   const location = useLocation();
   const navigate = useNavigate();
   const data = location.state?.data;

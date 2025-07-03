@@ -6,6 +6,8 @@ import useBookingReminders from "../../hooks/useBookingReminders";
 
 const PaymentsPage = () => {
   useAuthRedirect("customer");
+  
+  
   const { state } = useLocation();
   const navigate = useNavigate();
 

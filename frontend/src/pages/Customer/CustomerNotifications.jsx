@@ -1,8 +1,33 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import useAuthRedirect from "../../hooks/useAuthRedirect";
+import useBookingReminders from "../../hooks/useBookingReminders";
 const CustomerNotifications = () => {
   useAuthRedirect("customer");
+  const [userId, setUserId] = useState(null);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const res = await fetch("http://localhost:3000/customer/welcome", {
+          credentials: "include",
+        });
+        const result = await res.json();
+        const user = result?.data;
+
+        if (res.ok && user?.type === "customer") {
+          const id = user.id || user._id;
+          setUserId(id);
+        }
+      } catch (err) {
+        console.error("❌ Error fetching user in MakeNewBooking:", err);
+      }
+    };
+
+    fetchUser();
+  }, []);
+
+  useBookingReminders(userId); // ✅ Listen to reminders here
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
 
