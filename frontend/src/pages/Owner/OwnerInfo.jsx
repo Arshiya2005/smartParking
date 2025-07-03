@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from "react";
 import green from "../../assets/green_back.jpg";
 import useAuthRedirect from "../../hooks/useAuthRedirect";
+import socket from "../../socket";
+import useOwnerNotifications from "../../hooks/useOwnerNotifications"; // 🔌 Import socket instance
 const OwnerInfo = () => {
   useAuthRedirect("owner");
+  const [ownerId, setOwnerId] = useState(null);
   const [info, setInfo] = useState(null);
   const [newFname, setNewFname] = useState("");
   const [newLname, setNewLname] = useState("");
@@ -88,10 +91,17 @@ const OwnerInfo = () => {
         method: "GET",
         credentials: "include",
       });
-
+  
       if (res.ok) {
+        // ✅ Disconnect from socket
+        if (socket.connected) {
+          socket.disconnect();
+          socket.removeAllListeners();
+          console.log("🛑 Socket disconnected and listeners removed (owner logout)");
+        }
+  
         alert("Logged out successfully!");
-        window.location.href = "/login?type=owner";
+        window.location.href = "/login?type=owner"; // Redirect to owner login
       } else {
         alert("Failed to logout.");
       }

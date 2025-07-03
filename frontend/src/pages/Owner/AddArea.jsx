@@ -1,9 +1,37 @@
-import React, { useState } from "react";
+import React, { useState , useEffect} from "react";
 import NavBarOwner from "../../components/owner/NavBarOwner";
 import green from "../../assets/green_back.jpg"
 import useAuthRedirect from "../../hooks/useAuthRedirect";
+import useOwnerNotifications from "../../hooks/useOwnerNotifications";
 const AddArea = () => {
   useAuthRedirect("owner");
+  const [ownerId, setOwnerId] = useState(null);
+  useEffect(() => {
+    const fetchOwner = async () => {
+      try {
+        const res = await fetch("http://localhost:3000/owner/welcome", {
+          credentials: "include",
+        });
+        const result = await res.json();
+        const owner = result?.data;
+
+        if (res.ok && owner?.type === "owner") {
+          const id = owner.id || owner._id;
+          setOwnerId(id);
+          console.log("🧑‍💼 Owner ID fetched:", id);
+        } else {
+          console.error("⚠️ Failed to verify owner");
+        }
+      } catch (err) {
+        console.error("❌ Error fetching owner in OwnerDashboard:", err);
+      }
+    };
+
+    fetchOwner();
+  }, []);
+
+  // ✅ Listen for parking-payment events via socket
+  useOwnerNotifications(ownerId);
   const [formData, setFormData] = useState({
     name: "",
     lon: "",

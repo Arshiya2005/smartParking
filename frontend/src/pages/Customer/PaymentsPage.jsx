@@ -84,10 +84,9 @@ const PaymentsPage = () => {
       });
   
       const checkResult = await checkRes.json();
-  
-      if (!checkRes.ok || !checkResult?.available) {
+      if (!checkRes.ok || checkResult?.message !== "available") {
         alert(checkResult?.message || "❌ Slot is no longer available. Please try again.");
-        navigate("/customer"); // or redirect to ChooseSlot page
+        navigate("/customer");
         return;
       }
   

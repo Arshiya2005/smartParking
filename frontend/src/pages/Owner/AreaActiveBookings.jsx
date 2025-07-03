@@ -4,8 +4,36 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { format } from "date-fns";
 import useAuthRedirect from "../../hooks/useAuthRedirect";
+import useOwnerNotifications from "../../hooks/useOwnerNotifications";
 const AreaActiveBookings = () => {
   useAuthRedirect("owner");
+  const [ownerId, setOwnerId] = useState(null);
+  useEffect(() => {
+    const fetchOwner = async () => {
+      try {
+        const res = await fetch("http://localhost:3000/owner/welcome", {
+          credentials: "include",
+        });
+        const result = await res.json();
+        const owner = result?.data;
+
+        if (res.ok && owner?.type === "owner") {
+          const id = owner.id || owner._id;
+          setOwnerId(id);
+          console.log("🧑‍💼 Owner ID fetched:", id);
+        } else {
+          console.error("⚠️ Failed to verify owner");
+        }
+      } catch (err) {
+        console.error("❌ Error fetching owner in OwnerDashboard:", err);
+      }
+    };
+
+    fetchOwner();
+  }, []);
+
+  // ✅ Listen for parking-payment events via socket
+  useOwnerNotifications(ownerId);
   const location = useLocation();
   const navigate = useNavigate();
   const area = location.state?.area;

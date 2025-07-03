@@ -37,7 +37,7 @@ const OwnerProfileNav = () => {
           <i className="bi bi-person-circle" />
         </NavLink>
 
-        <NavLink
+        {/* <NavLink
           to="history"
           className="nav-link"
           style={({ isActive }) => ({
@@ -47,7 +47,7 @@ const OwnerProfileNav = () => {
           title="Booking History"
         >
           <i className="bi bi-clock-history" />
-        </NavLink>
+        </NavLink> */}
 
         <NavLink
           to="notifications"
