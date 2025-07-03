@@ -8,7 +8,6 @@ import bodyParser from "body-parser";
 import session from "express-session"
 import passport from "passport";
 import { Strategy } from "passport-local";
-import GoogleStrategy from "passport-google-oauth2";
 import http from 'http';
 import { Server } from 'socket.io';
 import Razorpay from "razorpay";
@@ -23,7 +22,7 @@ import payment from "./routes/paymentRoutes.js";
 import { initDb } from "./config/db.js";
 import { aj  } from "./lib/arcjet.js";
 
-import { verify, verifyusingGoogle } from "./controllers/authController.js";
+import { verify } from "./controllers/authController.js";
 
 dotenv.config();
 
@@ -115,13 +114,6 @@ passport.use("local", new Strategy({
   }, 
   verify));
 
-passport.use("google", new GoogleStrategy({
-    clientID: process.env.GOOGLE_CLIENT_ID,
-    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: "http://localhost:5173/",//this should go to homepage react after succesful login
-    passReqToCallback: true
-  },
-  verifyusingGoogle));
 
 passport.serializeUser((user, cb) => {
   const safeUser = {
