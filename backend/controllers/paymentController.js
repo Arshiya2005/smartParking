@@ -54,7 +54,7 @@ export const verifyPayment = async (req, res) => {
         if (isValid) {
             await sql`
                 INSERT INTO pending_payouts (booking_id, amount, status, created_at, owner_id ) 
-                VALUES ( ${id}, ${amount}, ${'pending'}, ${new Date()}, ${data[0].owner_id});
+                VALUES ( ${id}, ${amount * 0.9}, ${'pending'}, ${new Date()}, ${data[0].owner_id});
             `;
             return res.status(200).json({ message: 'Payment verification successful' });
         } else {
@@ -123,55 +123,3 @@ export const createRazorpayFundAccount = async (user, bank_account) => {
     }
     
 };
-
-/**
- * 
- * export const createFundAcc = async (req, res) => {
-    try {
-        if(req.user.type !== "owner") {
-            return res.status(401).json({ error: "no active user" });
-        }
-        const razorpayAuth = Buffer.from(`${process.env.KEY_ID}:${process.env.KEY_SECRET}`).toString('base64');
-        const { contact, bank_account } = req.body;
-        const name = req.user.fname + " " + req.user.lname;
-        const email = req.user.username;
-        const contactResponse = await axios.post('https://api.razorpay.com/v1/contacts', 
-            {name, email, contact, type : "owner",  },
-            {
-                headers: {
-                Authorization: `Basic ${razorpayAuth}`,
-                'Content-Type': 'application/json'
-                }
-            }
-        );
-        const contact_id = contactResponse.data.id;
-        console.log("contact_id : " + contact_id);
-        const fundAccountResponse = await axios.post('https://api.razorpay.com/v1/fund_accounts',
-            {
-                contact_id,
-                account_type: 'bank_account',
-                bank_account: {
-                    name: bank_account.name,
-                    ifsc: bank_account.ifsc,
-                    account_number: bank_account.account_number
-                }
-            },
-            {
-                headers: {
-                    Authorization: `Basic ${razorpayAuth}`,
-                    'Content-Type': 'application/json'
-                }
-            }
-        );
-        const fund_account_id = fundAccountResponse.data.id;
-        await sql`
-        INSERT INTO payout_accounts ( owner_id, contact_id, fund_account_id , created_at) 
-            VALUES ( ${req.user.id}, ${contact_id}, ${fund_account_id}, ${new Date()});
-        `;
-        return res.status(200).json({ data: order });
-    } catch (error) {
-        console.error("Error creating Razorpay order:", error);
-    res.status(500).send("Internal server error");
-    }
-};
- */

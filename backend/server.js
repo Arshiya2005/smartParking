@@ -88,6 +88,14 @@ app.use("/", authRoutes);
 app.use("/", usersRoutes);
 app.use("/", payment);
 
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static(path.join(__dirname, "/frontend/dist")));
+
+  app.get("*", (req, res) => {
+    res.sendFile(path.resolve(__dirname, "frontend", "dist", "index.html"));
+  });
+}
+
 const server = http.createServer(app);
 
 const io = new Server(server, {

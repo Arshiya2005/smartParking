@@ -255,21 +255,24 @@ export const deleteArea = async (req, res) => {
         }
         const now = new Date();
         const area = req.body.area;
+        console.log("In delete Area ");
         const data = await sql`
             SELECT * FROM scheduled_task WHERE spot_id = ${area.id} AND status = 'pending'
         `;
+        console.log(data);
         if(data.length > 0 && data[0].bike == null) {
             return res.status(409).json({ message: "Deletion already requested. Please wait." });
         }else if(data.length > 0) {
             await sql`
                 UPDATE scheduled_task SET status = 'cancelled' WHERE spot_id = ${area.id} AND status = 'pending'
             `;
-        }
+        } 
         await sql`
             INSERT INTO scheduled_task (spot_id, created_at) VALUES (${area.id}, ${now})
         `;
         return res.status(200).json({ message : "request is sent. Area will be be deleted by tomorrow" });
     } catch (error) {
+        console.error(error);
         return res.status(500).json({ error: "internal server error" });
     }
 };
