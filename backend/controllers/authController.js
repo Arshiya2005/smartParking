@@ -77,16 +77,6 @@ export const login = async (req, res, next) =>  {
   })(req, res, next);
 }
 
-//this is when u click on contionue with google
-export const gauth = async (req, res, next) => {
-    const { type } = req.query;
-    if (type) {
-        req.session.type = type; 
-    }
-    passport.authenticate('google', { scope: ["profile", "email"] })(req, res, next);
-}
-
-
 export const ensureAuthenticated = async (req, res) => {
   if (req.isAuthenticated()) {
     const { username, fname, lname, type } = req.user;
@@ -135,26 +125,3 @@ export async function verify(req, username, password, done) {
     }
 };
 
-/**
- * You're using req.session.type to remember if the Google login is for a "customer" or "owner", 
- * before the actual account is created. Then after login, you can access the logged-in user via req.user.
- */
-export async function verifyusingGoogle(req, accessToken, refreshToken, profile, done) {
-  try {
-    const userType = req.session?.type || "customer";
-    const result = await sql`
-      SELECT * FROM users WHERE username = ${profile.email} AND type = ${userType};
-    `;
-    if (result.length === 0) {
-      const today = new Date();
-      const newUser = await sql`
-          INSERT INTO users (username, password, type, created_at) VALUES (${profile.email}, 'google', ${userType}, ${today}) RETURNING *
-        `;
-      return done(null, newUser[0]);
-    }else {
-      return done(null, result[0]);
-    }
-  } catch (err) {
-    return done(err);
-  }
-}

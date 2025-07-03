@@ -175,7 +175,7 @@ export const searchNearby = async (req, res) => {
     if (isNaN(lat) || isNaN(lon)) {
       return res.status(400).json({ error: "Missing or invalid coordinates" });
     }
-
+    
     let allSpots = [];
     let radiusInKm = 2;
     let attemptLimit = 4;
@@ -194,6 +194,7 @@ export const searchNearby = async (req, res) => {
         radiusInKm += 1;
         attemptLimit--;
     } while(allSpots.length < 5&& attemptLimit > 0);
+    
     const results = [];
 
     for (const spot of allSpots) {
@@ -216,10 +217,18 @@ export const searchNearby = async (req, res) => {
             Vid
         });
     }
+    console.log(results);
     results.sort((a, b) => a.distance - b.distance);
     return res.status(200).json({ userloc : {lon ,lat }, data: results.slice(0, 5) });
   } catch (error) {
-    console.error("Error in searchNearby:", error.message);
+    if (error.response) {
+    console.error(`ORS API error [${error.response.status}]:`, error.response.data);
+    if (error.response.status === 429) {
+      console.error("❌ Rate limit exceeded. Try again later.");
+    }
+  } else {
+    console.error("ORS API error:", error);
+  }
     return res.status(500).json({ error: "Internal server error" });
   }
 };
