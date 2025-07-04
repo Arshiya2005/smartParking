@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import useAuthRedirect from "../../hooks/useAuthRedirect";
 import NavBarCustomer from "../../components/NavBarCustomer";
 import useBookingReminders from "../../hooks/useBookingReminders";
+const BASE_URL = import.meta.env.VITE_BASE_URL;
 const MyActiveBookings = () => {
   useAuthRedirect("customer");
   const [userId, setUserId] = useState(null);
@@ -10,7 +11,7 @@ const MyActiveBookings = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const res = await fetch("http://localhost:3000/customer/welcome", {
+        const res = await fetch(`${BASE_URL}/customer/welcome`, {
           credentials: "include",
         });
         const result = await res.json();
@@ -37,7 +38,7 @@ const MyActiveBookings = () => {
   useEffect(() => {
     const fetchActiveBooking = async () => {
       try {
-        const res = await fetch("http://localhost:3000/customer/activeBooking", {
+        const res = await fetch(`${BASE_URL}/customer/activeBooking`, {
           method: "GET",
           credentials: "include",
         });
@@ -64,7 +65,7 @@ const MyActiveBookings = () => {
       }).toString();
   
       const res = await fetch(
-        `http://localhost:3000/customer/Specificbooking?${query}`,
+        `${BASE_URL}/customer/Specificbooking?${query}`,
         {
           method: "GET",
           credentials: "include",

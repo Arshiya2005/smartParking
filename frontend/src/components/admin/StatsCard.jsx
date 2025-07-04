@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-
+const BASE_URL = import.meta.env.VITE_BASE_URL;
 const StatsCard = () => {
   const [stats, setStats] = useState({
     custCount: 0,
@@ -12,7 +12,7 @@ const StatsCard = () => {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const res = await fetch("http://localhost:3000/admin/welcome", {
+        const res = await fetch(`${BASE_URL}/admin/welcome`, {
           credentials: "include",
         });
         const data = await res.json();

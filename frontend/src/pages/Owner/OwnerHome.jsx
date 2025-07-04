@@ -8,6 +8,7 @@ import ownerBg from "../../assets/green_back.jpg";
 import socket from "../../socket"; // 👈 default import like customer
 import { toast } from "react-toastify";
 import useOwnerNotifications from "../../hooks/useOwnerNotifications";
+const BASE_URL = import.meta.env.VITE_BASE_URL;
 
 const OwnerHome = () => {
   useAuthRedirect("owner");
@@ -18,7 +19,7 @@ const OwnerHome = () => {
   useEffect(() => {
     const fetchOwner = async () => {
       try {
-        const res = await fetch("http://localhost:3000/owner/welcome", {
+        const res = await fetch(`${BASE_URL}/owner/welcome`, {
           credentials: "include",
         });
         const result = await res.json();

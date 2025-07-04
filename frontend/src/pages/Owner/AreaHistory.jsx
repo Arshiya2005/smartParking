@@ -2,13 +2,14 @@ import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import useAuthRedirect from "../../hooks/useAuthRedirect";
 import useOwnerNotifications from "../../hooks/useOwnerNotifications";
+const BASE_URL = import.meta.env.VITE_BASE_URL;
 const AreaHistory = () => {
   useAuthRedirect("owner");
   const [ownerId, setOwnerId] = useState(null);
   useEffect(() => {
     const fetchOwner = async () => {
       try {
-        const res = await fetch("http://localhost:3000/owner/welcome", {
+        const res = await fetch(`${BASE_URL}/owner/welcome`, {
           credentials: "include",
         });
         const result = await res.json();
@@ -49,7 +50,7 @@ const AreaHistory = () => {
     const fetchHistory = async () => {
       try {
         const res = await fetch(
-          `http://localhost:3000/owner/bookingHistoryInArea?area=${encodeURIComponent(
+          `${BASE_URL}/owner/bookingHistoryInArea?area=${encodeURIComponent(
             JSON.stringify(area)
           )}`,
           { credentials: "include" }

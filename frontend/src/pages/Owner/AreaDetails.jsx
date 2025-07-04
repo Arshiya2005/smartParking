@@ -2,13 +2,14 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import useAuthRedirect from "../../hooks/useAuthRedirect";
 import useOwnerNotifications from "../../hooks/useOwnerNotifications";
+const BASE_URL = import.meta.env.VITE_BASE_URL;
 const AreaDetails = () => {
   useAuthRedirect("owner");
   const [ownerId, setOwnerId] = useState(null);
   useEffect(() => {
     const fetchOwner = async () => {
       try {
-        const res = await fetch("http://localhost:3000/owner/welcome", {
+        const res = await fetch(`${BASE_URL}/owner/welcome`, {
           credentials: "include",
         });
         const result = await res.json();
@@ -42,7 +43,7 @@ const AreaDetails = () => {
     const fetchAll = async () => {
       try {
         // 1. Fetch Area Details
-        const res1 = await fetch(`http://localhost:3000/owner/parkingAreas`, {
+        const res1 = await fetch(`${BASE_URL}/owner/parkingAreas`, {
           credentials: "include",
         });
         const allAreas = await res1.json();
@@ -55,7 +56,7 @@ const AreaDetails = () => {
         const encoded = encodeURIComponent(JSON.stringify(selected));
 
         // 2. Fetch Slot Stats
-        const res2 = await fetch(`http://localhost:3000/owner/availableSlot?area=${encoded}`, {
+        const res2 = await fetch(`${BASE_URL}/owner/availableSlot?area=${encoded}`, {
           credentials: "include",
         });
         const slotData = await res2.json();
@@ -63,7 +64,7 @@ const AreaDetails = () => {
         setSlotStats(slotData);
 
         // 3. Fetch Bookings
-        const res3 = await fetch(`http://localhost:3000/owner/activeBookingInArea?area=${encoded}`, {
+        const res3 = await fetch(`${BASE_URL}/owner/activeBookingInArea?area=${encoded}`, {
           credentials: "include",
         });
         const bookingData = await res3.json();

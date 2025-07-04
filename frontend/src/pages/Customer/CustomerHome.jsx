@@ -8,7 +8,7 @@ import peaach from "../../assets/green_back.jpg";
 import socket from "../../socket";
 import { toast } from "react-toastify";
 import useBookingReminders from "../../hooks/useBookingReminders";
-
+const BASE_URL = import.meta.env.VITE_BASE_URL;
 const CustomerHome = () => {
   useAuthRedirect("customer");
 
@@ -17,7 +17,7 @@ const CustomerHome = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const res = await fetch("http://localhost:3000/customer/welcome", {
+        const res = await fetch(`${BASE_URL}/customer/welcome`, {
           credentials: "include",
         });
         const result = await res.json();

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate, Link, useLocation } from "react-router-dom";
 import BackgroundImg from "../assets/green_back.jpg";
-
+const BASE_URL = import.meta.env.VITE_BASE_URL;
 const SignUpUser = () => {
   const [form, setForm] = useState({
     firstName: "",
@@ -52,7 +52,7 @@ const SignUpUser = () => {
     }
 
     try {
-      const res = await fetch("http://localhost:3000/register", {
+      const res = await fetch(`${BASE_URL}/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),

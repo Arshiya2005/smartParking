@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import useAuthRedirect from "../../hooks/useAuthRedirect";
 import useBookingReminders from "../../hooks/useBookingReminders";
+const BASE_URL = import.meta.env.VITE_BASE_URL;
 const CustomerNotifications = () => {
   useAuthRedirect("customer");
   const [userId, setUserId] = useState(null);
@@ -9,7 +10,7 @@ const CustomerNotifications = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const res = await fetch("http://localhost:3000/customer/welcome", {
+        const res = await fetch(`${BASE_URL}/customer/welcome`, {
           credentials: "include",
         });
         const result = await res.json();
@@ -34,7 +35,7 @@ const CustomerNotifications = () => {
   // 📩 Fetch notifications from backend
   const fetchNotifications = async () => {
     try {
-      const res = await axios.get("http://localhost:3000/notifications", {
+      const res = await axios.get(`${BASE_URL}/notifications`, {
         withCredentials: true,
       });
       console.log("📩 Got:", res.data);

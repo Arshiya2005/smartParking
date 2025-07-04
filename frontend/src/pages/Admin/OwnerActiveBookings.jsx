@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useOutletContext } from "react-router-dom";
 import useAuthRedirect from "../../hooks/useAuthRedirect";
+const BASE_URL = import.meta.env.VITE_BASE_URL;
 const OwnerActiveBookings = () => {
     useAuthRedirect("admin");
   const { owner } = useOutletContext();
@@ -12,7 +13,7 @@ const OwnerActiveBookings = () => {
   useEffect(() => {
     const fetchAreas = async () => {
       try {
-        const res = await fetch(`http://localhost:3000/admin/ownerAreas?id=${owner.id}`, {
+        const res = await fetch(`${BASE_URL}/admin/ownerAreas?id=${owner.id}`, {
           credentials: "include",
         });
         const data = await res.json();
@@ -37,7 +38,7 @@ const OwnerActiveBookings = () => {
     const fetchActiveBookings = async () => {
       try {
         const res = await fetch(
-          `http://localhost:3000/admin/areaActiveBookings?id=${selectedArea}`,
+          `${BASE_URL}/admin/areaActiveBookings?id=${selectedArea}`,
           { credentials: "include" }
         );
         const data = await res.json();

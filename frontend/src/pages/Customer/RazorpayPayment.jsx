@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from "react-router-dom";
-
+const BASE_URL = import.meta.env.VITE_BASE_URL;
 const RazorpayPayment = () => {
   const { state } = useLocation();
   const navigate = useNavigate();
@@ -43,7 +43,7 @@ const RazorpayPayment = () => {
     }
 
     try {
-      const orderRes = await fetch("http://localhost:3000/createOrder", {
+      const orderRes = await fetch(`${BASE_URL}/createOrder`, {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
@@ -77,7 +77,7 @@ const RazorpayPayment = () => {
               
               console.log("📦 Verifying Payment with body:", verifyBody); // ✅ This logs what you're sending
               
-              const verifyRes = await fetch("http://localhost:3000/verifyPayment", {
+              const verifyRes = await fetch(`${BASE_URL}/verifyPayment`, {
                 method: "POST",
                 credentials: "include",
                 headers: { "Content-Type": "application/json" },

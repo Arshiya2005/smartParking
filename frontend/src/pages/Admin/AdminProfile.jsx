@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AdminNavBar from "../../components/admin/AdminNavBar";
 import useAuthRedirect from "../../hooks/useAuthRedirect";
-
+const BASE_URL = import.meta.env.VITE_BASE_URL;
 const AdminProfile = () => {
   useAuthRedirect("admin");
   const navigate = useNavigate();
@@ -13,7 +13,7 @@ const AdminProfile = () => {
 
   const handleLogout = async () => {
     try {
-      const res = await fetch("http://localhost:3000/logout", {
+      const res = await fetch(`${BASE_URL}/logout`, {
         method: "GET",
         credentials: "include",
       });
@@ -35,11 +35,11 @@ const AdminProfile = () => {
     const fetchData = async () => {
       try {
         const [infoRes, listRes] = await Promise.all([
-          fetch("http://localhost:3000/admin/profile/info", {
+          fetch(`${BASE_URL}/admin/profile/info`, {
             method: "GET",
             credentials: "include",
           }),
-          fetch("http://localhost:3000/admin/profile/adminList", {
+          fetch(`${BASE_URL}/admin/profile/adminList`, {
             method: "GET",
             credentials: "include",
           }),

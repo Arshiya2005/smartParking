@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
 import ownerImg from "../../assets/owner_welcome.svg"; // Add an appropriate owner SVG
-
+const BASE_URL = import.meta.env.VITE_BASE_URL;
 const WlcCardOwner = () => {
   const [name, setName] = useState(null); // null = loading
 
   useEffect(() => {
     const fetchWelcome = async () => {
       try {
-        const res = await fetch("http://localhost:3000/owner/welcome", {
+        const res = await fetch(`${BASE_URL}/owner/welcome`, {
           credentials: "include",
         });
 

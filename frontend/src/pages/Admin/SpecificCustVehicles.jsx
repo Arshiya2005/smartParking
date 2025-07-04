@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useOutletContext } from "react-router-dom";
 import useAuthRedirect from "../../hooks/useAuthRedirect";
+const BASE_URL = import.meta.env.VITE_BASE_URL;
 const SpecificCustVehicles = () => {
     useAuthRedirect("admin");
   const { customer } = useOutletContext();
@@ -10,7 +11,7 @@ const SpecificCustVehicles = () => {
     const fetchVehicles = async () => {
       try {
         const res = await fetch(
-          `http://localhost:3000/admin/customerVehicles?id=${customer.id}`,
+          `${BASE_URL}/admin/customerVehicles?id=${customer.id}`,
           {
             credentials: "include",
           }

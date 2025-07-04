@@ -3,6 +3,7 @@ import green from "../../assets/green_back.jpg"
 import socket from "../../socket";
 import useAuthRedirect from "../../hooks/useAuthRedirect";
 import useBookingReminders from "../../hooks/useBookingReminders";
+const BASE_URL = import.meta.env.VITE_BASE_URL;
 const CustomerInfo = () => {
   useAuthRedirect("customer");
   const [userId, setUserId] = useState(null);
@@ -10,7 +11,7 @@ const CustomerInfo = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const res = await fetch("http://localhost:3000/customer/welcome", {
+        const res = await fetch(`${BASE_URL}/customer/welcome`, {
           credentials: "include",
         });
         const result = await res.json();
@@ -38,7 +39,7 @@ const CustomerInfo = () => {
   useEffect(() => {
     const fetchInfo = async () => {
       try {
-        const res = await fetch("http://localhost:3000/customer/profile/info", {
+        const res = await fetch(`${BASE_URL}/customer/profile/info`, {
           credentials: "include",
         });
         const data = await res.json();
@@ -61,7 +62,7 @@ const CustomerInfo = () => {
   const handleEditFname = async () => {
     try {
       setLoading(true);
-      const res = await fetch("http://localhost:3000/customer/profile/info/editFname", {
+      const res = await fetch(`${BASE_URL}/customer/profile/info/editFname`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -84,7 +85,7 @@ const CustomerInfo = () => {
   const handleEditLname = async () => {
     try {
       setLoading(true);
-      const res = await fetch("http://localhost:3000/customer/profile/info/editLname", {
+      const res = await fetch(`${BASE_URL}/customer/profile/info/editLname`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -105,7 +106,7 @@ const CustomerInfo = () => {
 
   const handleLogout = async () => {
     try {
-      const res = await fetch("http://localhost:3000/logout", {
+      const res = await fetch(`${BASE_URL}/logout"`, {
         method: "GET",
         credentials: "include",
       });

@@ -3,7 +3,7 @@ import VehicleCard from "../../components/vehicleCard";
 import { FaPlus } from "react-icons/fa";
 import useAuthRedirect from "../../hooks/useAuthRedirect"; // ✅ Ensure this is imported
 import peachh from "../../assets/peach_background.jpg"; // if still used
-
+const BASE_URL = import.meta.env.VITE_BASE_URL;
 const CustomerVehicles = () => {
   useAuthRedirect("customer");
   const [userId, setUserId] = useState(null);
@@ -11,7 +11,7 @@ const CustomerVehicles = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const res = await fetch("http://localhost:3000/customer/welcome", {
+        const res = await fetch(`${BASE_URL}/customer/welcome`, {
           credentials: "include",
         });
         const result = await res.json();
@@ -36,7 +36,7 @@ const CustomerVehicles = () => {
 
   const fetchVehicles = async () => {
     try {
-      const res = await fetch("http://localhost:3000/customer/profile/myVehicles", {
+      const res = await fetch(`${BASE_URL}/customer/profile/myVehicles`, {
         method: "GET",
         credentials: "include",
         headers: {
@@ -63,7 +63,7 @@ const CustomerVehicles = () => {
     }
 
     try {
-      const res = await fetch("http://localhost:3000/customer/profile/myVehicles/add", {
+      const res = await fetch(`${BASE_URL}/customer/profile/myVehicles/add`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -87,7 +87,7 @@ const CustomerVehicles = () => {
 
   const handleDeleteVehicle = async (id) => {
     try {
-      const res = await fetch("http://localhost:3000/customer/profile/myVehicles/delete", {
+      const res = await fetch(`${BASE_URL}/customer/profile/myVehicles/delete`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",

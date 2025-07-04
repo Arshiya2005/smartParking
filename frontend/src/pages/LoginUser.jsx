@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import { useNavigate, Link, useLocation } from "react-router-dom";
 import socket from "../socket";
 import BackgroundImg from "../assets/green_back.jpg";
-
+const BASE_URL = import.meta.env.VITE_BASE_URL;
+console.log(BASE_URL);
 const LoginUser = () => {
   const [form, setForm] = useState({ username: "", password: "" });
   const navigate = useNavigate();
@@ -19,7 +20,7 @@ const LoginUser = () => {
     console.log(`🚀 Attempting login as ${type} with:`, form);
 
     try {
-      const res = await fetch("http://localhost:3000/login", {
+      const res = await fetch(`${BASE_URL}/login`, {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
@@ -53,7 +54,7 @@ const LoginUser = () => {
   };
 
   const handleGoogleLogin = () => {
-    window.location.href = `http://localhost:3000/auth/google?type=${type}`;
+    window.location.href = `${BASE_URL}/auth/google?type=${type}`;
   };
 
   return (

@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import NavBarCustomer from "../../components/NavBarCustomer";
 import useAuthRedirect from "../../hooks/useAuthRedirect";
 import useBookingReminders from "../../hooks/useBookingReminders";
-
+const BASE_URL = import.meta.env.VITE_BASE_URL;
 const ChooseSlot = () => {
   useAuthRedirect("customer");
   const [userId, setUserId] = useState(null);
@@ -11,7 +11,7 @@ const ChooseSlot = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const res = await fetch("http://localhost:3000/customer/welcome", {
+        const res = await fetch(`${BASE_URL}/customer/welcome`, {
           credentials: "include",
         });
         const result = await res.json();
@@ -77,7 +77,7 @@ const ChooseSlot = () => {
     }
 
     try {
-      const res = await fetch("http://localhost:3000/customer/chooseSlot", {
+      const res = await fetch(`${BASE_URL}/customer/chooseSlot`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",

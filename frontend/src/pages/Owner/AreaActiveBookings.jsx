@@ -5,13 +5,14 @@ import "react-datepicker/dist/react-datepicker.css";
 import { format } from "date-fns";
 import useAuthRedirect from "../../hooks/useAuthRedirect";
 import useOwnerNotifications from "../../hooks/useOwnerNotifications";
+const BASE_URL = import.meta.env.VITE_BASE_URL;
 const AreaActiveBookings = () => {
   useAuthRedirect("owner");
   const [ownerId, setOwnerId] = useState(null);
   useEffect(() => {
     const fetchOwner = async () => {
       try {
-        const res = await fetch("http://localhost:3000/owner/welcome", {
+        const res = await fetch(`${BASE_URL}/owner/welcome`, {
           credentials: "include",
         });
         const result = await res.json();
@@ -55,7 +56,7 @@ const AreaActiveBookings = () => {
       try {
         const encoded = encodeURIComponent(JSON.stringify(area));
         const res = await fetch(
-          `http://localhost:3000/owner/activeBookingInArea?area=${encoded}`,
+          `${BASE_URL}/owner/activeBookingInArea?area=${encoded}`,
           { credentials: "include" }
         );
         const data = await res.json();

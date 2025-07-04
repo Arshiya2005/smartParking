@@ -4,13 +4,14 @@ import greenBg from "../../assets/green_back.jpg"
 import NavBarOwner from "../../components/owner/NavBarOwner";
 import useAuthRedirect from "../../hooks/useAuthRedirect";
 import useOwnerNotifications from "../../hooks/useOwnerNotifications";
+const BASE_URL = import.meta.env.VITE_BASE_URL;
 const MyArea = () => {
   useAuthRedirect("owner");
   const [ownerId, setOwnerId] = useState(null);
   useEffect(() => {
     const fetchOwner = async () => {
       try {
-        const res = await fetch("http://localhost:3000/owner/welcome", {
+        const res = await fetch(`${BASE_URL}/owner/welcome`, {
           credentials: "include",
         });
         const result = await res.json();
@@ -40,7 +41,7 @@ const MyArea = () => {
   useEffect(() => {
     const fetchAreas = async () => {
       try {
-        const res = await fetch("http://localhost:3000/owner/parkingAreas", {
+        const res = await fetch(`${BASE_URL}/owner/parkingAreas`, {
           credentials: "include",
         });
         const data = await res.json();

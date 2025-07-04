@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import NavBarCustomer from "../../components/NavBarCustomer";
 import useAuthRedirect from "../../hooks/useAuthRedirect";
 import useBookingReminders from "../../hooks/useBookingReminders";
-
+const BASE_URL = import.meta.env.VITE_BASE_URL;
 const PaymentsPage = () => {
   useAuthRedirect("customer");
   
@@ -17,7 +17,7 @@ const PaymentsPage = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const res = await fetch("http://localhost:3000/customer/welcome", {
+        const res = await fetch(`${BASE_URL}/customer/welcome`, {
           credentials: "include",
         });
         const result = await res.json();
@@ -78,7 +78,7 @@ const PaymentsPage = () => {
   const handlePayment = async () => {
     try {
       // ✅ Step 1: Check Slot Availability First
-      const checkRes = await fetch("http://localhost:3000/customer/checkAvailability", {
+      const checkRes = await fetch(`${BASE_URL}/customer/checkAvailability`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -93,7 +93,7 @@ const PaymentsPage = () => {
       }
   
       // ✅ Step 2: Proceed to Book the Slot
-      const res = await fetch("http://localhost:3000/customer/addbooking", {
+      const res = await fetch(`${BASE_URL}/customer/addbooking`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -119,7 +119,7 @@ const PaymentsPage = () => {
       }
   
       // ✅ Step 4: Create Razorpay Order
-      const orderRes = await fetch("http://localhost:3000/createOrder", {
+      const orderRes = await fetch(`${BASE_URL}/createOrder`, {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
@@ -154,7 +154,7 @@ const PaymentsPage = () => {
   
           console.log("📬 Sending to verifyPayment:", verifyBody);
   
-          const verifyRes = await fetch("http://localhost:3000/verifyPayment", {
+          const verifyRes = await fetch(`${BASE_URL}/verifyPayment`, {
             method: "POST",
             credentials: "include",
             headers: { "Content-Type": "application/json" },

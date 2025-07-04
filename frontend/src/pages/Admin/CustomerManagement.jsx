@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import AdminNavBar from "../../components/admin/AdminNavBar";
 import { useNavigate } from "react-router-dom";
 import useAuthRedirect from "../../hooks/useAuthRedirect";
+const BASE_URL = import.meta.env.VITE_BASE_URL;
 const CustomerManagement = () => {
     useAuthRedirect("admin");
   const [customers, setCustomers] = useState([]);
@@ -10,7 +11,7 @@ const CustomerManagement = () => {
   useEffect(() => {
     const fetchCustomers = async () => {
       try {
-        const res = await fetch("http://localhost:3000/admin/customerInfo", {
+        const res = await fetch(`${BASE_URL}/admin/customerInfo`, {
           credentials: "include",
         });
         const { data } = await res.json();

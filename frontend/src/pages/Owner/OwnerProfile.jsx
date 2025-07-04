@@ -3,13 +3,14 @@ import { Outlet } from "react-router-dom";
 import useAuthRedirect from "../../hooks/useAuthRedirect";
 import OwnerProfileNav from "../../components/owner/OwnerProfileNav";
 import useOwnerNotifications from "../../hooks/useOwnerNotifications";
+const BASE_URL = import.meta.env.VITE_BASE_URL;
 const OwnerProfile = () => {
   useAuthRedirect("owner");
   const [ownerId, setOwnerId] = useState(null);
   useEffect(() => {
     const fetchOwner = async () => {
       try {
-        const res = await fetch("http://localhost:3000/owner/welcome", {
+        const res = await fetch(`${BASE_URL}/owner/welcome`, {
           credentials: "include",
         });
         const result = await res.json();

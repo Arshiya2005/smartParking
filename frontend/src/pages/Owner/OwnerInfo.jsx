@@ -3,6 +3,7 @@ import green from "../../assets/green_back.jpg";
 import useAuthRedirect from "../../hooks/useAuthRedirect";
 import socket from "../../socket";
 import useOwnerNotifications from "../../hooks/useOwnerNotifications"; // 🔌 Import socket instance
+const BASE_URL = import.meta.env.VITE_BASE_URL;
 const OwnerInfo = () => {
   useAuthRedirect("owner");
   const [ownerId, setOwnerId] = useState(null);
@@ -22,7 +23,7 @@ const OwnerInfo = () => {
   useEffect(() => {
     const fetchInfo = async () => {
       try {
-        const res = await fetch("http://localhost:3000/owner/profile/info", {
+        const res = await fetch(`${BASE_URL}/owner/profile/info`, {
           credentials: "include",
         });
         const data = await res.json();
@@ -44,7 +45,7 @@ const OwnerInfo = () => {
   const handleEditFname = async () => {
     try {
       setLoading(true);
-      const res = await fetch("http://localhost:3000/owner/profile/info/editFname", {
+      const res = await fetch(`${BASE_URL}/owner/profile/info/editFname`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -66,7 +67,7 @@ const OwnerInfo = () => {
   const handleEditLname = async () => {
     try {
       setLoading(true);
-      const res = await fetch("http://localhost:3000/owner/profile/info/editLname", {
+      const res = await fetch(`${BASE_URL}/owner/profile/info/editLname`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -87,7 +88,7 @@ const OwnerInfo = () => {
 
   const handleLogout = async () => {
     try {
-      const res = await fetch("http://localhost:3000/logout", {
+      const res = await fetch(`${BASE_URL}/logout`, {
         method: "GET",
         credentials: "include",
       });

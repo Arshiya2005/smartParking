@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import scooty from "../assets/girl_scooty.svg";
+const BASE_URL = import.meta.env.VITE_BASE_URL;
 
 const WlcCardCustomer = () => {
   const [name, setName] = useState(null); // null = loading
@@ -7,7 +8,7 @@ const WlcCardCustomer = () => {
   useEffect(() => {
     const fetchWelcome = async () => {
       try {
-        const res = await fetch("http://localhost:3000/customer/welcome", {
+        const res = await fetch(`${BASE_URL}/customer/welcome`, {
           credentials: "include",
         });
   

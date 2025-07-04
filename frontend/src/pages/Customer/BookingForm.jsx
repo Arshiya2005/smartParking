@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useAuthRedirect from "../../hooks/useAuthRedirect";
 import useBookingReminders from "../../hooks/useBookingReminders";
-
+const BASE_URL = import.meta.env.VITE_BASE_URL;
 const BookingForm = () => {
   useAuthRedirect("customer");
   const [userId, setUserId] = useState(null);
@@ -10,7 +10,7 @@ const BookingForm = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const res = await fetch("http://localhost:3000/customer/welcome", {
+        const res = await fetch(`${BASE_URL}/customer/welcome`, {
           credentials: "include",
         });
         const result = await res.json();
@@ -45,7 +45,7 @@ const BookingForm = () => {
   useEffect(() => {
     const fetchVehicles = async () => {
       try {
-        const res = await fetch("http://localhost:3000/customer/profile/myVehicles", {
+        const res = await fetch(`${BASE_URL}/customer/profile/myVehicles`, {
           credentials: "include",
         });
         const data = await res.json();
@@ -60,7 +60,7 @@ const BookingForm = () => {
 
   const handleAddVehicle = async () => {
     try {
-      const res = await fetch("http://localhost:3000/customer/profile/myVehicles/add", {
+      const res = await fetch(`${BASE_URL}/customer/profile/myVehicles/add`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -132,7 +132,7 @@ const BookingForm = () => {
         body = { location: manualLocation.trim(), id: vehicle.id, type: vehicle.type };
       }
 
-      const res = await fetch("http://localhost:3000/customer/searchNearby", {
+      const res = await fetch(`${BASE_URL}/customer/searchNearby`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",

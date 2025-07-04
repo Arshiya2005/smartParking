@@ -7,6 +7,7 @@ import NearbyMap from "../../components/NearbyMap";
 import SlotCard from "../../components/SlotCard";
 import useAuthRedirect from "../../hooks/useAuthRedirect";
 import useBookingReminders from "../../hooks/useBookingReminders";
+const BASE_URL = import.meta.env.VITE_BASE_URL;
 const NearbySpots = () => {
   useAuthRedirect("customer");
   const [userId, setUserId] = useState(null);

@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { FaChevronRight } from 'react-icons/fa';
 import useAuthRedirect from "../../hooks/useAuthRedirect";
 import useBookingReminders from "../../hooks/useBookingReminders";
+const BASE_URL = import.meta.env.VITE_BASE_URL;
 const CustomerHistory = () => {
   useAuthRedirect("customer");
   const [userId, setUserId] = useState(null);
@@ -11,7 +12,7 @@ const CustomerHistory = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const res = await fetch("http://localhost:3000/customer/welcome", {
+        const res = await fetch(`${BASE_URL}/customer/welcome`, {
           credentials: "include",
         });
         const result = await res.json();
@@ -39,7 +40,7 @@ const CustomerHistory = () => {
 
     const fetchHistory = async () => {
       try {
-        const res = await axios.get("http://localhost:3000/customer/Bookinghistory", {
+        const res = await axios.get(`${BASE_URL}/customer/Bookinghistory`, {
           withCredentials: true,
         });
 
