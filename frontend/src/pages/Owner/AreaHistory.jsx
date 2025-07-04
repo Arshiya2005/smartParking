@@ -56,7 +56,7 @@ const AreaHistory = () => {
           { credentials: "include" }
         );
         const data = await res.json();
-
+        console.log("📥 Full booking history response:", data);
         if (!res.ok) throw new Error(data.error || "Failed to fetch history");
         setHistory(data.data || []);
       } catch (err) {
@@ -69,7 +69,20 @@ const AreaHistory = () => {
     fetchHistory();
   }, [area]);
 
-  const formatTime = (time) => time.slice(0, 5); // HH:mm
+  const formatTime = (time) => {
+    console.log("🕒 Raw time value:", time); // 👈 Logs what you're actually getting
+  
+    if (!time) return "--:--";
+  
+    // Try parsing it intelligently
+    const date = new Date(`1970-01-01T${time}`);
+    if (isNaN(date)) {
+      console.warn("⚠️ Invalid time format:", time);
+      return "--:--";
+    }
+  
+    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  }; // HH:mm
   const formatDate = (dateStr) => new Date(dateStr).toLocaleDateString();
 
   return (
@@ -90,34 +103,40 @@ const AreaHistory = () => {
         <div className="text-center text-muted">No past bookings found.</div>
       )}
 
-      <div className="table-responsive">
-        {history.length > 0 && (
-          <table className="table table-bordered table-striped shadow-sm bg-white">
-            <thead className="table-dark">
-              <tr>
-                <th>Date</th>
-                <th>Slot No</th>
-                <th>Type</th>
-                <th>Start Time</th>
-                <th>End Time</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {history.map((b) => (
-                <tr key={b.id}>
-                  <td>{formatDate(b.date)}</td>
-                  <td>{b.slot_no}</td>
-                  <td>{b.type}</td>
-                  <td>{formatTime(b.sTime)}</td>
-                  <td>{formatTime(b.eTime)}</td>
-                  <td>{b.status}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
-      </div>
+<div className="table-responsive">
+  {history.length > 0 && (
+    <table className="table table-bordered table-striped shadow-sm bg-white">
+      <thead className="table-dark">
+        <tr>
+          <th>ID</th>
+          <th>Date</th>
+          <th>Slot No</th>
+          <th>Type</th>
+          <th>Start Time</th>
+          <th>End Time</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+  {history.map((b) => (
+    <tr
+      key={b.id}
+      style={{ cursor: "pointer" }}
+      onClick={() => navigate("/owner/booking/details", { state: { booking: b } })}
+    >
+      <td>{b.id}</td>
+      <td>{formatDate(b.date)}</td>
+      <td>{b.slot_no}</td>
+      <td>{b.type}</td>
+      <td>{formatTime(b.stime)}</td>
+      <td>{formatTime(b.etime)}</td>
+      <td>{b.status}</td>
+    </tr>
+  ))}
+</tbody>
+    </table>
+  )}
+</div>
     </div>
   );
 };

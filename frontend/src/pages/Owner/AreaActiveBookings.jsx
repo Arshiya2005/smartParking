@@ -1,14 +1,21 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
-import { format } from "date-fns";
 import useAuthRedirect from "../../hooks/useAuthRedirect";
 import useOwnerNotifications from "../../hooks/useOwnerNotifications";
+
 const BASE_URL = import.meta.env.VITE_BASE_URL;
+
 const AreaActiveBookings = () => {
   useAuthRedirect("owner");
   const [ownerId, setOwnerId] = useState(null);
+  const [bookings, setBookings] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const location = useLocation();
+  const navigate = useNavigate();
+  const area = location.state?.area;
+
   useEffect(() => {
     const fetchOwner = async () => {
       try {
@@ -17,33 +24,18 @@ const AreaActiveBookings = () => {
         });
         const result = await res.json();
         const owner = result?.data;
-
         if (res.ok && owner?.type === "owner") {
           const id = owner.id || owner._id;
           setOwnerId(id);
-          console.log("🧑‍💼 Owner ID fetched:", id);
-        } else {
-          console.error("⚠️ Failed to verify owner");
         }
       } catch (err) {
-        console.error("❌ Error fetching owner in OwnerDashboard:", err);
+        console.error("Error fetching owner:", err);
       }
     };
-
     fetchOwner();
   }, []);
 
-  // ✅ Listen for parking-payment events via socket
   useOwnerNotifications(ownerId);
-  const location = useLocation();
-  const navigate = useNavigate();
-  const area = location.state?.area;
-
-  const [bookings, setBookings] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  const today = new Date();
 
   useEffect(() => {
     const fetchBookings = async () => {
@@ -55,12 +47,10 @@ const AreaActiveBookings = () => {
 
       try {
         const encoded = encodeURIComponent(JSON.stringify(area));
-        const res = await fetch(
-          `${BASE_URL}/owner/activeBookingInArea?area=${encoded}`,
-          { credentials: "include" }
-        );
+        const res = await fetch(`${BASE_URL}/owner/activeBookingInArea?area=${encoded}`, {
+          credentials: "include",
+        });
         const data = await res.json();
-
         if (res.ok) {
           setBookings(data.data || []);
         } else {
@@ -77,19 +67,28 @@ const AreaActiveBookings = () => {
     fetchBookings();
   }, [area]);
 
+  const handleBookingClick = async (booking) => {
+    try {
+      const encoded = encodeURIComponent(JSON.stringify(booking));
+      const res = await fetch(`${BASE_URL}/owner/Specificbooking?book=${encoded}`, {
+        credentials: "include",
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        navigate("/owner/booking/details", { state: data });
+      } else {
+        alert(data?.error || "Failed to load booking details");
+      }
+    } catch (err) {
+      console.error("Error fetching specific booking:", err);
+      alert("Something went wrong.");
+    }
+  };
+
   return (
     <div className="container py-5">
       <h2 className="text-center mb-4">Today's Bookings – {area?.name}</h2>
-
-      {/* Calendar (read-only visual)
-      <div className="d-flex justify-content-center mb-4">
-        <DatePicker
-          selected={today}
-          inline
-          readOnly
-          calendarClassName="border rounded shadow"
-        />
-      </div> */}
 
       {loading ? (
         <div className="text-center">
@@ -102,7 +101,12 @@ const AreaActiveBookings = () => {
       ) : (
         <ul className="list-group shadow-sm">
           {bookings.map((booking) => (
-            <li key={booking.id} className="list-group-item d-flex justify-content-between">
+            <li
+              key={booking.id}
+              className="list-group-item d-flex justify-content-between align-items-center clickable"
+              style={{ cursor: "pointer" }}
+              onClick={() => handleBookingClick(booking)}
+            >
               <span>
                 <strong>Slot #{booking.slot_no}</strong> – {booking.type}
               </span>

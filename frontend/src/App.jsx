@@ -53,6 +53,7 @@ import OwnerBookingHistory from './pages/Admin/OwnerBookingHistory';
 import OwnerAreas from './pages/Admin/OwnerAreas';
 import RazorpayPayment from './pages/Customer/RazorPayPayment';
 import ContactUs from './pages/ContactUs';
+import BookingDetailsO from './pages/Owner/BookingDetailsO';
 function App() {
   return (
     <>
@@ -118,6 +119,7 @@ function App() {
   <Route path="active" element={<OwnerActiveBookings />} />
   <Route path="history" element={<OwnerBookingHistory />} />
 </Route>
+<Route path="/owner/booking/details" element={<BookingDetailsO/>}/>
       </Routes>
     </>
   );
