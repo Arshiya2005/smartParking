@@ -299,7 +299,7 @@ export const activeBooking = async (req, res) => {
         const time = now.toTimeString().split(' ')[0];
         const response = await sql`
             SELECT * FROM bookings
-                WHERE date = ${today} AND customer_id = ${id} AND ${time} < eTime AND status = ${'active'};
+                WHERE date = ${today} AND customer_id = ${id} AND ${time} < eTime AND status = ${'active'} ORDER BY created_time DESC;
             `;
         if (response.length > 0) {
             return res.status(200).json({ data : response });
@@ -401,7 +401,7 @@ export const bookingHistory = async (req, res) => {
         }
         const id = req.user.id;
         const response = await sql`
-            SELECT * FROM bookings WHERE customer_id = ${id};
+            SELECT * FROM bookings WHERE customer_id = ${id} ORDER BY date DESC, created_time DESC;
             `;
         if (response.length > 0) {
             return res.status(200).json({ data : response});
