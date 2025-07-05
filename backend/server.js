@@ -81,12 +81,12 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use("/customer", customerRoutes);
-app.use("/owner", ownerRoutes);
-app.use("/admin", adminRoutes);
-app.use("/", authRoutes);
-app.use("/", usersRoutes);
-app.use("/", payment);
+app.use("/api/customer", customerRoutes);
+app.use("/api/owner", ownerRoutes);
+app.use("/api/admin", adminRoutes);
+app.use("/api/", authRoutes);
+app.use("/api/", usersRoutes);
+app.use("/api/", payment);
 
 if (process.env.NODE_ENV === "production") {
   app.use(express.static(path.join(__dirname, "/frontend/dist")));
