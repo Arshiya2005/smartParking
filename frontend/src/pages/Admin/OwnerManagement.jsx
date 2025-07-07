@@ -11,7 +11,7 @@ const OwnerManagement = () => {
   useEffect(() => {
     const fetchOwners = async () => {
       try {
-        const res = await fetch("${BASE_URL}/admin/ownerInfo", {
+        const res = await fetch(`${BASE_URL}/admin/ownerInfo`, {
           credentials: "include",
         });
 

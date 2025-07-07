@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import VehicleCard from "../../components/vehicleCard";
 import { FaPlus } from "react-icons/fa";
 import useAuthRedirect from "../../hooks/useAuthRedirect"; // ✅ Ensure this is imported
-import peachh from "../../assets/peach_background.jpg"; // if still used
+import useBookingReminders from "../../hooks/useBookingReminders";
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 const CustomerVehicles = () => {
   useAuthRedirect("customer");

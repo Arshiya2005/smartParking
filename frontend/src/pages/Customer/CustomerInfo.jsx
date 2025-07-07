@@ -106,7 +106,7 @@ const CustomerInfo = () => {
 
   const handleLogout = async () => {
     try {
-      const res = await fetch(`${BASE_URL}/logout"`, {
+      const res = await fetch(`${BASE_URL}/logout`, {
         method: "GET",
         credentials: "include",
       });
@@ -118,7 +118,7 @@ const CustomerInfo = () => {
         alert("🛑 Socket disconnected and listeners removed");
   
         alert("Logged out successfully!");
-        window.location.href = "/login?type=customer";
+        window.location.href = `/login?type=customer`;
       } else {
         alert("Failed to logout.");
       }
