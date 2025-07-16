@@ -76,3 +76,14 @@ npm run dev
 
 ### 💰 Razorpay
 - Docs: https://razorpay.com/docs/payments/dashboard/account-settings/api-keys//?preferred-country=IN
+
+### 🛠️ Admin Dashboard
+
+- The admin dashboard can be accessed directly via:
+
+  ```
+  http://localhost:5173/admin
+  ```
+
+- There is **no navigation button** to access it — it must be visited manually.
+- To sign up as admin, use the `ADMIN_SECRET` in your `.env` file.
