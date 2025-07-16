@@ -1,12 +1,9 @@
 # smartParking
 A full-stack web app that helps users find nearby available parking spots using OpenStreetMap APIs.
 
-Install dependencies : 
+Backend Setup: 
 
-    npm i
-
-
-Create .env :
+Create .env in root folder:
 
     # Server Configuration
     PORT=your_desired_port
@@ -21,24 +18,44 @@ Create .env :
     ARCJET_KEY=your_arcjet_api_key
     ARCJET_ENV=development
 
-    # Google OAuth Configuration
-    GOOGLE_CLIENT_ID=your_google_client_id
-    GOOGLE_CLIENT_SECRET=your_google_client_secret
-
     # Session Secret for express-session
     SESSION_SECRET=your_session_secret
-
     ORS_API_KEY=your_openrouteservice_api_key
 
+    #razorpay credentials
+    KEY_ID="your_key_id"
+    KEY_SECRET="your_key_secret"
 
-Start server : 
-
-    npm run dev
-
+    #to sign up as admin
+    ADMIN_SECRET="your_admin_secret"
 
 
-Frontend : 
 
-    cd ./frontend
+Start backend server : 
     npm i
     npm run dev
+
+
+Frontend setup:
+    cd ./frontend
+
+Create .env in frontend folder
+    VITE_BASE_URL="http://localhost:3000/api"
+
+Start frontend server :
+    npm i
+    npm run dev
+
+
+API Keys Setup
+
+#openroute
+ORS website: https://openrouteservice.org
+Get API Key: https://openrouteservice.org/dev/#/signup
+API Docs: https://openrouteservice.org/dev/#/api-docs
+
+#arcjet
+https://docs.arcjet.com/get-started/#:~:text=Set%20your%20key,-Section%20titled%20%E2%80%9C2&text=Create%20a%20free%20Arcjet%20account,file%20in%20your%20project%20root.
+
+#razorpay
+https://razorpay.com/docs/payments/dashboard/account-settings/api-keys//?preferred-country=IN
