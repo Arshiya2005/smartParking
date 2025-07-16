@@ -1,61 +1,78 @@
 # smartParking
+
 A full-stack web app that helps users find nearby available parking spots using OpenStreetMap APIs.
 
-Backend Setup: 
+---
 
-Create .env in root folder:
+## 🔧 Backend Setup
 
-    # Server Configuration
-    PORT=your_desired_port
+### 1. Create `.env` in the root folder:
 
-    # PostgreSQL Database Configuration
-    PGUSER=your_postgres_username
-    PGPASSWORD=your_postgres_password
-    PGHOST=your_postgres_host_url
-    PGDATABASE=your_database_name
+```
+# Server Configuration
+PORT=your_desired_port
 
-    # Arcjet Configuration
-    ARCJET_KEY=your_arcjet_api_key
-    ARCJET_ENV=development
+# PostgreSQL Database Configuration
+PGUSER=your_postgres_username
+PGPASSWORD=your_postgres_password
+PGHOST=your_postgres_host_url
+PGDATABASE=your_database_name
 
-    # Session Secret for express-session
-    SESSION_SECRET=your_session_secret
-    ORS_API_KEY=your_openrouteservice_api_key
+# Arcjet Configuration
+ARCJET_KEY=your_arcjet_api_key
+ARCJET_ENV=development
 
-    #razorpay credentials
-    KEY_ID="your_key_id"
-    KEY_SECRET="your_key_secret"
+# Session Secret for express-session
+SESSION_SECRET=your_session_secret
+ORS_API_KEY=your_openrouteservice_api_key
 
-    #to sign up as admin
-    ADMIN_SECRET="your_admin_secret"
+# Razorpay credentials
+KEY_ID="your_key_id"
+KEY_SECRET="your_key_secret"
 
+# Admin signup
+ADMIN_SECRET="your_admin_secret"
+```
 
+### 2. Start Backend Server:
 
-Start backend server : 
-    npm i
-    npm run dev
+```bash
+npm install
+npm run dev
+```
 
+---
 
-Frontend setup:
-    cd ./frontend
+## 💻 Frontend Setup
 
-Create .env in frontend folder
-    VITE_BASE_URL="http://localhost:3000/api"
+```bash
+cd ./frontend
+```
 
-Start frontend server :
-    npm i
-    npm run dev
+### 1. Create `.env` in the `frontend` folder:
 
+```
+VITE_BASE_URL="http://localhost:3000/api"
+```
 
-API Keys Setup
+### 2. Start Frontend Server:
 
-#openroute
-ORS website: https://openrouteservice.org
-Get API Key: https://openrouteservice.org/dev/#/signup
-API Docs: https://openrouteservice.org/dev/#/api-docs
+```bash
+npm install
+npm run dev
+```
 
-#arcjet
-https://docs.arcjet.com/get-started/#:~:text=Set%20your%20key,-Section%20titled%20%E2%80%9C2&text=Create%20a%20free%20Arcjet%20account,file%20in%20your%20project%20root.
+---
 
-#razorpay
-https://razorpay.com/docs/payments/dashboard/account-settings/api-keys//?preferred-country=IN
+## 🔑 API Keys Setup
+
+### 📍 OpenRouteService
+- Website: https://openrouteservice.org  
+- Sign Up: https://openrouteservice.org/dev/#/signup  
+- API Docs: https://openrouteservice.org/dev/#/api-docs
+
+### 🛡️ Arcjet
+- Docs: https://docs.arcjet.com/get-started/#:~:text=Set%20your%20key,-Section%20titled%20%E2%80%9C2&text=Create%20a%20free%20Arcjet%20account,file%20in%20your%20project%20root.
+
+### 💰 Razorpay
+- Docs: https://razorpay.com/docs/payments/dashboard/account-settings/api-keys//?preferred-country=IN
